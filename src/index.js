@@ -2,8 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { Text, View, TouchableOpacity, Image } from "react-native";
 import { Camera } from "expo-camera";
 import Icon from "react-native-vector-icons/Feather";
-import * as tf from "@tensorflow/tfjs";
-import { bundleResourceIO } from "@tensorflow/tfjs-react-native";
+import {
+  loadModel,
+  preprocessImage,
+  getLabel,
+} from "./services/chipRecognition";
 
 async function getCameraPermission() {
   const { status } = await Camera.requestCameraPermissionsAsync();
@@ -17,26 +20,15 @@ async function getCameraPermission() {
 export default function Main() {
   const [hasPermission, setHasPermission] = useState(null);
   const [capturedPhoto, setCapturedPhoto] = useState(null);
+  const [model, setModel] = useState(null);
   const cameraRef = useRef(null);
-
-  const load = async () => {
-    try {
-      await tf.ready();
-      console.log("Tensorflow Ready!");
-      const modelJson = require("./assets/model/model.json");
-      const modelWeights1 = require("./assets/model/group1-shard1of2.bin");
-
-      console.log(model.summary());
-    } catch (err) {
-      console.log("Something failed :c");
-    }
-  };
 
   useEffect(() => {
     (async () => {
       const hasCameraPermission = await getCameraPermission();
       setHasPermission(hasCameraPermission);
-      await load();
+      const modelLoad = await loadModel();
+      setModel(modelLoad);
     })();
   }, []);
 
@@ -45,7 +37,11 @@ export default function Main() {
       const photo = await cameraRef.current.takePictureAsync();
       setCapturedPhoto(photo.uri);
       console.log("Photo taken!");
-      console.log("testing model load ...");
+      if (model) {
+        let imageTensor = await preprocessImage(photo.uri);
+        const predictions = model.predict(imageTensor);
+        await getLabel(predictions);
+      }
     }
   };
 
