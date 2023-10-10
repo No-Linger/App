@@ -1,5 +1,7 @@
 import * as tf from "@tensorflow/tfjs";
 import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
+import * as ImageManipulator from "expo-image-manipulator";
+import { Buffer } from "buffer";
 
 const categories = [
   "adobadas",
@@ -15,15 +17,10 @@ export const loadModel = async () => {
     await tf.ready();
     console.log("Tensorflow Ready!");
     const modelJson = require("../model/model.json");
-    const modelWeights1 = require("../model/group1-shard1of9.bin");
-    const modelWeights2 = require("../model/group1-shard2of9.bin");
-    const modelWeights3 = require("../model/group1-shard3of9.bin");
-    const modelWeights4 = require("../model/group1-shard4of9.bin");
-    const modelWeights5 = require("../model/group1-shard5of9.bin");
-    const modelWeights6 = require("../model/group1-shard6of9.bin");
-    const modelWeights7 = require("../model/group1-shard7of9.bin");
-    const modelWeights8 = require("../model/group1-shard8of9.bin");
-    const modelWeights9 = require("../model/group1-shard9of9.bin");
+    const modelWeights1 = require("../model/group1-shard1of4.bin");
+    const modelWeights2 = require("../model/group1-shard2of4.bin");
+    const modelWeights3 = require("../model/group1-shard3of4.bin");
+    const modelWeights4 = require("../model/group1-shard4of4.bin");
 
     console.log("Starting model load:", new Date().toISOString());
     const model = await tf.loadLayersModel(
@@ -32,11 +29,6 @@ export const loadModel = async () => {
         modelWeights2,
         modelWeights3,
         modelWeights4,
-        modelWeights5,
-        modelWeights6,
-        modelWeights7,
-        modelWeights8,
-        modelWeights9,
       ])
     );
     console.log("Finished model load:", new Date().toISOString());
@@ -49,21 +41,23 @@ export const loadModel = async () => {
 export const preprocessImage = async (uri) => {
   let imagePreprocessed;
   try {
-    const response = await fetch(uri, {}, { isBinary: true });
+    console.log("preprocessing image ...");
+    const resizedImage = await ImageManipulator.manipulateAsync(uri, [
+      { resize: { width: 224, height: 224 } },
+    ]);
+    const response = await fetch(resizedImage.uri, {}, { isBinary: true });
     const imageDataArrayBuffer = await response.arrayBuffer();
     const imageData = new Uint8Array(imageDataArrayBuffer);
 
     imagePreprocessed = tf.tidy(() => {
       const imageTensor = decodeJpeg(imageData);
       const imageTensorFloat = tf.cast(imageTensor, "float32");
-      const normalizedTensor = tf.div(imageTensorFloat, 255.0);
-      const resizedTensor = tf.image.resizeBilinear(
-        normalizedTensor,
-        [200, 200]
-      );
-      const transformedImage = tf.expandDims(resizedTensor, 0);
+      const dividedImage = tf.div(imageTensorFloat, 127.5);
+      const normalizedImage = tf.sub(dividedImage, 1);
+      const transformedImage = tf.expandDims(normalizedImage, 0);
       return transformedImage;
     });
+    console.log("image processed succesfully!");
   } catch (err) {
     console.log(err);
     console.log("image transformationa failed 😫");

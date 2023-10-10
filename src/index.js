@@ -38,7 +38,7 @@ export default function Main() {
       setCapturedPhoto(photo.uri);
       console.log("Photo taken!");
       if (model) {
-        let imageTensor = await preprocessImage(photo.uri);
+        const imageTensor = await preprocessImage(photo.uri);
         const predictions = model.predict(imageTensor);
         await getLabel(predictions);
       }
