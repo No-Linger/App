@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Camera } from "expo-camera";
 import { getCameraPermission } from "../services/camera";
-import Icon from "react-native-vector-icons/Feather";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
   classifyGrid,
   loadModel,
@@ -93,19 +93,43 @@ export default function TakePicture() {
         </View>
       )}
       {photoCaptured && !processingImage && (
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
-          <ScrollView style={styles.container}>
-            <View style={styles.imageGrid}>
-              {processedImages.map((url, index) => (
-                <View key={url} style={styles.imageContainer}>
-                  <Image source={{ uri: url }} style={styles.image} />
-                </View>
-              ))}
-            </View>
-          </ScrollView>
-        </View>
+        <>
+          <View
+            style={{
+              flex: 1,
+              marginTop: "15%",
+              justifyContent: "left",
+              alignItems: "flex-start",
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                setphotoCaptured(false);
+                setProcessingImage(false);
+              }}
+              style={{
+                padding: 14,
+                borderWidth: 2,
+                borderRadius: 15,
+              }}
+            >
+              <Icon name="replay" size={20} color="black" />
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{ flex: 9, alignItems: "center", justifyContent: "center" }}
+          >
+            <ScrollView style={styles.container}>
+              <View style={styles.imageGrid}>
+                {processedImages.map((url, index) => (
+                  <View key={url} style={styles.imageContainer}>
+                    <Image source={{ uri: url }} style={styles.image} />
+                  </View>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
+        </>
       )}
     </View>
   );
@@ -114,8 +138,6 @@ export default function TakePicture() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: "15%",
-    marginHorizontal: "2%",
   },
   imageGrid: {
     flexDirection: "row",
