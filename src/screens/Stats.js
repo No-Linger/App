@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 export default function Stats() {
   const [statData, setStatData] = React.useState(null);
@@ -10,6 +10,7 @@ export default function Stats() {
   const [showRecords, setShowRecords] = React.useState(false);
   const [selectedDate, setSelectedDate] = React.useState(null);
   const [triangleDirection, setTriangleDirection] = React.useState('right');
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentDate(new Date().toLocaleDateString());
@@ -25,10 +26,10 @@ export default function Stats() {
 
   const saveDataToAsyncStorage = async () => {
     const jsonData = {
-      date: new Date().toLocaleDateString(),
-      time: new Date().toLocaleTimeString(),
-      model_percentage: generateRandomPercentage(),
-      error_percentage: generateRandomPercentage(),
+      fecha: new Date().toLocaleDateString(),
+      hora: new Date().toLocaleTimeString(),
+      porcentaje_modelo: generateRandomPercentage(),
+      porcentaje_error: generateRandomPercentage(),
     };
     try {
       await AsyncStorage.setItem('statData', JSON.stringify(jsonData));
@@ -36,7 +37,7 @@ export default function Stats() {
       setStatData(jsonData);
 
       setRecords((prevRecords) => {
-        const dateKey = jsonData.date;
+        const dateKey = jsonData.fecha;
         if (!prevRecords[dateKey]) {
           prevRecords[dateKey] = [];
         }
@@ -48,8 +49,8 @@ export default function Stats() {
     }
   };
 
-  const handleDateClick = (date) => {
-    setSelectedDate(selectedDate === date ? null : date);
+  const handleDateClick = (fecha) => {
+    setSelectedDate(selectedDate === fecha ? null : fecha);
   };
 
   const handleShowRecordsClick = () => {
@@ -57,20 +58,19 @@ export default function Stats() {
     setShowRecords(!showRecords);
   };
   
-  
   return (
     <ScrollView style={{flex:1}}>
       <View style={{padding: 10, margin: 5, flex: 1,}}>
-        <Text style={{fontSize: 20, fontWeight: 'bold', textAlign: 'center', padding: 10, backgroundColor: 'gold', overflow: 'hidden', borderRadius: 10,}}
-          >Información {currentDate}
+        <Text style={{fontSize: 15, fontWeight: 'bold', padding: 3}}
+          >¡Hola! Hoy es: {currentDate}
         </Text>
         {statData ? (
           <View style={{marginTop:10}}>
             <View style={styles.text}>
-              <Text>Date: {statData.date}</Text>
-              <Text>Time: {statData.time}</Text>
-              <Text>Model Percentage: {statData.model_percentage}%</Text>
-              <Text>Error Percentage: {statData.error_percentage}%</Text>
+              <Text>Fecha: {statData.fecha}</Text>
+              <Text>Hora: {statData.hora}</Text>
+              <Text>porcentaje_modelo: {statData.porcentaje_modelo}%</Text>
+              <Text>porcentaje_error: {statData.porcentaje_error}%</Text>
             </View>
           </View>
         ) : (
@@ -86,25 +86,25 @@ export default function Stats() {
         <TouchableOpacity onPress={handleShowRecordsClick} style={styles.showRecordsButton}>
           <View style={styles.buttonContainer}>
             <Text>Datos Guardados</Text>
-            <FontAwesomeIcon name={`caret-${triangleDirection}`} size={16} />
+            <Icon name={`caret${triangleDirection}`} size={16} />
           </View>
         </TouchableOpacity>
         
         {showRecords && (
           <View style={styles.recordsContainer}>
-            {Object.entries(records).map(([date, captureArray], index) => (
+            {Object.entries(records).map(([fecha, captureArray], index) => (
               <View key={index}>
-                <TouchableOpacity style={styles.buttonContainer} onPress={() => handleDateClick(date)}>
-                  <Text style={{fontWeight: 'bold', marginBottom:2}}>Date: {date}</Text>
-                  <FontAwesomeIcon name="folder" style={{color: "#366ac4",}} />
+                <TouchableOpacity style={styles.buttonContainer} onPress={() => handleDateClick(fecha)}>
+                  <Text style={{fontWeight: 'bold', marginBottom:8, marginTop:8}}>Date: {fecha}</Text>
+                  <Icon name={selectedDate ?  "folderopen": "folder1"} style={{color: "#366ac4",}} />
                 </TouchableOpacity>
 
-                {selectedDate === date &&
+                {selectedDate === fecha &&
                   captureArray.map((capture, captureIndex) => (
                     <View style={{marginLeft:5}}key={captureIndex}>
-                      <Text>Time: {capture.time}</Text>
-                      <Text>Model Percentage: {capture.model_percentage}%</Text>
-                      <Text style={{marginBottom:2}}>Error Percentage: {capture.error_percentage}%</Text>
+                      <Text>Hora: {capture.hora}</Text>
+                      <Text>porcentaje_modelo: {capture.porcentaje_modelo}%</Text>
+                      <Text style={{marginBottom:2}}>porcentaje_error: {capture.porcentaje_error}%</Text>
                       <Text>--------------------------------</Text>
                     </View>
                   ))}
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   capturar: {
-    backgroundColor: 'lightskyblue',
+    backgroundColor: 'gainsboro',
     textAlign: 'center',
     alignItems: 'center',
     padding: 10,

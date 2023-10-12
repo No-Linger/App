@@ -18,9 +18,13 @@ function MyTabs() {
         name="Estadística"
         component={Stats}
         options={{
+          headerTitleAlign: 'left',
           tabBarLabel: "Estadística",
+          headerTitleStyle: {
+            fontSize: 25,
+          },
           tabBarIcon: ({ color, size }) => (
-            <Icon name="align-vertical-bottom" color={color} size={size} />
+            <Icon name="chart-bar" color={color} size={size} />
           ),
         }}
       />
@@ -39,7 +43,11 @@ function MyTabs() {
         name="Ajustes"
         component={Profile}
         options={{
+          headerTitleAlign: 'left',
           tabBarLabel: "Ajustes",
+          headerTitleStyle: {
+            fontSize: 25,
+          },
           tabBarIcon: ({ color, size }) => (
             <Icon name="account-settings" color={color} size={size} />
           ),
