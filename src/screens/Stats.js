@@ -47,9 +47,11 @@ export default function Stats() {
       ) : (
         <Text style={styles.alert}>No hay datos hoy.</Text>
       )}
-      <TouchableOpacity style={styles.container} onPress={saveDataToAsyncStorage}>
-        <Text style={styles.button}>Capturar</Text>
-      </TouchableOpacity>
+       <View style={styles.container}>
+        <TouchableOpacity onPress={saveDataToAsyncStorage}>
+          <Text style={styles.button}>Capturar</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }  
@@ -59,7 +61,6 @@ const styles = StyleSheet.create({
     padding: 10,
     margin: 5,
     flex: 1,
-    
   },
   header: {
     fontSize: 20,
@@ -71,9 +72,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   container: {
-    flex: 1,
     alignItems: 'center',
-    padding: 10,
+    
   },
   alert: {
     padding: 20,
@@ -94,8 +94,10 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: 'lightsalmon',
     textAlign: 'center',
+    alignItems: 'center',
     padding: 10,
-    minWidth: 100,
+    marginTop: 10,
+    width: 100,
     overflow: 'hidden',
     borderRadius: 12,
     fontWeight: '500'
