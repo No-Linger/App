@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Stats() {
   const [statData, setStatData] = React.useState(null);
   const [currentDate, setCurrentDate] = React.useState(new Date().toLocaleDateString());
-  const [showGuardarButton, setShowGuardarButton] = useState(false); // State to control button visibility
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -16,29 +15,13 @@ export default function Stats() {
     };
   }, []);
 
-  const showAlert = () => {
-    Alert.alert(
-      'Datos no disponibles',
-      'No hay datos disponibles en este momento.',
-      [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
-    );
-  };
-
-  useEffect(() => {
-    if (statData === null) {
-      showAlert();
-    } else {
-      // Data is available, so show the "Guardar" button
-      setShowGuardarButton(true);
-    }
-  }, [statData]);
 
   const saveDataToAsyncStorage = async () => {
     const jsonData = {
-      date: '2023-10-11',
-      time: '15:30',
-      model_percentage: 98,
-      error_percentage: 2,
+      date: '2023-10-12',
+      time: '2:30',
+      model_percentage: 99,
+      error_percentage: 1,
     };
     try {
       await AsyncStorage.setItem('statData', JSON.stringify(jsonData));
@@ -46,21 +29,6 @@ export default function Stats() {
       setStatData(jsonData);
     } catch (error) {
       console.error('Error:', error);
-    }
-  };
-
-  const retrieveDataFromAsyncStorage = async () => {
-    try {
-      const data = await AsyncStorage.getItem('statData');
-      if (data) {
-        const parsedData = JSON.parse(data);
-        console.log('Data retrieved:', parsedData);
-        setStatData(parsedData);
-      } else {
-        console.log('No data found in AsyncStorage.');
-      }
-    } catch (error) {
-      console.error('Error retrieving data:', error);
     }
   };
 
@@ -77,8 +45,7 @@ export default function Stats() {
       ) : (
         <Text style={styles.text}>No hay datos hoy.</Text>
       )}
-      <Button title="Fotografía" onPress={saveDataToAsyncStorage} />
-      {showGuardarButton && <Button title="Recuperar Datos" onPress={retrieveDataFromAsyncStorage} />}
+      <Button title="Capturar" onPress={saveDataToAsyncStorage} />
     </View>
   );
 }
