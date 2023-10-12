@@ -7,6 +7,7 @@ import {
   Image,
   ScrollView,
   StyleSheet,
+  Dimensions,
 } from "react-native";
 import { Camera } from "expo-camera";
 import { getCameraPermission } from "../services/camera";
@@ -17,40 +18,41 @@ import {
   sliceImage,
 } from "../services/chipRecognition";
 
+const deviceWidth = Dimensions.get("window").width;
+
 export default function TakePicture() {
   const [hasPermission, setHasPermission] = useState(null);
-  const [capturedPhoto, setCapturedPhoto] = useState(null);
-  const [photoCaptured, setphotoCaptured] = useState(false);
-  const [photoAccepted, setPhotoAccepted] = useState(false);
-  const [processingImage, setProcessingImage] = useState(false);
-  const [processedImages, setProcessedImages] = useState([]);
-  const [model, setModel] = useState();
   const cameraRef = useRef(null);
+
+  const [capturedPhoto, setCapturedPhoto] = useState(null);
+  const [photoAccepted, setPhotoAccepted] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processedImages, setProcessedImages] = useState([]);
+
+  const [model, setModel] = useState();
 
   const takePicture = async () => {
     if (cameraRef.current) {
       const photo = await cameraRef.current.takePictureAsync();
-      setCapturedPhoto(photo.uri);
-      setphotoCaptured(true);
+      setCapturedPhoto(photo);
     }
   };
 
   const processImage = async () => {
     if (model) {
       setPhotoAccepted(true);
-      setProcessingImage(true);
-      const slices = await sliceImage(capturedPhoto);
+      setIsProcessing(true);
+      const slices = await sliceImage(capturedPhoto.uri);
       setProcessedImages(slices);
       const predicitons = await classifyGrid(model, slices);
       console.log(predicitons);
-      setProcessingImage(false);
+      setIsProcessing(false);
     }
   };
 
   const resetProcess = async () => {
-    setphotoCaptured(false);
     setPhotoAccepted(false);
-    setProcessingImage(false);
+    setIsProcessing(false);
     setProcessedImages([]);
     setCapturedPhoto(null);
   };
@@ -66,7 +68,7 @@ export default function TakePicture() {
 
   return (
     <View style={{ flex: 1 }}>
-      {!photoCaptured && !photoAccepted && (
+      {!capturedPhoto && !photoAccepted && (
         <>
           <Camera
             style={{ flex: 5, marginTop: "15%" }}
@@ -98,16 +100,18 @@ export default function TakePicture() {
           </View>
         </>
       )}
-      {photoCaptured && !photoAccepted && (
+      {capturedPhoto && !photoAccepted && (
         <>
           <View
             style={{ flex: 6, justifyContent: "center", alignItems: "center" }}
           >
             <Image
-              source={{ uri: capturedPhoto }}
-              style={{ marginHorizontal: "5%", marginVertical: "10%" }}
-              width={200}
-              height={100}
+              source={{ uri: capturedPhoto.uri }}
+              style={{}}
+              width={deviceWidth}
+              height={
+                deviceWidth / (capturedPhoto.width / capturedPhoto.height)
+              }
             />
           </View>
           <View
@@ -145,7 +149,7 @@ export default function TakePicture() {
           </View>
         </>
       )}
-      {photoCaptured && processingImage && photoAccepted && (
+      {capturedPhoto && isProcessing && photoAccepted && (
         <>
           <View
             style={{
@@ -159,7 +163,7 @@ export default function TakePicture() {
           </View>
         </>
       )}
-      {photoCaptured && !processingImage && photoAccepted && (
+      {capturedPhoto && !isProcessing && photoAccepted && (
         <>
           <View
             style={{
@@ -198,6 +202,8 @@ export default function TakePicture() {
     </View>
   );
 }
+
+// Temporal styles for temporal image division grid
 
 const styles = StyleSheet.create({
   container: {
