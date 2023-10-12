@@ -1,5 +1,5 @@
-import React from "react";
-import { First, Profile, Stats, TakePicture } from "./screens";
+import React, { useState } from "react";
+import { Profile, Stats, TakePicture, Login } from "./screens";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -50,9 +50,20 @@ function MyTabs() {
 }
 
 export default function Main() {
-  return (
-    <NavigationContainer>
-      <MyTabs />
-    </NavigationContainer>
-  );
+  const [isLoged, setIsLoged] = useState(true);
+  if (isLoged) {
+    return (
+      <NavigationContainer>
+        <MyTabs />
+      </NavigationContainer>
+    );
+  } else {
+    return (
+      <Login
+        onClick={() => {
+          setIsLoged(true);
+        }}
+      />
+    );
+  }
 }

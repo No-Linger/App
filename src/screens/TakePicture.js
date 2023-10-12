@@ -21,6 +21,7 @@ export default function TakePicture() {
   const [hasPermission, setHasPermission] = useState(null);
   const [capturedPhoto, setCapturedPhoto] = useState(null);
   const [photoCaptured, setphotoCaptured] = useState(false);
+  const [photoAccepted, setPhotoAccepted] = useState(false);
   const [processingImage, setProcessingImage] = useState(false);
   const [processedImages, setProcessedImages] = useState([]);
   const [model, setModel] = useState();
@@ -28,18 +29,30 @@ export default function TakePicture() {
 
   const takePicture = async () => {
     if (cameraRef.current) {
-      if (model) {
-        const photo = await cameraRef.current.takePictureAsync();
-        setCapturedPhoto(photo.uri);
-        setphotoCaptured(true);
-        setProcessingImage(true);
-        const slices = await sliceImage(photo.uri);
-        setProcessedImages(slices);
-        const predicitons = await classifyGrid(model, slices);
-        console.log(predicitons);
-        setProcessingImage(false);
-      }
+      const photo = await cameraRef.current.takePictureAsync();
+      setCapturedPhoto(photo.uri);
+      setphotoCaptured(true);
     }
+  };
+
+  const processImage = async () => {
+    if (model) {
+      setPhotoAccepted(true);
+      setProcessingImage(true);
+      const slices = await sliceImage(capturedPhoto);
+      setProcessedImages(slices);
+      const predicitons = await classifyGrid(model, slices);
+      console.log(predicitons);
+      setProcessingImage(false);
+    }
+  };
+
+  const resetProcess = async () => {
+    setphotoCaptured(false);
+    setPhotoAccepted(false);
+    setProcessingImage(false);
+    setProcessedImages([]);
+    setCapturedPhoto(null);
   };
 
   useEffect(() => {
@@ -53,10 +66,10 @@ export default function TakePicture() {
 
   return (
     <View style={{ flex: 1 }}>
-      {!photoCaptured && !processingImage && (
+      {!photoCaptured && !photoAccepted && (
         <>
           <Camera
-            style={{ flex: 1, marginTop: "15%" }}
+            style={{ flex: 5, marginTop: "15%" }}
             type={Camera.Constants.Type.back}
             ref={cameraRef}
           >
@@ -75,24 +88,78 @@ export default function TakePicture() {
             <TouchableOpacity
               onPress={takePicture}
               style={{
-                padding: 14,
+                padding: 10,
                 borderWidth: 2,
                 borderRadius: 15,
               }}
             >
-              <Icon name="camera" size={40} color="black" />
+              <Icon name="camera-iris" size={40} color="black" />
             </TouchableOpacity>
           </View>
         </>
       )}
-      {photoCaptured && processingImage && (
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
-          <ActivityIndicator size="large" color="#000000" />
-        </View>
+      {photoCaptured && !photoAccepted && (
+        <>
+          <View
+            style={{ flex: 6, justifyContent: "center", alignItems: "center" }}
+          >
+            <Image
+              source={{ uri: capturedPhoto }}
+              style={{ marginHorizontal: "5%", marginVertical: "10%" }}
+              width={200}
+              height={100}
+            />
+          </View>
+          <View
+            style={{
+              flex: 3,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <TouchableOpacity
+              onPress={resetProcess}
+              style={{
+                padding: 10,
+                borderWidth: 2,
+                borderRadius: 15,
+                marginHorizontal: 30,
+                borderColor: "#FF3F16",
+              }}
+            >
+              <Icon name="cancel" size={50} color="#FF3F16" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={processImage}
+              style={{
+                padding: 10,
+                borderWidth: 2,
+                borderRadius: 15,
+                marginHorizontal: 30,
+                borderColor: "#1BE878",
+              }}
+            >
+              <Icon name="check-circle-outline" size={50} color="#1BE878" />
+            </TouchableOpacity>
+          </View>
+        </>
       )}
-      {photoCaptured && !processingImage && (
+      {photoCaptured && processingImage && photoAccepted && (
+        <>
+          <View
+            style={{
+              flex: 9,
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: "10%",
+            }}
+          >
+            <ActivityIndicator size="large" color="#000000" />
+          </View>
+        </>
+      )}
+      {photoCaptured && !processingImage && photoAccepted && (
         <>
           <View
             style={{
@@ -103,10 +170,7 @@ export default function TakePicture() {
             }}
           >
             <TouchableOpacity
-              onPress={() => {
-                setphotoCaptured(false);
-                setProcessingImage(false);
-              }}
+              onPress={resetProcess}
               style={{
                 padding: 14,
                 borderWidth: 2,

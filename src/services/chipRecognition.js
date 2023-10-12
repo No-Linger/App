@@ -45,6 +45,7 @@ export const loadModel = async () => {
 export const sliceImage = async (uri) => {
   const imageInfo = await ImageManipulator.manipulateAsync(uri);
   const { width, height } = imageInfo;
+  console.log(width, height);
 
   const pieceWidth = width / COLS;
   const pieceHeight = height / ROWS;
