@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Stats() {
@@ -33,36 +33,71 @@ export default function Stats() {
   };
 
   return (
-    <View>
+    <View style={styles.main}>
       <Text style={styles.header}>Información {currentDate}</Text>
       {statData ? (
-        <View>
+      <View style={styles.data}>
+        <View style={styles.text}>
           <Text>Date: {statData.date}</Text>
           <Text>Time: {statData.time}</Text>
           <Text>Model Percentage: {statData.model_percentage}%</Text>
           <Text>Error Percentage: {statData.error_percentage}%</Text>
         </View>
+      </View>
       ) : (
-        <Text style={styles.text}>No hay datos hoy.</Text>
+        <Text style={styles.alert}>No hay datos hoy.</Text>
       )}
-      <Button title="Capturar" onPress={saveDataToAsyncStorage} />
+      <TouchableOpacity style={styles.container} onPress={saveDataToAsyncStorage}>
+        <Text style={styles.button}>Capturar</Text>
+      </TouchableOpacity>
     </View>
   );
-}
+}  
 
 const styles = StyleSheet.create({
-  container: {
+  main: {
+    padding: 10,
+    margin: 5,
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    
   },
   header: {
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
     padding: 10,
+    backgroundColor: 'gold',
+    overflow: 'hidden',
+    borderRadius: 10,
+  },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 10,
+  },
+  alert: {
+    padding: 20,
+    textAlign: 'center',
+    color: 'lightcoral',
+    fontWeight: 'bold',
   },
   text: {
+    padding: 10,
     textAlign: 'center',
-  }
+    backgroundColor: 'gainsboro',
+    overflow: 'hidden',
+    borderRadius: 10,
+  },
+  data:{
+    paddingTop: 10
+  },
+  button: {
+    backgroundColor: 'lightsalmon',
+    textAlign: 'center',
+    padding: 10,
+    minWidth: 100,
+    overflow: 'hidden',
+    borderRadius: 12,
+    fontWeight: '500'
+  },
 });
