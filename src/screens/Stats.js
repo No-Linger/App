@@ -95,7 +95,7 @@ export default function Stats() {
             {Object.entries(records).map(([fecha, captureArray], index) => (
               <View key={index}>
                 <TouchableOpacity style={styles.buttonContainer} onPress={() => handleDateClick(fecha)}>
-                  <Text style={{fontWeight: 'bold', marginBottom:8, marginTop:8}}>Date: {fecha}</Text>
+                  <Text style={{fontWeight: 'bold', marginBottom:8, marginTop:8}}>Fecha: {fecha}</Text>
                   <Icon name={selectedDate ?  "folderopen": "folder1"} style={{color: "#366ac4",}} />
                 </TouchableOpacity>
 
