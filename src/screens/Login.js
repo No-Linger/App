@@ -4,6 +4,10 @@ import { authClient } from "../services/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 
+import Imagen from '../components/imagen.js';
+
+const logoImageSource = require('../../assets/logoOxxo.png');
+
 export default function Login() {
     //USERNAME: adrianbravo10@hotmail.com
     //PASSWORD: Password123!
@@ -32,24 +36,29 @@ export default function Login() {
         signIn()
       }
 
-    return (
+      return (
         <View style={styles.container}>
-          <Text style={styles.label}>Username</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setUsername(text)}
-            value={username}
-          />
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            secureTextEntry
-          />
-          <Button title="Login" 
-          onPress={handleClick} 
-          />
+          <View style={styles.formContainer}>
+            <View style={styles.logoImageContainer}>
+              <Imagen source={logoImageSource} width="50%" height="100%" style={styles.logoImage} />
+            </View>
+            <Text style={styles.label}>Username</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => setUsername(text)}
+              value={username}
+            />
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => setPassword(text)}
+              value={password}
+              secureTextEntry
+            />
+            <Button title="Login" 
+              onPress={handleClick} 
+            />
+          </View>
         </View>
       );
     }
@@ -59,18 +68,28 @@ export default function Login() {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+      },
+      formContainer: {
+        backgroundColor: 'rgba(192, 192, 192, 0.5)',
         padding: 16,
+        borderRadius: 16,
+        width: '80%',
+      },
+      logoImageContainer: {
+        alignItems: 'center', // Centra la imagen horizontalmente
+        marginBottom: 16,
+        height:'20%'
       },
       label: {
         fontSize: 18,
         marginBottom: 8,
       },
       input: {
-        width: '100%',
         height: 40,
         borderColor: 'gray',
         borderWidth: 1,
         marginBottom: 16,
         paddingLeft: 8,
+        borderRadius: 8,
       },
     });
