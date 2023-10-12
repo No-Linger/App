@@ -1,5 +1,6 @@
 import React from "react";
-import { First, Profile, Stats, TakePicture } from "./screens";
+import { First, Profile, Stats, TakePicture} from "./screens";
+import Login from "./screens/Login"
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -40,6 +41,16 @@ function MyTabs() {
         component={Profile}
         options={{
           tabBarLabel: "Profile",
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="account-settings" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Login"
+        component={Login}
+        options={{
+          tabBarLabel: "Login",
           tabBarIcon: ({ color, size }) => (
             <Icon name="account-settings" color={color} size={size} />
           ),
