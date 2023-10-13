@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Profile, Stats, TakePicture, Login } from "./screens";
+import { Profile, Stats, TakePicture} from "./screens";
+import Login from "./screens/Login"
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -9,7 +10,7 @@ const Tab = createBottomTabNavigator();
 function MyTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Take"
+      initialRouteName="Cámara"
       screenOptions={{
         tabBarActiveTintColor: "#000000",
       }}
@@ -18,7 +19,7 @@ function MyTabs() {
         name="Estadística"
         component={Stats}
         options={{
-          headerTitleAlign: 'left',
+          headerTitleAlign: "left",
           tabBarLabel: "Estadística",
           headerTitleStyle: {
             fontSize: 25,
@@ -43,7 +44,7 @@ function MyTabs() {
         name="Ajustes"
         component={Profile}
         options={{
-          headerTitleAlign: 'left',
+          headerTitleAlign: "left",
           tabBarLabel: "Ajustes",
           headerTitleStyle: {
             fontSize: 25,
@@ -58,7 +59,7 @@ function MyTabs() {
 }
 
 export default function Main() {
-  const [isLoged, setIsLoged] = useState(true);
+  const [isLoged, setIsLoged] = useState(false);
   if (isLoged) {
     return (
       <NavigationContainer>

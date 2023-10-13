@@ -8,6 +8,8 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
+  Animated,
+  Vibration,
 } from "react-native";
 import { Camera } from "expo-camera";
 import { getCameraPermission } from "../services/camera";
@@ -19,6 +21,7 @@ import {
 } from "../services/chipRecognition";
 
 const deviceWidth = Dimensions.get("window").width;
+import { Accelerometer } from "expo-sensors";
 
 export default function TakePicture() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -31,8 +34,80 @@ export default function TakePicture() {
 
   const [model, setModel] = useState();
 
+  const lastOrientationRef = React.useRef();
+  const [orientation, setOrientation] = useState("PORTRAIT");
+
+  const scale = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    let isMounted = true; // To track if component is still mounted during asynchronous operations
+
+    if (orientation === "PORTRAIT") {
+      const controller = new Animated.Value(1);
+
+      const anim = Animated.loop(
+        Animated.sequence([
+          Animated.timing(scale, {
+            toValue: 1.1,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scale, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scale, {
+            toValue: 0.9,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scale, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+
+      if (isMounted) anim.start();
+
+      // Cleanup function
+      return () => {
+        isMounted = false;
+        controller.stopAnimation();
+        anim.reset();
+      };
+    }
+
+    return () => {}; // Empty cleanup function for when the orientation is not 'PORTRAIT'
+  }, [orientation]);
+
+  useEffect(() => {
+    Accelerometer.setUpdateInterval(1000);
+    let subscription;
+    subscription = Accelerometer.addListener((accelerometerData) => {
+      const newOrientation = determineOrientation(accelerometerData);
+      if (newOrientation !== lastOrientationRef.current) {
+        lastOrientationRef.current = newOrientation;
+        setOrientation(lastOrientationRef.current);
+      }
+    });
+
+    return () => subscription && subscription.remove();
+  }, []);
+
+  const determineOrientation = ({ x, y }) => {
+    if (Math.abs(x) > Math.abs(y)) {
+      return x > 0 ? "LANDSCAPE-RIGHT" : "LANDSCAPE-LEFT";
+    } else {
+      return "PORTRAIT";
+    }
+  };
+
   const takePicture = async () => {
     if (cameraRef.current) {
+      Vibration.vibrate(1);
       const photo = await cameraRef.current.takePictureAsync();
       setCapturedPhoto(photo);
     }
@@ -68,26 +143,79 @@ export default function TakePicture() {
 
   return (
     <View style={{ flex: 1 }}>
-      {!capturedPhoto && !photoAccepted && (
+      {!model && (
         <>
-          <Camera
-            style={{ flex: 5, marginTop: "15%" }}
-            type={Camera.Constants.Type.back}
-            ref={cameraRef}
+          <View
+            style={{
+              flex: 9,
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: "10%",
+            }}
           >
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: "transparent",
-                flexDirection: "row",
-                borderTopLeftRadius: 20,
-              }}
-            ></View>
-          </Camera>
+            <Text styles={{ marginHorizontal: 5, marginVertical: 4 }}>
+              Cargando modelo ...
+            </Text>
+            <ActivityIndicator size="large" color="#000000" />
+          </View>
+        </>
+      )}
+      {!capturedPhoto && !photoAccepted && model && (
+        <>
+          <View style={{ flex: 5, marginTop: "15%", position: "relative" }}>
+            <Camera
+              style={{ flex: 1 }}
+              type={Camera.Constants.Type.back}
+              ref={cameraRef}
+            >
+              {"PORTRAIT" == orientation && (
+                <>
+                  <View
+                    style={{
+                      flex: 1,
+                      backgroundColor: "transparent",
+                      flexDirection: "row",
+                    }}
+                  ></View>
+
+                  <Animated.View
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      width: 150,
+                      height: 150,
+                      backgroundColor: "black",
+                      opacity: 0.65,
+                      transform: [
+                        { translateX: -75 },
+                        { translateY: -75 },
+                        { scale: scale },
+                      ],
+                      borderRadius: 20,
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Icon
+                      name="phone-rotate-landscape"
+                      color={"#ffffff"}
+                      size={60}
+                    />
+                    <Text style={{ color: "white", marginTop: 5 }}>
+                      ¡Gira el dispositivo!{" "}
+                    </Text>
+                  </Animated.View>
+                </>
+              )}
+            </Camera>
+          </View>
           <View
             style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
           >
             <TouchableOpacity
+              disabled={"PORTRAIT" == orientation}
               onPress={takePicture}
               style={{
                 padding: 10,
@@ -113,6 +241,11 @@ export default function TakePicture() {
                 deviceWidth / (capturedPhoto.width / capturedPhoto.height)
               }
             />
+          </View>
+          <View style={{ marginHorizontal: "15%" }}>
+            <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+              Esta es la imagen que vas a clasificar, ¿es correcta ?
+            </Text>
           </View>
           <View
             style={{
@@ -159,6 +292,7 @@ export default function TakePicture() {
               marginTop: "10%",
             }}
           >
+            <Text styles={{ marginHorizontal: 5 }}>Procesando imagen ...</Text>
             <ActivityIndicator size="large" color="#000000" />
           </View>
         </>
