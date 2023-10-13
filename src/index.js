@@ -9,7 +9,7 @@ const Tab = createBottomTabNavigator();
 function MyTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Take"
+      initialRouteName="Cámara"
       screenOptions={{
         tabBarActiveTintColor: "#000000",
       }}
@@ -18,7 +18,7 @@ function MyTabs() {
         name="Estadística"
         component={Stats}
         options={{
-          headerTitleAlign: 'left',
+          headerTitleAlign: "left",
           tabBarLabel: "Estadística",
           headerTitleStyle: {
             fontSize: 25,
@@ -43,7 +43,7 @@ function MyTabs() {
         name="Ajustes"
         component={Profile}
         options={{
-          headerTitleAlign: 'left',
+          headerTitleAlign: "left",
           tabBarLabel: "Ajustes",
           headerTitleStyle: {
             fontSize: 25,

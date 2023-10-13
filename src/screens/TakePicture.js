@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Dimensions,
   Animated,
+  Vibration,
 } from "react-native";
 import { Camera } from "expo-camera";
 import { getCameraPermission } from "../services/camera";
@@ -106,6 +107,7 @@ export default function TakePicture() {
 
   const takePicture = async () => {
     if (cameraRef.current) {
+      Vibration.vibrate(1);
       const photo = await cameraRef.current.takePictureAsync();
       setCapturedPhoto(photo);
     }
@@ -139,26 +141,26 @@ export default function TakePicture() {
     })();
   }, []);
 
-  //  {!model && (
-  //    <>
-  //      <View
-  //        style={{
-  //          flex: 9,
-  //          alignItems: "center",
-  //          justifyContent: "center",
-  //          marginTop: "10%",
-  //        }}
-  //      >
-  //        <Text styles={{ marginHorizontal: 5, marginVertical: 4 }}>
-  //          Cargando modelo ...
-  //        </Text>
-  //        <ActivityIndicator size="large" color="#000000" />
-  //      </View>
-  //    </>
-  //  )}
   return (
     <View style={{ flex: 1 }}>
-      {!capturedPhoto && !photoAccepted && (
+      {!model && (
+        <>
+          <View
+            style={{
+              flex: 9,
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: "10%",
+            }}
+          >
+            <Text styles={{ marginHorizontal: 5, marginVertical: 4 }}>
+              Cargando modelo ...
+            </Text>
+            <ActivityIndicator size="large" color="#000000" />
+          </View>
+        </>
+      )}
+      {!capturedPhoto && !photoAccepted && model && (
         <>
           <View style={{ flex: 5, marginTop: "15%", position: "relative" }}>
             <Camera
@@ -201,6 +203,9 @@ export default function TakePicture() {
                       color={"#ffffff"}
                       size={60}
                     />
+                    <Text style={{ color: "white", marginTop: 5 }}>
+                      ¡Gira el dispositivo!{" "}
+                    </Text>
                   </Animated.View>
                 </>
               )}
@@ -210,6 +215,7 @@ export default function TakePicture() {
             style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
           >
             <TouchableOpacity
+              disabled={"PORTRAIT" == orientation}
               onPress={takePicture}
               style={{
                 padding: 10,
