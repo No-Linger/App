@@ -58,6 +58,17 @@ export default function TakePicture() {
   };
 
   useEffect(() => {
+    const subscription = Dimensions.addEventListener(
+      "change",
+      ({ window, screen }) => {
+        console.log(window);
+        console.log(screen);
+      }
+    );
+    return () => subscription?.remove();
+  });
+
+  useEffect(() => {
     (async () => {
       const hasCameraPermission = await getCameraPermission();
       setHasPermission(hasCameraPermission);
@@ -68,7 +79,24 @@ export default function TakePicture() {
 
   return (
     <View style={{ flex: 1 }}>
-      {!capturedPhoto && !photoAccepted && (
+      {!model && (
+        <>
+          <View
+            style={{
+              flex: 9,
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: "10%",
+            }}
+          >
+            <Text styles={{ marginHorizontal: 5, marginVertical: 4 }}>
+              Cargando modelo ...
+            </Text>
+            <ActivityIndicator size="large" color="#000000" />
+          </View>
+        </>
+      )}
+      {!capturedPhoto && !photoAccepted && model && (
         <>
           <Camera
             style={{ flex: 5, marginTop: "15%" }}
@@ -113,6 +141,11 @@ export default function TakePicture() {
                 deviceWidth / (capturedPhoto.width / capturedPhoto.height)
               }
             />
+          </View>
+          <View style={{ marginHorizontal: "15%" }}>
+            <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+              Esta es la imagen que vas a clasificar, ¿es correcta ?
+            </Text>
           </View>
           <View
             style={{
@@ -159,6 +192,7 @@ export default function TakePicture() {
               marginTop: "10%",
             }}
           >
+            <Text styles={{ marginHorizontal: 5 }}>Procesando imagen ...</Text>
             <ActivityIndicator size="large" color="#000000" />
           </View>
         </>
