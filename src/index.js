@@ -1,5 +1,5 @@
-import React from "react";
-import { First, Profile, Stats, TakePicture} from "./screens";
+import React, { useState } from "react";
+import { Profile, Stats, TakePicture} from "./screens";
 import Login from "./screens/Login"
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -16,33 +16,41 @@ function MyTabs() {
       }}
     >
       <Tab.Screen
-        name="Stats"
+        name="Estadística"
         component={Stats}
         options={{
-          tabBarLabel: "Stats",
+          headerTitleAlign: 'left',
+          tabBarLabel: "Estadística",
+          headerTitleStyle: {
+            fontSize: 25,
+          },
           tabBarIcon: ({ color, size }) => (
-            <Icon name="align-vertical-bottom" color={color} size={size} />
+            <Icon name="chart-bar" color={color} size={size} />
           ),
         }}
       />
       <Tab.Screen
-        name="Take"
+        name="Cámara"
         component={TakePicture}
         options={{
           headerShown: false,
-          tabBarLabel: "Take Picture",
+          tabBarLabel: "Cámara",
           tabBarIcon: ({ color, size }) => (
             <Icon name="camera" color={color} size={size} />
           ),
         }}
       />
       <Tab.Screen
-        name="Profile"
+        name="Ajustes"
         component={Profile}
         options={{
-          tabBarLabel: "Profile",
+          headerTitleAlign: 'left',
+          tabBarLabel: "Ajustes",
+          headerTitleStyle: {
+            fontSize: 25,
+          },
           tabBarIcon: ({ color, size }) => (
-            <Icon name="account-settings" color={color} size={size} />
+            <Icon name="account-cog" color={color} size={size} />
           ),
         }}
       />
@@ -61,9 +69,20 @@ function MyTabs() {
 }
 
 export default function Main() {
-  return (
-    <NavigationContainer>
-      <MyTabs />
-    </NavigationContainer>
-  );
+  const [isLoged, setIsLoged] = useState(true);
+  if (isLoged) {
+    return (
+      <NavigationContainer>
+        <MyTabs />
+      </NavigationContainer>
+    );
+  } else {
+    return (
+      <Login
+        onClick={() => {
+          setIsLoged(true);
+        }}
+      />
+    );
+  }
 }
