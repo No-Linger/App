@@ -70,10 +70,11 @@ export default function Stats() {
         {statData ? (
           <View style={{marginTop:10}}>
             <View style={styles.text}>
+              <Text style={{textAlign:'center', marginBottom:5,fontWeight:'bold'}}>Captura</Text>
               <Text>Fecha: {statData.fecha}</Text>
               <Text>Hora: {statData.hora}</Text>
-              <Text>porcentaje_modelo: {statData.porcentaje_modelo}%</Text>
-              <Text>porcentaje_error: {statData.porcentaje_error}%</Text>
+              <Text style={{color:'green'}}>Porcentaje_modelo: {statData.porcentaje_modelo}%</Text>
+              <Text style={{marginBottom:5, color:'red'}}>Porcentaje_error: {statData.porcentaje_error}%</Text>
             </View>
           </View>
         ) : (
