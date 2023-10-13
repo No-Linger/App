@@ -49,7 +49,7 @@ function MyTabs() {
             fontSize: 25,
           },
           tabBarIcon: ({ color, size }) => (
-            <Icon name="account-settings" color={color} size={size} />
+            <Icon name="account-cog" color={color} size={size} />
           ),
         }}
       />
