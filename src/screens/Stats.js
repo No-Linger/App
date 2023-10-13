@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Icon from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function Stats() {
   const [statData, setStatData] = React.useState(null);
@@ -54,16 +55,18 @@ export default function Stats() {
   };
 
   const handleShowRecordsClick = () => {
-    setTriangleDirection(triangleDirection === 'down' ? 'right' : 'down');
+    setTriangleDirection(!triangleDirection);
     setShowRecords(!showRecords);
   };
   
   return (
     <ScrollView style={{flex:1}}>
       <View style={{padding: 10, margin: 5, flex: 1,}}>
-        <Text style={{fontSize: 15, fontWeight: 'bold', padding: 3}}
-          >¡Hola! Hoy es: {currentDate}
-        </Text>
+      
+          <Text style={{ fontSize: 15, fontWeight: 'bold', padding: 3, marginBottom:10 }}>
+            ¡Hola! Hoy es: {currentDate}
+          </Text>
+        
         {statData ? (
           <View style={{marginTop:10}}>
             <View style={styles.text}>
@@ -74,19 +77,28 @@ export default function Stats() {
             </View>
           </View>
         ) : (
-          <Text style={{textAlign:'center', padding:10}}>No hay datos hoy.</Text>
-        )}
+          <View style={{backgroundColor:'gainsboro', overflow:'hidden', borderRadius:20}}>
+          <View style={{alignItems: 'center'}}>
+            <Text style={{textAlign:'center', padding:10}}>Aún no has realizado ninguna captura hoy.</Text>
+            <Icons name='image-off' size={80} />
+          </View>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <TouchableOpacity style={{ alignItems: 'center', textAlign: 'center' }} onPress={saveDataToAsyncStorage}>
+              <Text style={{ margin:10, padding:10, textAlign: 'center', backgroundColor:'gray', color: 'white', paddingBottom: 10, overflow:'hidden', borderRadius:10 }}>
+                Tomar Fotografía
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-        <View style={{alignItems: 'center'}}>
-          <TouchableOpacity onPress={saveDataToAsyncStorage}>
-            <Text style={styles.capturar}>Capturar</Text>
-          </TouchableOpacity>
-        </View>
+          </View>
+         
+        )}
         
         <TouchableOpacity onPress={handleShowRecordsClick} style={styles.showRecordsButton}>
           <View style={styles.buttonContainer}>
             <Text>Datos Guardados</Text>
-            <Icon name={`caret${triangleDirection}`} size={16} />
+            <Icon name={triangleDirection ? "arrow-up" : "arrow-down"} size={16} />
+
           </View>
         </TouchableOpacity>
         
@@ -95,8 +107,8 @@ export default function Stats() {
             {Object.entries(records).map(([fecha, captureArray], index) => (
               <View key={index}>
                 <TouchableOpacity style={styles.buttonContainer} onPress={() => handleDateClick(fecha)}>
-                  <Text style={{fontWeight: 'bold', marginBottom:8, marginTop:8}}>Fecha: {fecha}</Text>
-                  <Icon name={selectedDate ?  "folderopen": "folder1"} style={{color: "#366ac4",}} />
+                  <Text style={{fontWeight: 'bold', marginBottom:8, marginTop:4}}>Fecha: {fecha}</Text>
+                  <Icon name={selectedDate ? "folder-open": "folder"} size={15}/>
                 </TouchableOpacity>
 
                 {selectedDate === fecha &&
@@ -114,7 +126,6 @@ export default function Stats() {
 
           </View>
         )}
-
       </View>
     </ScrollView>
   );
@@ -159,6 +170,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: 5
   },
 });
 
