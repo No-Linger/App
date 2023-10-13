@@ -10,7 +10,7 @@ import Imagen from '../components/imagen.js';
 
 const logoImageSource = require('../../assets/logoOxxo.png');
 
-export default function Login() {
+export default function Login(props) {
     //USERNAME: adrianbravo10@hotmail.com
     //PASSWORD: Password123!
     const navigation = useNavigation();
@@ -25,6 +25,7 @@ export default function Login() {
             console.log(response)
             setLoggedIn(true);
             navigation.navigate('Stats');
+            props.onClick()
         }
         catch(error){
             console.log(error)
@@ -84,7 +85,8 @@ export default function Login() {
       logoImageContainer: {
         alignItems: 'center', // Centra la imagen horizontalmente
         marginBottom: 16,
-        height:'20%'
+        height:'20%',
+        marginTop:10
       },
       label: {
         fontSize: 18,

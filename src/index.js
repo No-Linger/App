@@ -54,22 +54,12 @@ function MyTabs() {
           ),
         }}
       />
-      <Tab.Screen
-        name="Login"
-        component={Login}
-        options={{
-          tabBarLabel: "Login",
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="account-settings" color={color} size={size} />
-          ),
-        }}
-      />
     </Tab.Navigator>
   );
 }
 
 export default function Main() {
-  const [isLoged, setIsLoged] = useState(true);
+  const [isLoged, setIsLoged] = useState(false);
   if (isLoged) {
     return (
       <NavigationContainer>
