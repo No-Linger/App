@@ -1,7 +1,9 @@
-import * as React from "react";
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom'; // Importa useHistory
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { authClient } from "../services/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigation } from '@react-navigation/native';
 
 
 import Imagen from '../components/imagen.js';
@@ -11,14 +13,18 @@ const logoImageSource = require('../../assets/logoOxxo.png');
 export default function Login() {
     //USERNAME: adrianbravo10@hotmail.com
     //PASSWORD: Password123!
+    const navigation = useNavigation();
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
+    const [loggedIn, setLoggedIn] = useState(false);
     const AUTH = authClient
 
     const signIn = async() =>{
         try{
             const response = await signInWithEmailAndPassword(AUTH,username,password)
             console.log(response)
+            setLoggedIn(true);
+            navigation.navigate('Stats');
         }
         catch(error){
             console.log(error)
