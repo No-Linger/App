@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconPicture from '../components/PotatoePicture';
 
 export default function Stats({ navigation }) {
   const [statData, setStatData] = useState(null);
@@ -56,7 +56,7 @@ export default function Stats({ navigation }) {
       ) : (
         <View style={styles.noCaptureContainer}>
           <Text style={styles.noCaptureText}>Aún no has realizado ninguna captura hoy.</Text>
-          <Icons name="image-off" size={80} />
+          <IconPicture/>
           <TouchableOpacity style={styles.captureButton} onPress={saveDataToAsyncStorage}>
             <Text style={styles.captureButtonText}>Capturar</Text>
           </TouchableOpacity>
@@ -128,10 +128,15 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 20,
     alignItems: 'center',
+    shadowOffset: {width: -2, height: 4},  
+    shadowColor: '#171717',  
+    shadowOpacity: 0.2,  
+    shadowRadius: 3, 
   },
   noCaptureText: {
     textAlign: 'center',
-    padding: 10,
+    padding: 15,
+    fontWeight:'500'
   },
   captureButton: {
     alignItems: 'center',
@@ -140,11 +145,14 @@ const styles = StyleSheet.create({
     margin: 10,
     padding: 10,
     textAlign: 'center',
-    backgroundColor: 'gray',
+    backgroundColor: 'mediumturquoise',
     color: 'white',
     paddingBottom: 10,
     overflow: 'hidden',
     borderRadius: 10,
+    width:180,
+    marginBottom:15,
+    fontWeight:'bold'
   },
   showRecordsButton: {
     marginTop: 5,
