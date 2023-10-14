@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconPicture from '../components/PotatoePicture';
 
 export default function Stats({ navigation }) {
   const [statData, setStatData] = useState(null);
@@ -36,7 +36,7 @@ export default function Stats({ navigation }) {
         [jsonData.fecha]: [...(prevRecords[jsonData.fecha] || []), jsonData],
       }));
 
-    navigation.navigate('Cámara'); // Replace 'Cámara' with your screen name.
+    navigation.navigate('Cámara');
     } catch (error) {
       console.error('Error:', error);
     }
@@ -46,17 +46,31 @@ export default function Stats({ navigation }) {
     <ScrollView style={styles.container}>
       <Text style={styles.title}>¡Hola! Hoy es: {currentDate}</Text>
       {statData ? (
-        <View style={styles.statsContainer}>
+       <View style={styles.statsContainer}>
           <Text style={styles.statsTitle}>Captura</Text>
-          <Text>Fecha: {statData.fecha}</Text>
-          <Text>Hora: {statData.hora}</Text>
-          <Text style={styles.greenText}>Porcentaje_modelo: {statData.porcentaje_modelo}%</Text>
-          <Text style={styles.redText}>Porcentaje_error: {statData.porcentaje_error}%</Text>
-        </View>
+          <Text style={{marginBottom:5, fontWeight:'bold'}}>------------------------------------</Text>
+          <View style={styles.statsRow}>
+              <Text style={styles.leftText}>Fecha:</Text>
+              <Text>{statData.fecha}</Text>
+          </View>
+          <View style={styles.statsRow}>
+              <Text style={styles.leftText}>Hora:</Text>
+              <Text>{statData.hora}</Text>
+          </View>
+          <View style={styles.statsRow}>
+              <Text style={styles.leftText}>Porcentaje_modelo:</Text>
+              <Text style={styles.greenText}>{statData.porcentaje_modelo}%</Text>
+          </View>
+          <View style={styles.statsRow}>
+              <Text style={styles.leftText}>Porcentaje_error:</Text>
+              <Text style={styles.redText}>{statData.porcentaje_error}%</Text>
+          </View>
+       </View>
+   
       ) : (
         <View style={styles.noCaptureContainer}>
           <Text style={styles.noCaptureText}>Aún no has realizado ninguna captura hoy.</Text>
-          <Icons name="image-off" size={80} />
+          <IconPicture/>
           <TouchableOpacity style={styles.captureButton} onPress={saveDataToAsyncStorage}>
             <Text style={styles.captureButtonText}>Capturar</Text>
           </TouchableOpacity>
@@ -79,10 +93,19 @@ export default function Stats({ navigation }) {
               {selectedDate === fecha &&
                 captureArray.map((capture, captureIndex) => (
                   <View key={captureIndex} style={styles.captureInfo}>
-                    <Text>Hora: {capture.hora}</Text>
-                    <Text>porcentaje_modelo: {capture.porcentaje_modelo}%</Text>
-                    <Text style={styles.captureSeparator}>porcentaje_error: {capture.porcentaje_error}%</Text>
-                  </View>
+                    <View style={styles.captureRow}>
+                        <Text style={styles.leftText}>Hora:</Text>
+                        <Text>{capture.hora}</Text>
+                    </View>
+                    <View style={styles.captureRow}>
+                        <Text style={styles.leftText}>porcentaje_modelo:</Text>
+                        <Text style={styles.greenText}>{capture.porcentaje_modelo}%</Text>
+                    </View>
+                    <View style={styles.captureRow}>
+                        <Text style={styles.leftText}>porcentaje_error:</Text>
+                        <Text style={styles.redText}>{capture.porcentaje_error}%</Text>
+                    </View>
+                 </View>
                 ))}
             </View>
           ))}
@@ -97,6 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     margin: 5,
+  
   },
   title: {
     fontSize: 15,
@@ -106,10 +130,10 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     marginTop: 10,
-    backgroundColor: 'gainsboro',
+    backgroundColor: 'lightsteelblue',
     overflow: 'hidden',
     borderRadius: 10,
-    padding: 10
+    padding: 10,
   },
   statsTitle: {
     textAlign: 'center',
@@ -118,20 +142,26 @@ const styles = StyleSheet.create({
   },
   greenText: {
     color: 'green',
+    marginBottom:3
   },
   redText: {
     marginBottom: 5,
     color: 'red',
   },
   noCaptureContainer: {
-    backgroundColor: 'gainsboro',
+    backgroundColor: 'lightsteelblue',
     overflow: 'hidden',
     borderRadius: 20,
     alignItems: 'center',
+    shadowOffset: {width: -2, height: 4},  
+    shadowColor: '#171717',  
+    shadowOpacity: 0.2,  
+    shadowRadius: 3, 
   },
   noCaptureText: {
     textAlign: 'center',
-    padding: 10,
+    padding: 15,
+    fontWeight:'500'
   },
   captureButton: {
     alignItems: 'center',
@@ -140,11 +170,14 @@ const styles = StyleSheet.create({
     margin: 10,
     padding: 10,
     textAlign: 'center',
-    backgroundColor: 'gray',
+    backgroundColor: 'dodgerblue',
     color: 'white',
     paddingBottom: 10,
     overflow: 'hidden',
     borderRadius: 10,
+    width:180,
+    marginBottom:15,
+    fontWeight:'bold'
   },
   showRecordsButton: {
     marginTop: 5,
@@ -159,13 +192,13 @@ const styles = StyleSheet.create({
   recordsContainer: {
     marginTop: 5,
     padding: 10,
-    backgroundColor: 'gainsboro',
+    backgroundColor: 'lightsteelblue',
     borderRadius: 10,
   },
   boldText: {
     fontWeight: 'bold',
     marginBottom: 8,
-    marginTop: 4,
+    marginTop: 4
   },
   captureInfo: {
     marginLeft: 5,
@@ -173,4 +206,14 @@ const styles = StyleSheet.create({
   captureSeparator: {
     marginBottom: 2,
   },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 3,
+},
+captureRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  marginBottom: 3,
+},
 });
