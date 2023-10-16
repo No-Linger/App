@@ -173,16 +173,15 @@ export default function TakePicture() {
               type={Camera.Constants.Type.back}
               ref={cameraRef}
             >
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: "transparent",
+                  flexDirection: "row",
+                }}
+              ></View>
               {"PORTRAIT" == orientation && (
                 <>
-                  <View
-                    style={{
-                      flex: 1,
-                      backgroundColor: "transparent",
-                      flexDirection: "row",
-                    }}
-                  ></View>
-
                   <Animated.View
                     style={{
                       position: "absolute",
@@ -297,8 +296,14 @@ export default function TakePicture() {
               marginTop: "10%",
             }}
           >
-            <Text styles={{ marginHorizontal: 5 }}>Procesando imagen ...</Text>
-            <ActivityIndicator size="large" color="#000000" />
+            <LottieAnimation
+              source={require("../../assets/lotties/cube.json")}
+              width={40}
+              height={40}
+            />
+            <Text style={{ fontSize: 15, marginTop: 5 }}>
+              Cargando modelo ...
+            </Text>
           </View>
         </>
       )}
