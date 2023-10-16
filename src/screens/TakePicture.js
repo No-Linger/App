@@ -19,6 +19,7 @@ import {
   loadModel,
   sliceImage,
 } from "../services/chipRecognition";
+import { LottieAnimation } from "../components";
 
 const deviceWidth = Dimensions.get("window").width;
 import { Accelerometer } from "expo-sensors";
@@ -48,7 +49,7 @@ export default function TakePicture() {
       const anim = Animated.loop(
         Animated.sequence([
           Animated.timing(scale, {
-            toValue: 1.1,
+            toValue: 1.05,
             duration: 300,
             useNativeDriver: true,
           }),
@@ -58,7 +59,7 @@ export default function TakePicture() {
             useNativeDriver: true,
           }),
           Animated.timing(scale, {
-            toValue: 0.9,
+            toValue: 0.95,
             duration: 300,
             useNativeDriver: true,
           }),
@@ -153,10 +154,14 @@ export default function TakePicture() {
               marginTop: "10%",
             }}
           >
-            <Text styles={{ marginHorizontal: 5, marginVertical: 4 }}>
+            <LottieAnimation
+              source={require("../../assets/lotties/cube.json")}
+              width={40}
+              height={40}
+            />
+            <Text style={{ fontSize: 15, marginTop: 5 }}>
               Cargando modelo ...
             </Text>
-            <ActivityIndicator size="large" color="#000000" />
           </View>
         </>
       )}
