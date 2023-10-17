@@ -3,7 +3,6 @@ import {
   View,
   TouchableOpacity,
   Text,
-  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
@@ -18,8 +17,10 @@ import {
   classifyGrid,
   loadModel,
   sliceImage,
+  comparePlanogram,
 } from "../services/chipRecognition";
 import { LottieAnimation } from "../components";
+import LottieView from "lottie-react-native";
 
 const deviceWidth = Dimensions.get("window").width;
 import { Accelerometer } from "expo-sensors";
@@ -122,6 +123,7 @@ export default function TakePicture() {
       setProcessedImages(slices);
       const predicitons = await classifyGrid(model, slices);
       console.log(predicitons);
+      const result = await comparePlanogram("testPlanogram", predicitons);
       setIsProcessing(false);
     }
   };
@@ -141,6 +143,8 @@ export default function TakePicture() {
       setModel(loadedModel);
     })();
   }, []);
+
+  let lottieViewRef = useRef(null);
 
   return (
     <View style={{ flex: 1 }}>
@@ -296,13 +300,18 @@ export default function TakePicture() {
               marginTop: "10%",
             }}
           >
-            <LottieAnimation
-              source={require("../../assets/lotties/cube.json")}
-              width={40}
-              height={40}
-            />
+            <View>
+              <LottieView
+                ref={lottieViewRef}
+                onLayout={() => lottieViewRef.current?.play()}
+                autoPlay
+                loop
+                source={require("../../assets/lotties/processingImage.json")}
+                style={{ width: 200, height: 200 }}
+              />
+            </View>
             <Text style={{ fontSize: 15, marginTop: 5 }}>
-              Cargando modelo ...
+              Pocesando imagen ...
             </Text>
           </View>
         </>
