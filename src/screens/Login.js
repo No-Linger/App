@@ -13,7 +13,6 @@ const logoImageSource = require('../../assets/logoOxxo.png');
 export default function Login(props) {
     //USERNAME: adrianbravo10@hotmail.com
     //PASSWORD: Password123!
-    const navigation = useNavigation();
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [loggedIn, setLoggedIn] = useState(false);
@@ -24,7 +23,7 @@ export default function Login(props) {
             const response = await signInWithEmailAndPassword(AUTH,username,password)
             console.log(response)
             setLoggedIn(true);
-            navigation.navigate('Stats');
+            //console.log(AUTH.currentUser.user.uid)
             props.onClick()
         }
         catch(error){
