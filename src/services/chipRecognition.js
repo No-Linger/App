@@ -135,6 +135,7 @@ export const comparePlanogram = async (planogramId, gridImages) => {
       res.push(temp);
     }
     console.log(res);
+    return res;
   } catch (err) {
     console.log(err);
   }
