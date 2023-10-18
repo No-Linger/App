@@ -23,7 +23,7 @@ export default function Login(props) {
             const response = await signInWithEmailAndPassword(AUTH,username,password)
             console.log(response)
             setLoggedIn(true);
-            //console.log(AUTH.currentUser.user.uid)
+            console.log(AUTH.currentUser.uid)
             props.onClick()
         }
         catch(error){
@@ -100,3 +100,4 @@ export default function Login(props) {
         borderRadius: 8,
       },
     });
+

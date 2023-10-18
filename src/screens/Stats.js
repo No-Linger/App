@@ -85,7 +85,7 @@ export default function Stats({ navigation }) {
             Aún no has realizado ninguna captura hoy.
           </Text>
           <LottieAnimation
-            source={require("../../assets/potatoeWalking.json")}
+            source={require("../../assets/lotties/potatoeWalking.json")}
             width={"50"}
             height={"50"}
           />
