@@ -5,10 +5,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Button,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { LottieAnimation } from "../components";
+import { saveDataToAsyncStorage } from "../services/fetchService";
 
 export default function Stats({ navigation }) {
   const [statData, setStatData] = useState(null);
@@ -27,25 +29,36 @@ export default function Stats({ navigation }) {
     return () => clearInterval(intervalId);
   }, []);
 
-  const generateRandomPercentage = () => Math.round(Math.random() * 100);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const existingData = await AsyncStorage.getItem("statData");
 
-  const saveDataToAsyncStorage = async () => {
-    const jsonData = {
-      fecha: new Date().toLocaleDateString(),
-      hora: new Date().toLocaleTimeString(),
-      porcentaje_modelo: generateRandomPercentage(),
-      porcentaje_error: generateRandomPercentage(),
+        if (existingData) {
+          const data = JSON.parse(existingData);
+          setRecords(data);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
 
+    fetchData();
+  }, []);
+
+  const saveDataAndLoadFecha = async () => {
     try {
-      await AsyncStorage.setItem("statData", JSON.stringify(jsonData));
-      console.log("Datos Guardados:", jsonData);
+      const jsonData = await saveDataToAsyncStorage();
       setStatData(jsonData);
 
-      setRecords((prevRecords) => ({
-        ...prevRecords,
-        [jsonData.fecha]: [...(prevRecords[jsonData.fecha] || []), jsonData],
-      }));
+      const updatedRecords = { ...records };
+      if (!updatedRecords[currentDate]) {
+        updatedRecords[currentDate] = [];
+      }
+      updatedRecords[currentDate].push(jsonData);
+      setRecords(updatedRecords);
+
+      await AsyncStorage.setItem("statData", JSON.stringify(updatedRecords));
 
       navigation.navigate("Cámara");
     } catch (error) {
@@ -53,31 +66,42 @@ export default function Stats({ navigation }) {
     }
   };
 
+  const handleClearData = async () => {
+    try {
+      await AsyncStorage.removeItem("statData");
+      setRecords({});
+      console.log("Data cleared successfully.");
+    } catch (error) {
+      console.error("Error clearing data:", error);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>¡Hola! Hoy es: {currentDate}</Text>
-      {statData ? (
+      {records[currentDate] && records[currentDate].length > 0 ? (
         <View style={styles.statsContainer}>
           <Text style={styles.statsTitle}>Captura</Text>
-          <Text style={{ marginBottom: 5, fontWeight: "bold" }}>
-            ------------------------------------
-          </Text>
-          <View style={styles.statsRow}>
-            <Text style={styles.leftText}>Fecha:</Text>
-            <Text>{statData.fecha}</Text>
-          </View>
-          <View style={styles.statsRow}>
-            <Text style={styles.leftText}>Hora:</Text>
-            <Text>{statData.hora}</Text>
-          </View>
-          <View style={styles.statsRow}>
-            <Text style={styles.leftText}>Porcentaje_modelo:</Text>
-            <Text style={styles.greenText}>{statData.porcentaje_modelo}%</Text>
-          </View>
-          <View style={styles.statsRow}>
-            <Text style={styles.leftText}>Porcentaje_error:</Text>
-            <Text style={styles.redText}>{statData.porcentaje_error}%</Text>
-          </View>
+          {statData && (
+            <>
+              <View style={styles.statsRow}>
+                <Text style={styles.leftText}>Fecha:</Text>
+                <Text>{statData.fecha}</Text>
+              </View>
+              <View style={styles.statsRow}>
+                <Text style={styles.leftText}>Hora:</Text>
+                <Text>{statData.hora}</Text>
+              </View>
+              <View style={styles.statsRow}>
+                <Text style={styles.leftText}>Porcentaje modelo:</Text>
+                <Text style={styles.greenText}>{statData.porcentaje_modelo}%</Text>
+              </View>
+              <View style={styles.statsRow}>
+                <Text style={styles.leftText}>Porcentaje error:</Text>
+                <Text style={styles.redText}>{statData.porcentaje_error}%</Text>
+              </View>
+            </>
+          )}
         </View>
       ) : (
         <View style={styles.noCaptureContainer}>
@@ -91,12 +115,21 @@ export default function Stats({ navigation }) {
           />
           <TouchableOpacity
             style={styles.captureButton}
-            onPress={saveDataToAsyncStorage}
+            onPress={saveDataAndLoadFecha}
           >
             <Text style={styles.captureButtonText}>Capturar</Text>
           </TouchableOpacity>
         </View>
       )}
+      <View style={styles.clearDataContainer}>
+        <Button title="Clear All Data" onPress={handleClearData} />
+      </View>
+      <TouchableOpacity
+        style={styles.captureButton}
+        onPress={saveDataAndLoadFecha}
+      >
+        <Text style={styles.captureButtonText}>Capturar</Text>
+      </TouchableOpacity>
       <TouchableOpacity
         onPress={() => setShowRecords(!showRecords)}
         style={styles.showRecordsButton}
@@ -130,13 +163,13 @@ export default function Stats({ navigation }) {
                       <Text>{capture.hora}</Text>
                     </View>
                     <View style={styles.captureRow}>
-                      <Text style={styles.leftText}>porcentaje_modelo:</Text>
+                      <Text style={styles.leftText}>Porcentaje modelo:</Text>
                       <Text style={styles.greenText}>
                         {capture.porcentaje_modelo}%
                       </Text>
                     </View>
                     <View style={styles.captureRow}>
-                      <Text style={styles.leftText}>porcentaje_error:</Text>
+                      <Text style={styles.leftText}>Porcentaje error:</Text>
                       <Text style={styles.redText}>
                         {capture.porcentaje_error}%
                       </Text>
@@ -149,7 +182,8 @@ export default function Stats({ navigation }) {
       )}
     </ScrollView>
   );
-}
+  }
+  
 
 const styles = StyleSheet.create({
   container: {
@@ -165,15 +199,19 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     marginTop: 10,
-    backgroundColor: "lightsteelblue",
+    backgroundColor: "gainsboro",
     overflow: "hidden",
     borderRadius: 10,
     padding: 10,
+    
   },
   statsTitle: {
     textAlign: "center",
     marginBottom: 5,
     fontWeight: "bold",
+    overflow:'hidden',
+    borderRadius: 5,
+    padding: 5,
   },
   greenText: {
     color: "green",
@@ -184,7 +222,7 @@ const styles = StyleSheet.create({
     color: "red",
   },
   noCaptureContainer: {
-    backgroundColor: "lightsteelblue",
+    backgroundColor: "gainsboro",
     overflow: "hidden",
     borderRadius: 20,
     alignItems: "center",
@@ -197,12 +235,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     padding: 15,
     fontWeight: "500",
+    backgroundColor: 'gray',
+    color:'white',
+    overflow: 'hidden',
+    borderRadius: 10,
+    marginTop: 15
   },
   captureButton: {
     alignItems: "center",
   },
   captureButtonText: {
-    margin: 10,
     padding: 10,
     textAlign: "center",
     backgroundColor: "dodgerblue",
@@ -227,7 +269,7 @@ const styles = StyleSheet.create({
   recordsContainer: {
     marginTop: 5,
     padding: 10,
-    backgroundColor: "lightsteelblue",
+    backgroundColor: "gainsboro",
     borderRadius: 10,
   },
   boldText: {

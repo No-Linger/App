@@ -13,6 +13,7 @@ const logoImageSource = require('../../assets/logoOxxo.png');
 export default function Login(props) {
     //USERNAME: adrianbravo10@hotmail.com
     //PASSWORD: Password123!
+
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [loggedIn, setLoggedIn] = useState(false);
