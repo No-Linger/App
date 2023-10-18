@@ -62,9 +62,14 @@ export default function Main() {
   const [isLoged, setIsLoged] = useState(true);
   if (isLoged) {
     return (
-      <NavigationContainer>
-        <MyTabs />
-      </NavigationContainer>
+      <Login
+      onClick={() => {
+        setIsLoged(true);
+      }}
+    />
+      // <NavigationContainer>
+      //   <MyTabs />
+      // </NavigationContainer>
     );
   } else {
     return (
