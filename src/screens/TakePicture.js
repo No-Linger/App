@@ -21,7 +21,6 @@ import {
 } from "../services/chipRecognition";
 import { LottieAnimation } from "../components";
 import LottieView from "lottie-react-native";
-
 const deviceWidth = Dimensions.get("window").width;
 import { Accelerometer } from "expo-sensors";
 
@@ -123,7 +122,7 @@ export default function TakePicture() {
       setProcessedImages(slices);
       const predicitons = await classifyGrid(model, slices);
       console.log(predicitons);
-      const result = await comparePlanogram("testPlanogram", predicitons);
+      // const result = await comparePlanogram("testPlanogram", predicitons);
       setIsProcessing(false);
     }
   };

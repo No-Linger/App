@@ -1,41 +1,42 @@
-import * as React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getPlanograms } from "../services/planograms";
 
 export default function Profile() {
-  const setTempPlanogram = async () => {
-    try {
-      const testPlanogram = {
-        grid: [4, 2],
-        labels: [
-          ["rancheritos", "rancheritos", "doritos", "doritos"],
-          ["chips", "jalapeno", "adobadas", "ruffles"],
-        ],
-      };
-      await AsyncStorage.setItem(
-        "testPlanogram",
-        JSON.stringify(testPlanogram)
-      );
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const [planograms, setPlanograms] = useState(null);
+
+  useEffect(() => {
+    const loadPlanograms = async () => {
+      const response = await getPlanograms();
+      setPlanograms(response);
+      console.log(response);
+    };
+    loadPlanograms();
+  }, []);
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Profile!</Text>
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <TouchableOpacity
-          onPress={setTempPlanogram}
+    <View style={{ flex: 1 }}>
+      <Text style={{ flex: 1, fontSize: 25, fontWeight: "bold", margin: 15 }}>
+        Planogramas :
+      </Text>
+      {!planograms && (
+        <View
+          style={{ flex: 9, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text style>Cargando planogramas ...</Text>
+        </View>
+      )}
+      {planograms && (
+        <ScrollView
           style={{
-            padding: 10,
-            borderWidth: 2,
-            borderRadius: 15,
+            flex: 9,
           }}
         >
-          <Icon name="camera-iris" size={40} color="black" />
-        </TouchableOpacity>
-      </View>
+          {Object.entries(planograms).map(([key, value]) => (
+            <Text>{key}</Text>
+          ))}
+        </ScrollView>
+      )}
     </View>
   );
 }
