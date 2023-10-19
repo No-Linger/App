@@ -12,8 +12,8 @@ const categories = [
   "ruffles",
 ];
 
-const COLS = 12;
-const ROWS = 6;
+const COLS = 4;
+const ROWS = 2;
 
 export const loadModel = async () => {
   try {
