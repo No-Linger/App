@@ -89,7 +89,7 @@ export default function Profile() {
             setPlanograms(planograms);
           }}
         >
-          <Icon name="reset" size={50} />
+          <Icon name="refresh" size={50} />
         </TouchableOpacity>
       </View>
     </View>

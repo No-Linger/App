@@ -24,8 +24,11 @@ import LottieView from "lottie-react-native";
 const deviceWidth = Dimensions.get("window").width;
 import { Accelerometer } from "expo-sensors";
 
+import { useIsFocused } from "@react-navigation/native";
+
 export default function TakePicture() {
   const [hasPermission, setHasPermission] = useState(null);
+  const [cameraKey, setCameraKey] = useState(Date.now());
   const cameraRef = useRef(null);
 
   const [capturedPhoto, setCapturedPhoto] = useState(null);
@@ -145,6 +148,15 @@ export default function TakePicture() {
 
   let lottieViewRef = useRef(null);
 
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      setCameraKey(Date.now()); // set a new key to force remount
+      console.log(Date.now());
+    }
+  }, [isFocused]);
+
   return (
     <View style={{ flex: 1 }}>
       {!model && (
@@ -175,6 +187,7 @@ export default function TakePicture() {
               style={{ flex: 1 }}
               type={Camera.Constants.Type.back}
               ref={cameraRef}
+              key={cameraKey}
             >
               <View
                 style={{
