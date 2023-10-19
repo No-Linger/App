@@ -13,7 +13,7 @@ const logoImageSource = require('../../assets/logoOxxo.png');
 export default function Login(props) {
     //USERNAME: adrianbravo10@hotmail.com
     //PASSWORD: Password123!
-  
+
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [loggedIn, setLoggedIn] = useState(false);
@@ -24,6 +24,7 @@ export default function Login(props) {
             const response = await signInWithEmailAndPassword(AUTH,username,password)
             console.log(response)
             setLoggedIn(true);
+            console.log(AUTH.currentUser.uid)
             props.onClick()
         }
         catch(error){
@@ -100,3 +101,4 @@ export default function Login(props) {
         borderRadius: 8,
       },
     });
+

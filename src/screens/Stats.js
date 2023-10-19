@@ -109,9 +109,9 @@ export default function Stats({ navigation }) {
             Aún no has realizado ninguna captura hoy.
           </Text>
           <LottieAnimation
-            source={require("../../assets/potatoeWalking.json")}
-            width={40}
-            height={40}
+            source={require("../../assets/lotties/potatoeWalking.json")}
+            width={"50"}
+            height={"50"}
           />
           <TouchableOpacity
             style={styles.captureButton}
