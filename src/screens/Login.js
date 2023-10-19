@@ -7,13 +7,13 @@ import Svg,{Image} from 'react-native-svg';
 import Imagen from '../components/imagen.js';
 import { Dimensions } from "react-native";
 import Caca from "../components/caca";
-// import Animated,{useSharedValue} from 'react-native-reanimated'
+import Animated,{useSharedValue, useAnimatedStyle} from 'react-native-reanimated'
 
 const logoImageSource = require('../../assets/logoOxxo.png');
 
 export default function Login(props) {
     const {height, width}= Dimensions.get('window');
-    // const imagePosition = useSharedValue(1)
+    const imagePosition = useSharedValue(1)
 
     //USERNAME: adrianbravo10@hotmail.com
     //PASSWORD: Password123!
@@ -45,7 +45,7 @@ export default function Login(props) {
 
       return (
         <View style={styles.container}> 
-          <View style={StyleSheet.absoluteFill}>
+          <Animated.View style={StyleSheet.absoluteFill}>
             <Svg height={height} width={width}>
               <Image href={require("../../assets/cruz.jpg")} 
               width={width} 
@@ -56,7 +56,7 @@ export default function Login(props) {
             <View style={styles.closeButtomContainer}>
               <Text>X</Text>
             </View>
-          </View>
+          </Animated.View>
           <View style={styles.bottomContainer}>
             <View style={styles.button}>
               <Text style={styles.buttonText}>LOG IN</Text>
