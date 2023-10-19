@@ -9,7 +9,7 @@ import Svg,{Image} from 'react-native-svg';
 import Imagen from '../components/imagen.js';
 import { Dimensions } from "react-native";
 import Caca from "../components/caca";
-import Animated,{useSharedValue, useAnimatedStyle} from 'react-native-reanimated'
+import Animated,{useSharedValue, useAnimatedStyle,interpolate,withTiming} from 'react-native-reanimated'
 
 const logoImageSource = require('../../assets/logoOxxo.png');
 
@@ -17,6 +17,20 @@ export default function Login(props) {
     const {height, width}= Dimensions.get('window');
     const imagePosition = useSharedValue(1)
 
+    const imageAnimatedStyle=useAnimatedStyle(()=>{
+      const interpolation=interpolate(imagePosition.value,[0,1],[-height/2,0])
+      return {
+        transform: [{translateY:withTiming(interpolation,{duration:1000})}]
+      }
+    })
+
+    const loginHandler=()=>{
+      imagePosition.value=0
+    }
+
+    const registerHandler=()=>{
+      imagePosition.value=0
+    }
     //USERNAME: adrianbravo10@hotmail.com
     //PASSWORD: Password123!
     const navigation = useNavigation();
@@ -64,12 +78,12 @@ export default function Login(props) {
             </View>
           </Animated.View>
           <View style={styles.bottomContainer}>
-            <View style={styles.button}>
+            <Presabble style={styles.button} onPress={loginHandler}>
               <Text style={styles.buttonText}>LOG IN</Text>
-            </View>
-            <View style={styles.button}>
+            </Presabble>
+            <Presabble style={styles.button} onPress={registerHandler}>
               <Text style={styles.buttonText}>REGISTER</Text>
-            </View>
+            </Presabble>
           </View>
           {/* <View style={styles.formInputContainer}>
             <TextInput
