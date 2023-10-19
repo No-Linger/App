@@ -2,16 +2,28 @@ import { PLANOGRAM_API } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system";
 
-export const getPlanograms = async () => {
+export const resetPlanogramTracker = async () => {
+  await AsyncStorage.setItem("planograms", JSON.stringify({}));
+  return {};
+};
+
+export const getLocalPlanograms = async () => {
+  let actualPlanograms = await AsyncStorage.getItem("planograms");
+  console.log(actualPlanograms);
+  actualPlanograms = JSON.parse(actualPlanograms);
+  if (!actualPlanograms) {
+    await AsyncStorage.setItem("planograms", JSON.stringify({}));
+    actualPlanograms = {};
+  }
+  return actualPlanograms;
+};
+
+export const updatePlanogramRecord = async () => {
   try {
     const response = await fetch(PLANOGRAM_API + "/getPlanograms");
     const data = await response.json();
-    const storageKeys = await AsyncStorage.getAllKeys();
-    if (!storageKeys.includes("planograms")) {
-      await AsyncStorage.setItem("planograms", JSON.stringify({}));
-    }
-    let actualPlanograms = await AsyncStorage.getItem("planograms");
-    actualPlanograms = JSON.parse(actualPlanograms);
+    console.log(data);
+    let actualPlanograms = await getLocalPlanograms();
     let actualPlanogramsKeys = Object.keys(actualPlanograms);
     for (let planogram of data.planograms) {
       if (!actualPlanogramsKeys.includes(planogram["_id"])) {
