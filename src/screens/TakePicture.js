@@ -301,11 +301,9 @@ export default function TakePicture() {
           >
             <View>
               <LottieView
-                ref={lottieViewRef}
-                onLayout={() => lottieViewRef.current?.play()}
                 autoPlay
                 loop
-                source={require("../../assets/lotties/processingImage.json")}
+                source={require("../../assets/lotties/chips.json")}
                 style={{ width: 200, height: 200 }}
               />
             </View>

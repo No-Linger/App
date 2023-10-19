@@ -1,14 +1,32 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { getPlanograms } from "../services/planograms";
+import {
+  getLocalPlanograms,
+  resetPlanogramTracker,
+  updatePlanogramRecord,
+} from "../services/planograms";
 
 export default function Profile() {
   const [planograms, setPlanograms] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    let newPlanograms = await updatePlanogramRecord();
+    setPlanograms(newPlanograms);
+    setRefreshing(false);
+  }, []);
 
   useEffect(() => {
     const loadPlanograms = async () => {
-      const response = await getPlanograms();
+      const response = await getLocalPlanograms();
       setPlanograms(response);
       console.log(response);
     };
@@ -27,16 +45,53 @@ export default function Profile() {
         </View>
       )}
       {planograms && (
-        <ScrollView
-          style={{
-            flex: 9,
+        <View style={{ flex: 9 }}>
+          <ScrollView
+            style={{
+              flex: 1,
+            }}
+            contentContainerStyle={{ alignItems: "center" }}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
+            {Object.entries(planograms).map(([key, value]) => (
+              <View
+                key={key}
+                style={{
+                  width: "95%",
+                  height: 70,
+                  marginBottom: 10,
+                  backgroundColor: "#E6E6FA",
+                  borderRadius: 20,
+                }}
+              >
+                <Text>{key}</Text>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+      <View style={{ flex: 1, flexDirection: "row" }}>
+        <TouchableOpacity
+          style={{ flex: 1 }}
+          onPress={() => {
+            let planograms = getLocalPlanograms();
+            setPlanograms(planograms);
           }}
         >
-          {Object.entries(planograms).map(([key, value]) => (
-            <Text>{key}</Text>
-          ))}
-        </ScrollView>
-      )}
+          <Icon name="refresh" size={50} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ flex: 1 }}
+          onPress={() => {
+            let planograms = resetPlanogramTracker();
+            setPlanograms(planograms);
+          }}
+        >
+          <Icon name="reset" size={50} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
