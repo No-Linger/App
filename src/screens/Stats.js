@@ -13,11 +13,11 @@ import { LottieAnimation } from "../components";
 import { saveDataToAsyncStorage } from "../services/fetchService";
 
 export default function Stats({ navigation }) {
-  const [statData, setStatData] = useState(null);
-  const [currentDate, setCurrentDate] = useState(
-    new Date().toLocaleDateString()
-  );
-  const [records, setRecords] = useState({});
+  const [statData, setStatData] = useState(null);//data from JSON
+  const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
+
+  const [records, setRecords] = useState({}); //object with all the data saved. 
+
   const [showRecords, setShowRecords] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
 
@@ -59,7 +59,7 @@ export default function Stats({ navigation }) {
       setRecords(updatedRecords);
 
       await AsyncStorage.setItem("statData", JSON.stringify(updatedRecords));
-
+      
       navigation.navigate("Cámara");
     } catch (error) {
       console.error("Error:", error);
@@ -182,8 +182,8 @@ export default function Stats({ navigation }) {
       )}
     </ScrollView>
   );
-  }
-  
+}
+
 
 const styles = StyleSheet.create({
   container: {
