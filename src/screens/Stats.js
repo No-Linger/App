@@ -11,6 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { LottieAnimation } from "../components";
 import { saveDataToAsyncStorage } from "../services/fetchService";
+import { syncDataToMongoDB } from "../services/statsUpdate";
 
 export default function Stats({ navigation }) {
   const [statData, setStatData] = useState(null);//data from JSON
@@ -28,24 +29,26 @@ export default function Stats({ navigation }) {
     );
     return () => clearInterval(intervalId);
   }, []);
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const existingData = await AsyncStorage.getItem("statData");
-
-        if (existingData) {
-          const data = JSON.parse(existingData);
-          setRecords(data);
-        }
+        // Retrieve data from AsyncStorage
+        const data = await AsyncStorage.getItem("statData");
+  
+        // Parse the data into parsedData, or initialize it as an empty array
+        const parsedData = data ? JSON.parse(data) : [];
+  
+        // Set the parsedData in the state
+        setRecords(parsedData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-
+  
     fetchData();
   }, []);
-
+  
   const saveDataAndLoadFecha = async () => {
     try {
       const jsonData = await saveDataToAsyncStorage();
@@ -59,12 +62,15 @@ export default function Stats({ navigation }) {
       setRecords(updatedRecords);
 
       await AsyncStorage.setItem("statData", JSON.stringify(updatedRecords));
-      
+
+      // Call the function to sync data with the Flask server
+      syncDataToMongoDB(jsonData);
+
       navigation.navigate("Cámara");
     } catch (error) {
       console.error("Error:", error);
     }
-  };
+  }
 
   const handleClearData = async () => {
     try {
