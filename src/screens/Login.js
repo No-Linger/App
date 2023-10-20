@@ -3,11 +3,20 @@ import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { authClient } from "../services/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import styles from '../../styles'
-import Svg,{Image} from 'react-native-svg';
+import Svg,{Ellipse, Image,ClipPath} from 'react-native-svg';
 import Imagen from '../components/imagen.js';
 import { Dimensions } from "react-native";
 import Caca from "../components/caca";
-import Animated,{useSharedValue, useAnimatedStyle,interpolate,withTiming} from 'react-native-reanimated'
+import Animated,{
+  interpolate, 
+  useSharedValue, 
+  useAnimatedStyle,
+  withTiming,
+  withDelay,
+  withSequence,
+  withSpring
+} from 'react-native-reanimated'
+import { Pressable } from "react-native";
 
 const logoImageSource = require('../../assets/logoOxxo.png');
 
@@ -61,10 +70,14 @@ export default function Login(props) {
         <View style={styles.container}> 
           <Animated.View style={StyleSheet.absoluteFill}>
             <Svg height={height} width={width}>
+              {/* <ClipPath id="clipPathId">
+                <Ellipse cx={width/2} rx={height} ry={height+100}/>
+              </ClipPath> */}
               <Image href={require("../../assets/cruz.jpg")} 
-              width={width} 
-              height={height}
+              width={width+100} 
+              height={height+100}
               preserveAspectRatio='xMidYmid slice'
+              clipPath="url(#clipPathId)"
               />
             </Svg>
             <View style={styles.closeButtomContainer}>
@@ -72,12 +85,12 @@ export default function Login(props) {
             </View>
           </Animated.View>
           <View style={styles.bottomContainer}>
-            <Presabble style={styles.button} onPress={loginHandler}>
+            <Pressable style={styles.button} onPress={loginHandler}>
               <Text style={styles.buttonText}>LOG IN</Text>
-            </Presabble>
-            <Presabble style={styles.button} onPress={registerHandler}>
+            </Pressable>
+            <Pressable style={styles.button} onPress={registerHandler}>
               <Text style={styles.buttonText}>REGISTER</Text>
-            </Presabble>
+            </Pressable>
           </View>
           {/* <View style={styles.formInputContainer}>
             <TextInput
@@ -97,6 +110,9 @@ export default function Login(props) {
           </View>
         
 
+      );
+    }
+    
         // <View style={styles.container}>
         //   <View style={styles.formContainer}>
         //     <View style={styles.logoImageContainer}>
@@ -120,9 +136,6 @@ export default function Login(props) {
         //     />
         //   </View>
         // </View>
-      );
-    }
-    
     // const styles = StyleSheet.create({
     //   container: {
     //     flex: 1,

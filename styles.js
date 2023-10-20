@@ -72,7 +72,8 @@ const styles = StyleSheet.create({
     elevation:1,
     backgroundColor:'white',
     alignItems:'center',
-    borderRadius:20
+    borderRadius:20,
+    top:-20
     },
     // closeContainer:{
     //     height:50,
