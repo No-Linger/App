@@ -28,7 +28,6 @@ export default function Profile() {
     const loadPlanograms = async () => {
       const response = await getLocalPlanograms();
       setPlanograms(response);
-      console.log(response);
     };
     loadPlanograms();
   }, []);
@@ -55,28 +54,36 @@ export default function Profile() {
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
           >
-            {Object.entries(planograms).map(([key, value]) => (
-              <View
-                key={key}
-                style={{
-                  width: "95%",
-                  height: 70,
-                  marginBottom: 10,
-                  backgroundColor: "#E6E6FA",
-                  borderRadius: 20,
-                }}
-              >
-                <Text>{key}</Text>
-              </View>
-            ))}
+            {planograms &&
+              Object.keys(planograms).length > 0 &&
+              Object.entries(planograms).map(([key, value]) => (
+                <View
+                  key={key}
+                  style={{
+                    width: "90%",
+                    height: 70,
+                    marginBottom: 10,
+                    backgroundColor: "#E6E6FA",
+                    borderRadius: 20,
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{ fontWeight: "500", fontSize: 15, marginLeft: 10 }}
+                  >
+                    {value.name}
+                  </Text>
+                </View>
+              ))}
           </ScrollView>
         </View>
       )}
       <View style={{ flex: 1, flexDirection: "row" }}>
         <TouchableOpacity
           style={{ flex: 1 }}
-          onPress={() => {
-            let planograms = getLocalPlanograms();
+          onPress={async () => {
+            let planograms = await getLocalPlanograms();
             setPlanograms(planograms);
           }}
         >
@@ -84,8 +91,8 @@ export default function Profile() {
         </TouchableOpacity>
         <TouchableOpacity
           style={{ flex: 1 }}
-          onPress={() => {
-            let planograms = resetPlanogramTracker();
+          onPress={async () => {
+            let planograms = await resetPlanogramTracker();
             setPlanograms(planograms);
           }}
         >

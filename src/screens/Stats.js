@@ -13,10 +13,12 @@ import { LottieAnimation } from "../components";
 import { saveDataToAsyncStorage } from "../services/fetchService";
 
 export default function Stats({ navigation }) {
-  const [statData, setStatData] = useState(null);//data from JSON
-  const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
+  const [statData, setStatData] = useState(null); //data from JSON
+  const [currentDate, setCurrentDate] = useState(
+    new Date().toLocaleDateString()
+  );
 
-  const [records, setRecords] = useState({}); //object with all the data saved. 
+  const [records, setRecords] = useState({}); //object with all the data saved.
 
   const [showRecords, setShowRecords] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -59,7 +61,7 @@ export default function Stats({ navigation }) {
       setRecords(updatedRecords);
 
       await AsyncStorage.setItem("statData", JSON.stringify(updatedRecords));
-      
+
       navigation.navigate("Cámara");
     } catch (error) {
       console.error("Error:", error);
@@ -94,7 +96,9 @@ export default function Stats({ navigation }) {
               </View>
               <View style={styles.statsRow}>
                 <Text style={styles.leftText}>Porcentaje modelo:</Text>
-                <Text style={styles.greenText}>{statData.porcentaje_modelo}%</Text>
+                <Text style={styles.greenText}>
+                  {statData.porcentaje_modelo}%
+                </Text>
               </View>
               <View style={styles.statsRow}>
                 <Text style={styles.leftText}>Porcentaje error:</Text>
@@ -109,7 +113,7 @@ export default function Stats({ navigation }) {
             Aún no has realizado ninguna captura hoy.
           </Text>
           <LottieAnimation
-            source={require("../../assets/lotties/potatoeWalking.json")}
+            source={require("../../assets/lotties/noCapture.json")}
             width={"50"}
             height={"50"}
           />
@@ -184,7 +188,6 @@ export default function Stats({ navigation }) {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -203,13 +206,12 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderRadius: 10,
     padding: 10,
-    
   },
   statsTitle: {
     textAlign: "center",
     marginBottom: 5,
     fontWeight: "bold",
-    overflow:'hidden',
+    overflow: "hidden",
     borderRadius: 5,
     padding: 5,
   },
@@ -235,11 +237,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     padding: 15,
     fontWeight: "500",
-    backgroundColor: 'gray',
-    color:'white',
-    overflow: 'hidden',
+    backgroundColor: "gray",
+    color: "white",
+    overflow: "hidden",
     borderRadius: 10,
-    marginTop: 15
+    marginTop: 15,
   },
   captureButton: {
     alignItems: "center",
