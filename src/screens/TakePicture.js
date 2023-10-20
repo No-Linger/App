@@ -316,8 +316,8 @@ export default function TakePicture() {
               <LottieView
                 autoPlay
                 loop
-                source={require("../../assets/lotties/chips.json")}
-                style={{ width: 200, height: 200 }}
+                source={require("../../assets/lotties/processingImage.json")}
+                style={{ width: 400, height: 400 }}
               />
             </View>
             <Text style={{ fontSize: 15, marginTop: 5 }}>

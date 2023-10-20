@@ -9,7 +9,6 @@ export const resetPlanogramTracker = async () => {
 
 export const getLocalPlanograms = async () => {
   let actualPlanograms = await AsyncStorage.getItem("planograms");
-  console.log(actualPlanograms);
   actualPlanograms = JSON.parse(actualPlanograms);
   if (!actualPlanograms) {
     await AsyncStorage.setItem("planograms", JSON.stringify({}));
@@ -22,7 +21,6 @@ export const updatePlanogramRecord = async () => {
   try {
     const response = await fetch(PLANOGRAM_API + "/getPlanograms");
     const data = await response.json();
-    console.log(data);
     let actualPlanograms = await getLocalPlanograms();
     let actualPlanogramsKeys = Object.keys(actualPlanograms);
     for (let planogram of data.planograms) {
