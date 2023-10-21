@@ -31,6 +31,7 @@ export const updatePlanogramRecord = async () => {
         actualPlanograms[id]["downloaded"] = false;
         actualPlanograms[id]["processed"] = false;
         actualPlanograms[id]["grid"] = [];
+        actualPlanograms[id]["localUri"] = "";
       }
     }
     await AsyncStorage.setItem("planograms", JSON.stringify(actualPlanograms));
@@ -38,5 +39,26 @@ export const updatePlanogramRecord = async () => {
     return actualPlanograms;
   } catch (err) {
     console.log(err);
+  }
+};
+
+export const downloadPlanogram = async (planogramId) => {
+  let actualPlanograms = await getLocalPlanograms();
+  const fileType = actualPlanograms[planogramId].url.split(".").pop();
+  const localUri = `${FileSystem.documentDirectory}${
+    planogramId + "." + fileType
+  }`;
+  try {
+    const { uri } = await FileSystem.downloadAsync(
+      actualPlanograms[planogramId].url,
+      localUri
+    );
+    console.log(`Image saved to ${uri}`);
+    actualPlanograms[planogramId]["downloaded"] = true;
+    actualPlanograms[planogramId]["localUri"] = uri;
+    await AsyncStorage.setItem("planograms", JSON.stringify(actualPlanograms));
+    return actualPlanograms;
+  } catch (err) {
+    console.log("Error", err);
   }
 };

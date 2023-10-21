@@ -153,7 +153,6 @@ export default function TakePicture() {
   useEffect(() => {
     if (isFocused) {
       setCameraKey(Date.now()); // set a new key to force remount
-      console.log(Date.now());
     }
   }, [isFocused]);
 
