@@ -8,10 +8,14 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
+  downloadPlanogram,
   getLocalPlanograms,
   resetPlanogramTracker,
   updatePlanogramRecord,
 } from "../services/planograms";
+
+import LottieView from "lottie-react-native";
+import PlanogramRow from "../components/PlanogramRow";
 
 export default function Profile() {
   const [planograms, setPlanograms] = useState(null);
@@ -28,6 +32,7 @@ export default function Profile() {
     const loadPlanograms = async () => {
       const response = await getLocalPlanograms();
       setPlanograms(response);
+      console.log(response);
     };
     loadPlanograms();
   }, []);
@@ -57,24 +62,12 @@ export default function Profile() {
             {planograms &&
               Object.keys(planograms).length > 0 &&
               Object.entries(planograms).map(([key, value]) => (
-                <View
+                <PlanogramRow
                   key={key}
-                  style={{
-                    width: "90%",
-                    height: 70,
-                    marginBottom: 10,
-                    backgroundColor: "#E6E6FA",
-                    borderRadius: 20,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Text
-                    style={{ fontWeight: "500", fontSize: 15, marginLeft: 10 }}
-                  >
-                    {value.name}
-                  </Text>
-                </View>
+                  planogramId={key}
+                  planogram={value}
+                  setPlanograms={setPlanograms}
+                />
               ))}
           </ScrollView>
         </View>
