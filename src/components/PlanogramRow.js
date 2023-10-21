@@ -280,6 +280,8 @@ export default function PlanogramRow({
                         flex: 5,
                         alignItems: "center",
                         justifyContent: "center",
+                        flexDirection: "row",
+                        gap: 20,
                       }}
                     >
                       <TouchableOpacity
@@ -289,7 +291,22 @@ export default function PlanogramRow({
                           borderRadius: 10,
                           borderWidth: 2,
                           padding: 15,
-                          width: "50%",
+                          width: "40%",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text style={{ fontWeight: "600", fontSize: 20 }}>
+                          Procesar
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={handlePlanogramProcess}
+                        style={{
+                          borderColor: "black",
+                          borderRadius: 10,
+                          borderWidth: 2,
+                          padding: 15,
+                          width: "40%",
                           alignItems: "center",
                         }}
                       >
