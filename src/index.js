@@ -4,6 +4,7 @@ import Login from "./screens/Login";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { ModelProvider } from "./contexts/model";
 
 const Tab = createBottomTabNavigator();
 
@@ -62,9 +63,11 @@ export default function Main() {
   const [isLoged, setIsLoged] = useState(true);
   if (isLoged) {
     return (
-      <NavigationContainer>
-        <MyTabs />
-      </NavigationContainer>
+      <ModelProvider>
+        <NavigationContainer>
+          <MyTabs />
+        </NavigationContainer>
+      </ModelProvider>
     );
   } else {
     return (

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import {
   View,
   TouchableOpacity,
@@ -12,14 +12,20 @@ import {
   Dimensions,
 } from "react-native";
 import LottieView from "lottie-react-native";
-import { downloadPlanogram } from "../services/planograms";
+import {
+  deletePlanogramRecord,
+  downloadPlanogram,
+  processPlanogram,
+} from "../services/planograms";
 import Slider from "react-native-a11y-slider";
+import { ModelContext } from "../contexts/model";
 
 export default function PlanogramRow({
   planogramId,
   planogram,
   setPlanograms,
 }) {
+  const { model } = useContext(ModelContext);
   const [downloading, setDownloading] = useState(false);
   const [processing, setProcessing] = useState(false);
 
@@ -97,20 +103,17 @@ export default function PlanogramRow({
 
   let downloadSuccessAnimation = useRef(null);
 
-  function wait() {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve("Fetched data after 2 seconds!");
-      }, 10000);
-    });
-  }
-
   const handlePlanogramProcess = async () => {
     setModalVisible(false);
     setProcessing(true);
-    await wait();
+    let newPlanograms = await processPlanogram(
+      model,
+      planogram.localUri,
+      planogramId,
+      [cols, rows]
+    );
     setProcessing(false);
-    console.log("Proceso Terminado!");
+    setPlanograms(newPlanograms);
   };
 
   return (
@@ -148,7 +151,7 @@ export default function PlanogramRow({
                 <LottieView
                   autoPlay={true}
                   loop
-                  source={require("../../assets/lotties/adjustPlanogram.json")}
+                  source={require("../../assets/lotties/cube.json")}
                   style={{ width: 50, height: 50 }}
                 />
               </TouchableOpacity>
@@ -157,7 +160,7 @@ export default function PlanogramRow({
               <LottieView
                 autoPlay={true}
                 loop
-                source={require("../../assets/lotties/cube.json")}
+                source={require("../../assets/lotties/processingImage.json")}
                 style={{ width: 50, height: 50 }}
               />
             )}
@@ -285,9 +288,15 @@ export default function PlanogramRow({
                       }}
                     >
                       <TouchableOpacity
-                        onPress={handlePlanogramProcess}
+                        onPress={async () => {
+                          await deletePlanogramRecord(
+                            planogramId,
+                            planogram.localUri
+                          );
+                          setModalVisible(!modalVisible);
+                        }}
                         style={{
-                          borderColor: "black",
+                          borderColor: "red",
                           borderRadius: 10,
                           borderWidth: 2,
                           padding: 15,
@@ -295,8 +304,14 @@ export default function PlanogramRow({
                           alignItems: "center",
                         }}
                       >
-                        <Text style={{ fontWeight: "600", fontSize: 20 }}>
-                          Procesar
+                        <Text
+                          style={{
+                            fontWeight: "600",
+                            fontSize: 20,
+                            color: "red",
+                          }}
+                        >
+                          Eliminar
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
