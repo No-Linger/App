@@ -14,7 +14,8 @@ const styles = StyleSheet.create({
         marginHorizontal:20,
         marginVertical:10,
         borderWidth:1,
-        borderColor:'white'
+        borderColor:'white',
+        zIndex:1
     },
     buttonText:{
         fontSize:20,
@@ -24,7 +25,7 @@ const styles = StyleSheet.create({
     },
     bottomContainer:{
         justifyContento:'center',
-        height:height/3
+        height:height/3,
     },
     textInput:{
         height:50,
@@ -52,12 +53,15 @@ const styles = StyleSheet.create({
         },
         shadowOpacity:0.25,
         shadowRadius:3.84,
-        elevation:5,
+        elevation:5
     },
     formInputContainer:{
         marginBottom:70
+        // ...StyleSheet.absoluteFill,
+        // zIndex:-1,
+        // justifyContent:'center'
     },
-    closeButtomContainer:{
+    closeButtonContainer:{
     height:40,
     width:40,
     alignSelf:'center',
@@ -69,11 +73,12 @@ const styles = StyleSheet.create({
     },
     shadowOpacity:0.34,
     shadowRadius:6.27,
-    elevation:1,
+    elevation:5,
     backgroundColor:'white',
-    alignItems:'center',
+    alignItems:'center', 
     borderRadius:20,
-    top:-20
+    top:-20,
+    zIndex:15
     },
     // closeContainer:{
     //     height:50,
