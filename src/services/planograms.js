@@ -33,6 +33,7 @@ export const updatePlanogramRecord = async () => {
   try {
     const response = await fetch(PLANOGRAM_API + "/getPlanograms");
     const data = await response.json();
+    console.log(data);
     let actualPlanograms = await getLocalPlanograms();
     let actualPlanogramsKeys = Object.keys(actualPlanograms);
     for (let planogram of data.planograms) {
@@ -112,4 +113,24 @@ export const deletePlanogramRecord = async (planogramId, uri) => {
   await AsyncStorage.setItem("planograms", JSON.stringify(actualPlanograms));
   await FileSystem.deleteAsync(uri);
   return actualPlanograms;
+};
+
+export const addCustomePlanogram = async (tempUri, planogram) => {
+  let actualPlanograms = await getLocalPlanograms();
+  const id = "id-" + Date.now();
+  actualPlanograms[id] = planogram;
+  actualPlanograms[id]["downloaded"] = true;
+  actualPlanograms[id]["processed"] = false;
+  actualPlanograms[id]["grid"] = null;
+
+  const fileType = tempUri.split(".").pop();
+  const localUri = `${FileSystem.documentDirectory}${id + "." + fileType}`;
+  try {
+    await FileSystem.copyAsync({ from: tempUri, to: localUri });
+    actualPlanograms[id]["localUri"] = localUri;
+    await AsyncStorage.setItem("planograms", JSON.stringify(actualPlanograms));
+    return { id, localUri };
+  } catch (err) {
+    console.warn(err);
+  }
 };
