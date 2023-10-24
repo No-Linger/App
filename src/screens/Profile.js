@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
+  addCustomePlanogram,
   getLocalPlanograms,
   getLocalPlanogramsMatrix,
   resetPlanogramTracker,
@@ -47,6 +48,8 @@ export default function Profile() {
 
   const [rows, setRows] = useState(4);
   const [cols, setCols] = useState(4);
+  const [planogramName, setPlanogramName] = useState("");
+  const [currentDate, setCurrentDate] = useState("");
 
   const [selectedImage, setSelectedImage] = useState(null);
   const pickImage = async () => {
@@ -58,13 +61,33 @@ export default function Profile() {
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
       quality: 1,
     });
 
     if (!result.canceled) {
       console.log(result.assets);
+      setSelectedImage(result.assets[0].uri);
     }
+  };
+
+  function getCurrentDate() {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, "0"); // January is 0!
+    const yyyy = today.getFullYear();
+
+    return dd + "-" + mm + "-" + yyyy;
+  }
+
+  const handlePlanogramSaveAndProcess = async () => {
+    let newPlanograms = await addCustomePlanogram(selectedImage, {
+      name: planogramName,
+      fecha: currentDate,
+      url: null,
+      tienda: 0,
+    });
+    //Procesar con modelo
+    setPlanograms(newPlanograms);
   };
 
   const onRefresh = useCallback(async () => {
@@ -81,6 +104,8 @@ export default function Profile() {
       console.log(response);
     };
     loadPlanograms();
+    const dateString = getCurrentDate();
+    setCurrentDate(dateString);
   }, []);
   return (
     <View style={{ flex: 1 }}>
@@ -136,6 +161,8 @@ export default function Profile() {
               >
                 <View style={{ flex: 1, marginTop: 30, marginLeft: 16 }}>
                   <TextInput
+                    value={planogramName}
+                    onChangeText={setPlanogramName}
                     style={{
                       fontWeight: "600",
                       fontSize: 30,
@@ -144,14 +171,20 @@ export default function Profile() {
                     placeholder="Nombre"
                     placeholderTextColor={"#777777"}
                   />
-                  <Text style={{ fontSize: 18 }}>21-10-2023</Text>
+                  <Text style={{ fontSize: 18 }}>{currentDate}</Text>
                 </View>
                 <View style={{ flex: 3 }}>
-                  <Button
-                    title="Pick an image from camera roll"
-                    onPress={pickImage}
-                  />
-                  {selectedImage && <Image source={{ uri: selectedImage }} />}
+                  <TouchableOpacity onPress={pickImage}>
+                    {!selectedImage && (
+                      <Text>Pick an image from camera roll</Text>
+                    )}
+                    {selectedImage && (
+                      <Image
+                        source={{ uri: selectedImage }}
+                        style={{ width: "100%", height: "100%" }}
+                      />
+                    )}
+                  </TouchableOpacity>
                 </View>
                 <View style={{ flex: 4 }}>
                   <Text
@@ -248,10 +281,11 @@ export default function Profile() {
                           color: "red",
                         }}
                       >
-                        Eliminar
+                        Cancelar
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
+                      onPress={handlePlanogramSaveAndProcess}
                       style={{
                         borderColor: "black",
                         borderRadius: 10,

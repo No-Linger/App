@@ -101,8 +101,6 @@ export default function PlanogramRow({
     setPlanograms(newPlanograms);
   };
 
-  let downloadSuccessAnimation = useRef(null);
-
   const handlePlanogramProcess = async () => {
     setModalVisible(false);
     setProcessing(true);
@@ -351,8 +349,6 @@ export default function PlanogramRow({
         )}
         {planogram.downloaded && !downloading && (
           <LottieView
-            ref={downloadSuccessAnimation}
-            onLayout={() => downloadSuccessAnimation.current.play()}
             autoPlay={true}
             loop={false}
             source={require("../../assets/lotties/downloadSuccess.json")}
