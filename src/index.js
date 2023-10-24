@@ -5,6 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
+
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
@@ -62,14 +63,9 @@ export default function Main() {
   const [isLoged, setIsLoged] = useState(true);
   if (isLoged) {
     return (
-      <Login
-      onClick={() => {
-        setIsLoged(true);
-      }}
-    />
-      // <NavigationContainer>
-      //   <MyTabs />
-      // </NavigationContainer>
+      <NavigationContainer>
+        <MyTabs />
+      </NavigationContainer>
     );
   } else {
     return (
