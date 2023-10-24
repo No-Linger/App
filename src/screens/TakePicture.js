@@ -1,4 +1,5 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
+import { ModelContext } from "../contexts/model";
 import {
   View,
   TouchableOpacity,
@@ -15,7 +16,6 @@ import { getCameraPermission } from "../services/camera";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
   classifyGrid,
-  loadModel,
   sliceImage,
   comparePlanogram,
 } from "../services/chipRecognition";
@@ -27,6 +27,8 @@ import { Accelerometer } from "expo-sensors";
 import { useIsFocused } from "@react-navigation/native";
 
 export default function TakePicture() {
+  const { model } = useContext(ModelContext);
+
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraKey, setCameraKey] = useState(Date.now());
   const cameraRef = useRef(null);
@@ -35,8 +37,6 @@ export default function TakePicture() {
   const [photoAccepted, setPhotoAccepted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedImages, setProcessedImages] = useState([]);
-
-  const [model, setModel] = useState();
 
   const lastOrientationRef = React.useRef();
   const [orientation, setOrientation] = useState("PORTRAIT");
@@ -141,8 +141,6 @@ export default function TakePicture() {
     (async () => {
       const hasCameraPermission = await getCameraPermission();
       setHasPermission(hasCameraPermission);
-      let loadedModel = await loadModel();
-      setModel(loadedModel);
     })();
   }, []);
 
@@ -153,7 +151,6 @@ export default function TakePicture() {
   useEffect(() => {
     if (isFocused) {
       setCameraKey(Date.now()); // set a new key to force remount
-      console.log(Date.now());
     }
   }, [isFocused]);
 
@@ -316,8 +313,8 @@ export default function TakePicture() {
               <LottieView
                 autoPlay
                 loop
-                source={require("../../assets/lotties/chips.json")}
-                style={{ width: 200, height: 200 }}
+                source={require("../../assets/lotties/processingImage.json")}
+                style={{ width: 400, height: 400 }}
               />
             </View>
             <Text style={{ fontSize: 15, marginTop: 5 }}>
