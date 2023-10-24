@@ -99,6 +99,33 @@ export default function Login(props) {
         //   Alert.alert('Login Failed', 'Invalid username or password');
         // }
 
+    // const signIn = async() => {
+    //   try {
+    //     const response = await signInWithEmailAndPassword(AUTH, username, password);
+    //     console.log(response);
+    
+    //     // Verificar que el inicio de sesión fue exitoso antes de navegar
+    //     if (response) {
+    //       // Obtener el objeto de navegación
+    //       //const navigation = useNavigation();
+    
+    //       // Navegar a la pantalla de estadísticas
+    //       //navigation.navigate('Estadística'); // Debes usar el nombre de la pantalla en la navegación
+    //     }
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // };
+
+    
+    
+        // Add your authentication logic here.
+        // if (username === 'testuser' && password === 'testpassword') {
+        //   Alert.alert('Login Successful', 'You are now logged in!');
+        // } else {
+        //   Alert.alert('Login Failed', 'Invalid username or password');
+        // }
+
     const signIn = async() =>{
         try{
             const response = await signInWithEmailAndPassword(AUTH,username,password)
