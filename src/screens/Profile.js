@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+  useContext,
+} from "react";
 import {
   View,
   Text,
@@ -11,12 +17,14 @@ import {
   TextInput,
   Button,
   Image,
+  StyleSheet,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
   addCustomePlanogram,
   getLocalPlanograms,
   getLocalPlanogramsMatrix,
+  processPlanogram,
   resetPlanogramTracker,
   updatePlanogramRecord,
 } from "../services/planograms";
@@ -24,8 +32,10 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import PlanogramRow from "../components/PlanogramRow";
 import Slider from "react-native-a11y-slider";
+import { ModelContext } from "../contexts/model";
 
 export default function Profile() {
+  const { model } = useContext(ModelContext);
   const [planograms, setPlanograms] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -51,6 +61,7 @@ export default function Profile() {
   const [planogramName, setPlanogramName] = useState("");
   const [currentDate, setCurrentDate] = useState("");
 
+  const [containerHeight, setContainerHeight] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const pickImage = async () => {
     let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -66,8 +77,27 @@ export default function Profile() {
 
     if (!result.canceled) {
       console.log(result.assets);
-      setSelectedImage(result.assets[0].uri);
+      setSelectedImage(result.assets[0]);
     }
+  };
+
+  const generateLines = (count, isRow, imageWidth, imageHeight) => {
+    const lines = [];
+    for (let i = 0; i < count; i++) {
+      const position = isRow
+        ? (imageHeight / count) * i
+        : (imageWidth / count) * i;
+      lines.push(
+        <View
+          key={i}
+          style={[
+            isRow ? styles.rowLine : styles.colLine,
+            isRow ? { top: position } : { left: position },
+          ]}
+        />
+      );
+    }
+    return lines;
   };
 
   function getCurrentDate() {
@@ -80,14 +110,27 @@ export default function Profile() {
   }
 
   const handlePlanogramSaveAndProcess = async () => {
-    let newPlanograms = await addCustomePlanogram(selectedImage, {
+    setModalVisible(false);
+    const { id, localUri } = await addCustomePlanogram(selectedImage.uri, {
       name: planogramName,
       fecha: currentDate,
       url: null,
       tienda: 0,
     });
-    //Procesar con modelo
+    const newPlanograms = await processPlanogram(model, localUri, id, [
+      cols,
+      rows,
+    ]);
     setPlanograms(newPlanograms);
+    await resetAddPlanogram();
+  };
+
+  const resetAddPlanogram = async () => {
+    setModalVisible(false);
+    setPlanogramName("");
+    setSelectedImage(null);
+    setCols(0);
+    setRows(0);
   };
 
   const onRefresh = useCallback(async () => {
@@ -173,24 +216,95 @@ export default function Profile() {
                   />
                   <Text style={{ fontSize: 18 }}>{currentDate}</Text>
                 </View>
-                <View style={{ flex: 3 }}>
-                  <TouchableOpacity onPress={pickImage}>
-                    {!selectedImage && (
-                      <Text>Pick an image from camera roll</Text>
-                    )}
-                    {selectedImage && (
-                      <Image
-                        source={{ uri: selectedImage }}
-                        style={{ width: "100%", height: "100%" }}
-                      />
-                    )}
-                  </TouchableOpacity>
+                <View
+                  style={{
+                    flex: 3,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    position: "relative",
+                  }}
+                >
+                  {!selectedImage && (
+                    <TouchableOpacity
+                      onPress={pickImage}
+                      style={{
+                        borderWidth: 2,
+                        borderColor: "black",
+                        padding: 80,
+                        borderRadius: 20,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Icon name="selection-drag" size={80} />
+                      <Text
+                        style={{
+                          marginTop: 10,
+                          fontSize: 15,
+                          textAlign: "center",
+                        }}
+                      >
+                        Abrir galeria de imagenes
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  {selectedImage && (
+                    <>
+                      <View
+                        style={styles.container}
+                        onLayout={(event) => {
+                          const { height } = event.nativeEvent.layout;
+                          setContainerHeight(height);
+                        }}
+                      >
+                        <Image
+                          source={{ uri: selectedImage.uri, flex: 1 }}
+                          style={{
+                            width:
+                              containerHeight *
+                              (selectedImage.width / selectedImage.height),
+                            height: containerHeight,
+                            borderRadius: 10,
+                          }}
+                        />
+                        {generateLines(
+                          rows,
+                          true,
+                          containerHeight *
+                            (selectedImage.width / selectedImage.height),
+                          containerHeight
+                        )}
+                        {generateLines(
+                          cols,
+                          false,
+                          containerHeight *
+                            (selectedImage.width / selectedImage.height),
+                          containerHeight
+                        )}
+                      </View>
+                      <View
+                        style={{ position: "absolute", bottom: 10, right: 20 }}
+                      >
+                        <TouchableOpacity
+                          onPress={pickImage}
+                          style={{
+                            backgroundColor: "white",
+                            borderColor: "black",
+                            padding: 5,
+                            borderWidth: 2,
+                            borderRadius: 10,
+                          }}
+                        >
+                          <Icon name="camera-retake-outline" size={20} />
+                        </TouchableOpacity>
+                      </View>
+                    </>
+                  )}
                 </View>
-                <View style={{ flex: 4 }}>
+                <View style={{ flex: 4, alignItems: "center" }}>
                   <Text
                     style={{
                       marginTop: 20,
-                      marginLeft: 20,
                       fontWeight: "600",
                     }}
                   >
@@ -208,12 +322,11 @@ export default function Profile() {
                       max={24}
                       values={[]}
                       onChange={setCols}
-                      style={{ width: "70%", marginLeft: 20, marginTop: 10 }}
+                      style={{ width: "70%", marginTop: 10 }}
                       showLabel={false}
                     />
                     <Text
                       style={{
-                        marginLeft: 10,
                         fontWeight: "700",
                         fontSize: 30,
                       }}
@@ -224,7 +337,6 @@ export default function Profile() {
                   <Text
                     style={{
                       marginTop: 20,
-                      marginLeft: 20,
                       fontWeight: "600",
                     }}
                   >
@@ -240,14 +352,13 @@ export default function Profile() {
                     <Slider
                       min={1}
                       max={12}
-                      values={[]}
+                      values={[rows]}
                       onChange={setRows}
-                      style={{ width: "70%", marginLeft: 20, marginTop: 10 }}
+                      style={{ width: "70%", marginTop: 10 }}
                       showLabel={false}
                     />
                     <Text
                       style={{
-                        marginLeft: 10,
                         fontWeight: "700",
                         fontSize: 30,
                       }}
@@ -265,6 +376,7 @@ export default function Profile() {
                     }}
                   >
                     <TouchableOpacity
+                      onPress={resetAddPlanogram}
                       style={{
                         borderColor: "red",
                         borderRadius: 10,
@@ -363,3 +475,26 @@ export default function Profile() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: "relative",
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+  },
+  rowLine: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: "white",
+  },
+  colLine: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    width: 1,
+    backgroundColor: "white",
+  },
+});

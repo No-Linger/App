@@ -129,7 +129,7 @@ export const addCustomePlanogram = async (tempUri, planogram) => {
     await FileSystem.copyAsync({ from: tempUri, to: localUri });
     actualPlanograms[id]["localUri"] = localUri;
     await AsyncStorage.setItem("planograms", JSON.stringify(actualPlanograms));
-    return actualPlanograms;
+    return { id, localUri };
   } catch (err) {
     console.warn(err);
   }

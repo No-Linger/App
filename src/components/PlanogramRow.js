@@ -19,6 +19,7 @@ import {
 } from "../services/planograms";
 import Slider from "react-native-a11y-slider";
 import { ModelContext } from "../contexts/model";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default function PlanogramRow({
   planogramId,
@@ -335,24 +336,22 @@ export default function PlanogramRow({
           </>
         )}
         {!planogram.downloaded && !downloading && (
-          <TouchableOpacity onPress={handlePlanogramDownload}>
-            <LottieView
-              autoPlay={true}
-              loop
-              source={require("../../assets/lotties/downloadAlert.json")}
-              style={{ width: 50, height: 50 }}
-            />
+          <TouchableOpacity
+            onPress={handlePlanogramDownload}
+            style={{ marginRight: 10 }}
+          >
+            <Icon name="alert-circle-outline" color={"red"} size={40} />
           </TouchableOpacity>
         )}
         {!planogram.downloaded && downloading && (
           <ActivityIndicator style={{ width: 50, height: 50 }} />
         )}
         {planogram.downloaded && !downloading && (
-          <LottieView
-            autoPlay={true}
-            loop={false}
-            source={require("../../assets/lotties/downloadSuccess.json")}
-            style={{ width: 50, height: 50 }}
+          <Icon
+            name="check-circle-outline"
+            color={"green"}
+            size={40}
+            style={{ marginRight: 10 }}
           />
         )}
       </View>
