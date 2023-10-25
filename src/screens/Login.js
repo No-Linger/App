@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom'; // Importa useHistory
+//import { useHistory } from 'react-router-dom'; // Importa useHistory
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { authClient } from "../services/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigation } from '@react-navigation/native';
 import styles from '../../styles'
 import Svg,{Ellipse, Image,ClipPath} from 'react-native-svg';
 import Imagen from '../components/imagen.js';
@@ -66,7 +65,7 @@ export default function Login(props) {
     }
     //USERNAME: adrianbravo10@hotmail.com
     //PASSWORD: Password123!
-    const navigation = useNavigation();
+    //const navigation = useNavigation();
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [loggedIn, setLoggedIn] = useState(false);
@@ -136,7 +135,10 @@ export default function Login(props) {
             console.log(error)
         }
     }
-
+    const startButtonAnimation = () => {
+      formButtonScale.value = withSequence(withSpring(1.5), withSpring(1));
+    };
+    
     const handleClick = () => {
         // Add your authentication logic here.
         // if (username === 'testuser' && password === 'testpassword') {

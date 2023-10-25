@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     },
     formInputContainer:{
         marginBottom:70,
-        ...StyleSheet.absoluteFill,
+        //...StyleSheet.absoluteFill,
         zindex:-1,
         justifyContent:'center'
     },
@@ -75,7 +75,8 @@ const styles = StyleSheet.create({
     elevation:1,
     backgroundColor:'white',
     alignItems:'center',
-    borderRadius:20
+    borderRadius:20,
+
     },
 
 });
