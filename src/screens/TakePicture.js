@@ -1,4 +1,10 @@
-import React, { useRef, useState, useEffect, useContext } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+} from "react";
 import { ModelContext } from "../contexts/model";
 import {
   View,
@@ -10,6 +16,7 @@ import {
   Dimensions,
   Animated,
   Vibration,
+  RefreshControl,
 } from "react-native";
 import { Camera } from "expo-camera";
 import { getCameraPermission } from "../services/camera";
@@ -25,6 +32,10 @@ const deviceWidth = Dimensions.get("window").width;
 import { Accelerometer } from "expo-sensors";
 
 import { useIsFocused } from "@react-navigation/native";
+
+import { getLocalPlanograms } from "../services/planograms";
+
+import PagerView from "react-native-pager-view";
 
 export default function TakePicture() {
   const { model } = useContext(ModelContext);
@@ -125,7 +136,7 @@ export default function TakePicture() {
       setProcessedImages(slices);
       const predicitons = await classifyGrid(model, slices);
       console.log(predicitons);
-      // const result = await comparePlanogram("testPlanogram", predicitons);
+      //const result = await comparePlanogram("id-1698198902397", predicitons);
       setIsProcessing(false);
     }
   };
@@ -144,8 +155,6 @@ export default function TakePicture() {
     })();
   }, []);
 
-  let lottieViewRef = useRef(null);
-
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -153,6 +162,56 @@ export default function TakePicture() {
       setCameraKey(Date.now()); // set a new key to force remount
     }
   }, [isFocused]);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    let newPlanograms = await getLocalPlanograms();
+    console.log(newPlanograms);
+    setPlanograms(newPlanograms);
+    setRefreshing(false);
+  }, []);
+
+  const [planograms, setPlanograms] = useState(null);
+  const [selectedPlanogram, setSelectedPlanogram] = useState(null);
+  const [containerSelectHeight, setContainerSelectHeight] = useState(null);
+  const [currentPage, setCurrentPage] = useState();
+  const pagerRef = useRef(null);
+
+  const handleGetLocalPlanograms = async () => {
+    let actualPlanograms = await getLocalPlanograms();
+    const filteredData = Object.entries(actualPlanograms)
+      .filter(([_, value]) => value.downloaded === true)
+      .reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      }, {});
+    const dataArray = Object.entries(filteredData).map(([id, value]) => ({
+      id,
+      ...value,
+    }));
+    console.log("Data Array :", dataArray);
+    setPlanograms(dataArray);
+  };
+
+  const currentPageHelper = (e) => {
+    const pageIndex = e.nativeEvent.position;
+    setCurrentPage(pageIndex);
+  };
+
+  const handlePlanogramSelect = async () => {
+    if (currentPage != undefined && planograms[currentPage]) {
+      console.log(planograms[currentPage]);
+      setSelectedPlanogram(planograms[currentPage]);
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      await handleGetLocalPlanograms();
+    })();
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -177,7 +236,90 @@ export default function TakePicture() {
           </View>
         </>
       )}
-      {!capturedPhoto && !photoAccepted && model && (
+      {model && !selectedPlanogram && (
+        <View style={{ flex: 1 }}>
+          <View style={{ flex: 2, justifyContent: "flex-end" }}>
+            <Text style={{ fontSize: 30, fontWeight: "600", paddingLeft: 20 }}>
+              Selecciona un planograma!
+            </Text>
+          </View>
+          <PagerView
+            style={{ flex: 6 }}
+            initialPage={0}
+            ref={pagerRef}
+            onPageSelected={currentPageHelper}
+          >
+            {planograms.map((item) => (
+              <View
+                key={item.id}
+                style={{
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  flex: 1,
+                  opacity: item.processed ? 1 : 0.4,
+                }}
+              >
+                <View
+                  style={{
+                    flex: 3,
+                    justifyContent: "flex-start",
+                    marginTop: "30%",
+                  }}
+                  onLayout={(event) => {
+                    const { height } = event.nativeEvent.layout;
+                    console.log(height);
+                    setContainerSelectHeight(height);
+                  }}
+                >
+                  <Image
+                    source={{ uri: item.localUri }}
+                    style={{
+                      width: containerSelectHeight * (item.width / item.height),
+                      height: containerSelectHeight,
+                      borderRadius: 10,
+                    }}
+                  />
+                </View>
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ fontWeight: "500", fontSize: 18 }}>
+                    {item.name}
+                  </Text>
+                  <Text style={{ fontWeight: "400", fontSize: 18 }}>
+                    {item.fecha}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </PagerView>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              justifyContent: "flex-start",
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                padding: 15,
+                borderColor: "black",
+                borderWidth: 2,
+                borderRadius: 15,
+              }}
+              onPress={handlePlanogramSelect}
+            >
+              <Text style={{ fontSize: 18 }}>Seleccionar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+      {!capturedPhoto && !photoAccepted && model && selectedPlanogram && (
         <>
           <View style={{ flex: 5, marginTop: "15%", position: "relative" }}>
             <Camera

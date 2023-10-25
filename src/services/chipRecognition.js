@@ -113,6 +113,7 @@ export const classifyGrid = async (model, imagesUris, grid = [4, 2]) => {
       });
       let label = await getLabel(predcition);
       temp.push(label);
+      console.log(categories[label]);
       counter++;
     }
     result.push(temp);
@@ -122,19 +123,26 @@ export const classifyGrid = async (model, imagesUris, grid = [4, 2]) => {
   return result;
 };
 
-export const comparePlanogram = async (planogramId, gridImages) => {
+export const comparePlanogram = async (
+  planogramId,
+  gridImages,
+  grid = [4, 2]
+) => {
   try {
     let res = [];
-    const jsonPlanogramValue = await AsyncStorage.getItem(planogramId);
-    const { grid, labels } = JSON.parse(jsonPlanogramValue);
+    //const planogramsMatrix = await getLocalPlanogramsMatrix();
+    const planogramsMatrix = [];
+    console.log("Planograma :", planogramsMatrix);
+    console.log("Resultado :", gridImages);
+    const planogramMatrix = planogramsMatrix[planogramId];
+    console.log(planogramMatrix);
     for (let i = 0; i < grid[1]; i++) {
       let temp = [];
       for (let j = 0; j < grid[0]; j++) {
-        temp.push(labels[i][j] == gridImages[i][j]);
+        temp.push(planogramMatrix[i][j] == gridImages[i][j]);
       }
       res.push(temp);
     }
-    console.log(res);
     return res;
   } catch (err) {
     console.log(err);

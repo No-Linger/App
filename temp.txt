@@ -1,0 +1,51 @@
+ <PagerView style={{ flex: 1, marginTop: "10%" }} initialPage={0}>
+            {planograms &&
+              Object.keys(planograms).length > 0 &&
+              Object.entries(planograms).map(([key, value]) => {
+                console.log(value);
+                return (
+                  <>
+                    <View
+                      style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flex: 1,
+                      }}
+                    >
+                      <View
+                        style={{ flex: 8 }}
+                        onLayout={(event) => {
+                          const { height } = event.nativeEvent.layout;
+                          setContainerSelectHeight(height);
+                        }}
+                      >
+                        <Image
+                          source={{ uri: value.localUri }}
+                          style={{
+                            width:
+                              containerSelectHeight *
+                              (value.width / value.height),
+                            height: containerSelectHeight,
+                            borderRadius: 20,
+                          }}
+                        />
+                      </View>
+                      <View
+                        style={{
+                          flex: 1,
+                          marginTop: "5%",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                          {value.name}
+                        </Text>
+                        <Text style={{ fontWeight: "500", fontSize: 16 }}>
+                          {value.fecha}
+                        </Text>
+                      </View>
+                    </View>
+                  </>
+                );
+              })}
+          </PagerView>

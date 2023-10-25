@@ -6,6 +6,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ModelProvider } from "./contexts/model";
 
+import TestScreen from "./screens/TestScreen";
+
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
