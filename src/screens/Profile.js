@@ -116,6 +116,10 @@ export default function Profile() {
       fecha: currentDate,
       url: null,
       tienda: 0,
+      width: selectedImage.width,
+      height: selectedImage.height,
+      rows,
+      cols,
     });
     const newPlanograms = await processPlanogram(model, localUri, id, [
       cols,

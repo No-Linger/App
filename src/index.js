@@ -9,6 +9,11 @@ import { ModelProvider } from "./contexts/model";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 
+import TestScreen from "./screens/TestScreen";
+
+const Tab = createBottomTabNavigator();
+
+
   const Stack = createNativeStackNavigator();
 
   const Tab = createBottomTabNavigator();
