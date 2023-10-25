@@ -1,7 +1,7 @@
 import * as tf from "@tensorflow/tfjs";
 import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
 import * as ImageManipulator from "expo-image-manipulator";
-import { Buffer } from "buffer";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const categories = [
   "adobadas",
@@ -42,18 +42,18 @@ export const loadModel = async () => {
   }
 };
 
-export const sliceImage = async (uri) => {
+export const sliceImage = async (uri, grid = [4, 2]) => {
   const imageInfo = await ImageManipulator.manipulateAsync(uri);
   const { width, height } = imageInfo;
   console.log(width, height);
 
-  const pieceWidth = width / COLS;
-  const pieceHeight = height / ROWS;
+  const pieceWidth = width / grid[0];
+  const pieceHeight = height / grid[1];
 
   const slices = [];
 
-  for (let y = 0; y < ROWS; y++) {
-    for (let x = 0; x < COLS; x++) {
+  for (let y = 0; y < grid[1]; y++) {
+    for (let x = 0; x < grid[0]; x++) {
       const slice = await ImageManipulator.manipulateAsync(uri, [
         {
           crop: {
@@ -96,26 +96,47 @@ export const preprocessImage = async (uri) => {
 export const getLabel = async (results) => {
   const predictionLabel = await tf.argMax(results, 1).data();
   const categorieId = predictionLabel[0];
-  return categories[categorieId];
+  return categorieId;
 };
 
-export const classifyGrid = async (model, imagesUris) => {
+export const classifyGrid = async (model, imagesUris, grid = [4, 2]) => {
   let result = [];
   let imageTensor;
   let start = performance.now();
-  for (let i = 0; i < ROWS; i++) {
+  let counter = 0;
+  for (let i = 0; i < grid[1]; i++) {
     let temp = [];
-    for (let j = 0; j < COLS; j++) {
-      imageTensor = await preprocessImage(imagesUris[i + j]);
+    for (let j = 0; j < grid[0]; j++) {
+      imageTensor = await preprocessImage(imagesUris[counter]);
       let predcition = tf.tidy(() => {
         return model.predict(imageTensor);
       });
       let label = await getLabel(predcition);
       temp.push(label);
+      counter++;
     }
     result.push(temp);
   }
   let end = performance.now();
   console.log("Image processed in : ", ((end - start) / 1000).toFixed(2));
   return result;
+};
+
+export const comparePlanogram = async (planogramId, gridImages) => {
+  try {
+    let res = [];
+    const jsonPlanogramValue = await AsyncStorage.getItem(planogramId);
+    const { grid, labels } = JSON.parse(jsonPlanogramValue);
+    for (let i = 0; i < grid[1]; i++) {
+      let temp = [];
+      for (let j = 0; j < grid[0]; j++) {
+        temp.push(labels[i][j] == gridImages[i][j]);
+      }
+      res.push(temp);
+    }
+    console.log(res);
+    return res;
+  } catch (err) {
+    console.log(err);
+  }
 };

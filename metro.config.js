@@ -5,6 +5,7 @@ module.exports = {
   resolver: {
     assetExts: [
       ...defaultAssetExts,
+      "lottie",
       "bin", // Add .bin as a recognized asset extension
     ],
   },

@@ -1,10 +1,13 @@
-  import React, { useState } from "react";
-  import { Profile, Stats, TakePicture } from "./screens";
-  import Login from "./screens/Login";
-  import { NavigationContainer } from "@react-navigation/native";
-  import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-  import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-  import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+import React, { useState } from "react";
+import { Profile, Stats, TakePicture } from "./screens";
+import Login from "./screens/Login";
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { ModelProvider } from "./contexts/model";
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 
   const Stack = createNativeStackNavigator();
 

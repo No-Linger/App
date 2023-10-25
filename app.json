@@ -21,10 +21,13 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.bastian1110.nolinger"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
     }
   }
 }

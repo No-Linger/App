@@ -1,9 +1,9 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
+import { ModelContext } from "../contexts/model";
 import {
   View,
   TouchableOpacity,
   Text,
-  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
@@ -16,23 +16,27 @@ import { getCameraPermission } from "../services/camera";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
   classifyGrid,
-  loadModel,
   sliceImage,
+  comparePlanogram,
 } from "../services/chipRecognition";
-
+import { LottieAnimation } from "../components";
+import LottieView from "lottie-react-native";
 const deviceWidth = Dimensions.get("window").width;
 import { Accelerometer } from "expo-sensors";
 
+import { useIsFocused } from "@react-navigation/native";
+
 export default function TakePicture() {
+  const { model } = useContext(ModelContext);
+
   const [hasPermission, setHasPermission] = useState(null);
+  const [cameraKey, setCameraKey] = useState(Date.now());
   const cameraRef = useRef(null);
 
   const [capturedPhoto, setCapturedPhoto] = useState(null);
   const [photoAccepted, setPhotoAccepted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedImages, setProcessedImages] = useState([]);
-
-  const [model, setModel] = useState();
 
   const lastOrientationRef = React.useRef();
   const [orientation, setOrientation] = useState("PORTRAIT");
@@ -48,7 +52,7 @@ export default function TakePicture() {
       const anim = Animated.loop(
         Animated.sequence([
           Animated.timing(scale, {
-            toValue: 1.1,
+            toValue: 1.05,
             duration: 300,
             useNativeDriver: true,
           }),
@@ -58,7 +62,7 @@ export default function TakePicture() {
             useNativeDriver: true,
           }),
           Animated.timing(scale, {
-            toValue: 0.9,
+            toValue: 0.95,
             duration: 300,
             useNativeDriver: true,
           }),
@@ -121,6 +125,7 @@ export default function TakePicture() {
       setProcessedImages(slices);
       const predicitons = await classifyGrid(model, slices);
       console.log(predicitons);
+      // const result = await comparePlanogram("testPlanogram", predicitons);
       setIsProcessing(false);
     }
   };
@@ -136,10 +141,18 @@ export default function TakePicture() {
     (async () => {
       const hasCameraPermission = await getCameraPermission();
       setHasPermission(hasCameraPermission);
-      let loadedModel = await loadModel();
-      setModel(loadedModel);
     })();
   }, []);
+
+  let lottieViewRef = useRef(null);
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      setCameraKey(Date.now()); // set a new key to force remount
+    }
+  }, [isFocused]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -153,10 +166,14 @@ export default function TakePicture() {
               marginTop: "10%",
             }}
           >
-            <Text styles={{ marginHorizontal: 5, marginVertical: 4 }}>
+            <LottieAnimation
+              source={require("../../assets/lotties/cube.json")}
+              width={40}
+              height={40}
+            />
+            <Text style={{ fontSize: 15, marginTop: 5 }}>
               Cargando modelo ...
             </Text>
-            <ActivityIndicator size="large" color="#000000" />
           </View>
         </>
       )}
@@ -167,17 +184,17 @@ export default function TakePicture() {
               style={{ flex: 1 }}
               type={Camera.Constants.Type.back}
               ref={cameraRef}
+              key={cameraKey}
             >
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: "transparent",
+                  flexDirection: "row",
+                }}
+              ></View>
               {"PORTRAIT" == orientation && (
                 <>
-                  <View
-                    style={{
-                      flex: 1,
-                      backgroundColor: "transparent",
-                      flexDirection: "row",
-                    }}
-                  ></View>
-
                   <Animated.View
                     style={{
                       position: "absolute",
@@ -292,8 +309,17 @@ export default function TakePicture() {
               marginTop: "10%",
             }}
           >
-            <Text styles={{ marginHorizontal: 5 }}>Procesando imagen ...</Text>
-            <ActivityIndicator size="large" color="#000000" />
+            <View>
+              <LottieView
+                autoPlay
+                loop
+                source={require("../../assets/lotties/processingImage.json")}
+                style={{ width: 400, height: 400 }}
+              />
+            </View>
+            <Text style={{ fontSize: 15, marginTop: 5 }}>
+              Pocesando imagen ...
+            </Text>
           </View>
         </>
       )}

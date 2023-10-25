@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 //import { useHistory } from 'react-router-dom'; // Importa useHistory
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { authClient } from "../services/firebaseConfig";
@@ -65,7 +66,6 @@ export default function Login(props) {
     }
     //USERNAME: adrianbravo10@hotmail.com
     //PASSWORD: Password123!
-    //const navigation = useNavigation();
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [loggedIn, setLoggedIn] = useState(false);
@@ -129,6 +129,8 @@ export default function Login(props) {
         try{
             const response = await signInWithEmailAndPassword(AUTH,username,password)
             console.log(response)
+            setLoggedIn(true);
+            console.log(AUTH.currentUser.uid)
             props.onClick()
         }
         catch(error){
