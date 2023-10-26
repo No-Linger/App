@@ -8,8 +8,7 @@ import styles from '../../styles'
 import Svg,{Ellipse, Image,ClipPath} from 'react-native-svg';
 import Imagen from '../components/imagen.js';
 import { Dimensions } from "react-native";
-import Caca from "../components/caca";
-
+import { LottieAnimation } from '../components';
 import Animated,{
   interpolate, 
   useSharedValue, 
@@ -159,12 +158,12 @@ export default function Login(props) {
               <ClipPath id="clipPathId">
                 <Ellipse cx={width/2} rx={height} ry={height+100}/>
               </ClipPath>
-              <Image href={require("../../assets/cruz.jpg")} 
-              width={width+100} 
+              <Image href={require("../../assets/splash.png")} 
+              width={width} 
               height={height+100}
               preserveAspectRatio='xMidYmid slice'
               clipPath="url(#clipPathId)"
-              />
+              /> 
             </Svg>
             <Animated.View style={[styles.closeButtonContainer,closeButtonContainerStyle]}>
               <Text onPress={()=>imagePosition.value=1}>X</Text>
@@ -178,6 +177,11 @@ export default function Login(props) {
             </Animated.View>
           </View>
           <Animated.View style={[styles.formInputContainer,formAnimatedStyle]}>
+          <LottieAnimation
+              source={require("../../assets/lotties/LockCircle.json")}
+              width={"100"}
+              height={"100"}
+             />
             <TextInput
               placeholder="Email"
               placeholderTextColor="black"
