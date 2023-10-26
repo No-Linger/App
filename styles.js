@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
         zindex:-1,
         justifyContent:'center'
     },
-    closeButtomContainer:{
+    closeButtonContainer:{
     height:40,
     width:40,
     alignSelf:'center',
@@ -68,16 +68,24 @@ const styles = StyleSheet.create({
     shadowColor:'#000',
     shadowOffset:{
         width:0,
-        height:5,
+        height:7
     },
     shadowOpacity:0.34,
     shadowRadius:6.27,
     elevation:1,
     backgroundColor:'white',
     alignItems:'center',
-    borderRadius:20,
+    borderRadius:20
 
     },
+    lottieAnimationStyle:{
+        display:"flex",
+        justifyContent:"center",
+        alignItems:"center",
+        marginBottom:150
+        
+
+    }
 
 });
 

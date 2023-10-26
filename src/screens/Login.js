@@ -158,12 +158,13 @@ export default function Login(props) {
               <ClipPath id="clipPathId">
                 <Ellipse cx={width/2} rx={height} ry={height+100}/>
               </ClipPath>
+
               <Image href={require("../../assets/splash.png")} 
               width={width} 
               height={height+100}
               preserveAspectRatio='xMidYmid slice'
               clipPath="url(#clipPathId)"
-              /> 
+              />
             </Svg>
             <Animated.View style={[styles.closeButtonContainer,closeButtonContainerStyle]}>
               <Text onPress={()=>imagePosition.value=1}>X</Text>
@@ -176,12 +177,16 @@ export default function Login(props) {
               </Pressable>
             </Animated.View>
           </View>
+
           <Animated.View style={[styles.formInputContainer,formAnimatedStyle]}>
-          <LottieAnimation
-              source={require("../../assets/lotties/LockCircle.json")}
-              width={"100"}
-              height={"100"}
+          <View style={styles.lottieAnimationStyle}>
+              <LottieAnimation
+              source={require("../../assets/lotties/keyLogin.json")}
+              width={"50"}
+              height={"50"}
+              // autoplay={true}
              />
+          </View>
             <TextInput
               placeholder="Email"
               placeholderTextColor="black"
