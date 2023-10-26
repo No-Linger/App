@@ -34,6 +34,7 @@ export const updatePlanogramRecord = async () => {
   try {
     const response = await fetch(PLANOGRAM_API + "/getPlanograms");
     const data = await response.json();
+    console.log(data);
     let actualPlanograms = await getLocalPlanograms();
     let actualPlanogramsKeys = Object.keys(actualPlanograms);
     for (let planogram of data.planograms) {
@@ -43,7 +44,6 @@ export const updatePlanogramRecord = async () => {
         actualPlanograms[id] = planogram;
         actualPlanograms[id]["downloaded"] = false;
         actualPlanograms[id]["processed"] = false;
-        actualPlanograms[id]["grid"] = null;
         actualPlanograms[id]["localUri"] = "";
       }
     }
@@ -97,14 +97,17 @@ export const downloadPlanogram = async (planogramId) => {
 
 export const processPlanogram = async (
   model,
-  uri,
   planogramId,
-  grid = [4, 2]
+
+  uri,
+  cols,
+  rows
 ) => {
-  const slices = await sliceImage(uri, grid);
-  const predicitons = await classifyGrid(model, slices, grid);
+  const slices = await sliceImage(uri, rows, cols);
+  const predicitons = await classifyGrid(model, slices, rows, cols);
   let actualPlanograms = await getLocalPlanograms();
-  actualPlanograms[planogramId]["grid"] = grid;
+  actualPlanograms[planogramId]["cols"] = cols;
+  actualPlanograms[planogramId]["rows"] = rows;
   actualPlanograms[planogramId]["processed"] = true;
   let actualPlanogramsMatrix = await getLocalPlanogramsMatrix();
   actualPlanogramsMatrix[planogramId] = predicitons;
@@ -140,7 +143,6 @@ export const addCustomePlanogram = async (tempUri, planogram) => {
   actualPlanograms[id] = planogram;
   actualPlanograms[id]["downloaded"] = true;
   actualPlanograms[id]["processed"] = false;
-  actualPlanograms[id]["grid"] = null;
 
   const fileType = tempUri.split(".").pop();
   const localUri = `${FileSystem.documentDirectory}${id + "." + fileType}`;
