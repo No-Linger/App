@@ -75,23 +75,27 @@ export default function Login(props) {
 
 
 
-    const signIn = async() =>{
+    const signIn = async () => {
       setModalVisible(true); // Muestra el modal
-      setTimeout(() => {
-        setModalVisible(false); // Cierra el modal después de 3 segundos
-      }, 3000);
-        try{
-            const response = await signInWithEmailAndPassword(AUTH,username,password)
-            console.log(response)
-            setLoggedIn(true);
-
-            console.log(AUTH.currentUser.uid)
-            props.onClick()
-        }
-        catch(error){
-            console.log(error)
-        }
-    }
+    
+      try {
+        const response = await signInWithEmailAndPassword(AUTH, username, password);
+        console.log(response);
+        setLoggedIn(true);
+    
+        console.log(AUTH.currentUser.uid);
+        props.onClick();
+      } catch (error) {
+        console.log(error);
+      } finally {
+        // Cierra el modal después de 3 segundos, independientemente del resultado
+        setTimeout(() => {
+          setModalVisible(false);
+        }, 3000);
+      }
+    };
+    
+    
     const startButtonAnimation = () => {
       formButtonScale.value = withSequence(withSpring(1.5), withSpring(1));
     };
@@ -131,10 +135,6 @@ export default function Login(props) {
               clipPath="url(#clipPathId)"
               />
             </Svg>
-            <Animated.View style={[styles.closeButtonContainer,closeButtonContainerStyle]}>
-              <Text onPress={()=>imagePosition.value=1}>X</Text>
-            </Animated.View>
-
           </Animated.View>
           <View style={styles.bottomContainer}>
             <Animated.View style={buttonsAnimatedStyle}>
@@ -144,41 +144,44 @@ export default function Login(props) {
             </Animated.View>
           </View>
 
-          <Animated.View style={[styles.formInputContainer,formAnimatedStyle]}>
-          {/* <View style={styles.lottieAnimationStyle}>
-              <LottieAnimation
-              source={require("../../assets/lotties/keyLogin.json")}
-              width={"10"}
-              height={"10"}
-              // autoplay={true}
-             />
-          </View> */}
+          <Animated.View style={[styles.formInputContainer, formAnimatedStyle]}>
             <TextInput
               placeholder="Email"
               placeholderTextColor="black"
               style={styles.textInput}
               onChangeText={(text) => setUsername(text)}
-               value={username}
+              value={username}
+              editable={!modalVisible} // Deshabilita la edición cuando el modal está visible
             />
             <TextInput
-              placeholder="PassWord"
+              placeholder="Password"
               placeholderTextColor="black"
               style={styles.textInput}
               onChangeText={(text) => setPassword(text)}
               value={password}
               secureTextEntry
+              editable={!modalVisible} // Deshabilita la edición cuando el modal está visible
             />
+            <Animated.View style={[styles.closeButtonContainer, closeButtonContainerStyle]}>
+              <Pressable onPress={() => {
+                Keyboard.dismiss();
+                imagePosition.value = 1;
+                setUsername('');
+                setPassword('');
+              }}>
+                <Text style={{ transform: [{ rotate: '180deg' }] }}>Cancel</Text>
+              </Pressable>
+            </Animated.View>
             <Animated.View style={[styles.formButtom, formButtonAnimatedStyle]}>
-              <Pressable   onPress={async () => {
-    startButtonAnimation();
-    signIn()// Iniciar la animación al presionar el botón
-       }}
-    >
-              <Text style={styles.buttonText}>LOG IN</Text>
+              <Pressable onPress={async () => {
+                startButtonAnimation();
+                signIn(); // Iniciar la animación al presionar el botón
+              }}>
+                <Text style={styles.buttonText}>LOG IN</Text>
               </Pressable>
             </Animated.View>
           </Animated.View>
-          <CustomModal isVisible={modalVisible} onModalClose={() => setModalVisible(false)} />
+          {/* <CustomModal isVisible={modalVisible} onModalClose={() => setModalVisible(false)} /> */}
         </View>
       );
     }

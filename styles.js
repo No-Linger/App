@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
         marginVertical:20,
         borderRadius:25,
         paddingLeft:20,
-        zindex:-1
+        zindex:-1,
 
     },
     formButtom:{
@@ -59,14 +59,14 @@ const styles = StyleSheet.create({
 
     },
     formInputContainer:{
-        marginBottom:70,
+        marginBottom:30,
         //...StyleSheet.absoluteFill,
         zindex:-1,
         justifyContent:'center'
     },
     closeButtonContainer:{
     height:40,
-    width:40,
+    width:60,
     alignSelf:'center',
     justifyContent:'center',
     shadowColor:'#000',
