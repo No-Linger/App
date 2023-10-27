@@ -102,11 +102,14 @@ export default function PlanogramRow({
   const handlePlanogramProcess = async () => {
     setModalVisible(false);
     setProcessing(true);
+    console.log("Rows ", rows);
+    console.log("Cols ", cols);
     let newPlanograms = await processPlanogram(
       model,
-      planogram.localUri,
       planogramId,
-      [cols, rows]
+      planogram.localUri,
+      cols[0],
+      rows[0]
     );
     setProcessing(false);
     setPlanograms(newPlanograms);

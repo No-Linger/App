@@ -125,15 +125,6 @@ export default function Stats({ navigation }) {
           </TouchableOpacity>
         </View>
       )}
-      <View style={styles.clearDataContainer}>
-        <Button title="Clear All Data" onPress={handleClearData} />
-      </View>
-      <TouchableOpacity
-        style={styles.captureButton}
-        onPress={saveDataAndLoadFecha}
-      >
-        <Text style={styles.captureButtonText}>Capturar</Text>
-      </TouchableOpacity>
       <TouchableOpacity
         onPress={() => setShowRecords(!showRecords)}
         style={styles.showRecordsButton}
@@ -143,6 +134,7 @@ export default function Stats({ navigation }) {
           <Icon name={showRecords ? "arrow-up" : "arrow-down"} size={16} />
         </View>
       </TouchableOpacity>
+
       {showRecords && (
         <View style={styles.recordsContainer}>
           {Object.entries(records).map(([fecha, captureArray]) => (

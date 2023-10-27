@@ -111,6 +111,8 @@ export default function Profile() {
 
   const handlePlanogramSaveAndProcess = async () => {
     setModalVisible(false);
+    console.log("Rows ", rows);
+    console.log("Cols ", cols);
     const { id, localUri } = await addCustomePlanogram(selectedImage.uri, {
       name: planogramName,
       fecha: currentDate,
@@ -118,13 +120,14 @@ export default function Profile() {
       tienda: 0,
       width: selectedImage.width,
       height: selectedImage.height,
-      rows,
-      cols,
     });
-    const newPlanograms = await processPlanogram(model, localUri, id, [
-      cols,
-      rows,
-    ]);
+    const newPlanograms = await processPlanogram(
+      model,
+      id,
+      localUri,
+      cols[0],
+      rows[0]
+    );
     setPlanograms(newPlanograms);
     await resetAddPlanogram();
   };
@@ -164,7 +167,6 @@ export default function Profile() {
           marginBottom: 30,
         }}
       >
-        <Text style={{ fontSize: 30, fontWeight: "bold" }}>Planogramas :</Text>
         <View style={{ flexDirection: "row" }}>
           <View style={{ flex: 3 }} />
           <TouchableOpacity
@@ -455,7 +457,7 @@ export default function Profile() {
       )}
       <View style={{ flex: 1, flexDirection: "row" }}>
         <TouchableOpacity
-          style={{ flex: 1 }}
+          style={{ flex: 1, opacity: 0 }}
           onPress={async () => {
             let planograms = await getLocalPlanograms();
             let planogramMatrix = await getLocalPlanogramsMatrix();
@@ -467,7 +469,7 @@ export default function Profile() {
           <Icon name="refresh" size={50} />
         </TouchableOpacity>
         <TouchableOpacity
-          style={{ flex: 1 }}
+          style={{ flex: 1, opacity: 0 }}
           onPress={async () => {
             let planograms = await resetPlanogramTracker();
             setPlanograms(planograms);

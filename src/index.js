@@ -22,11 +22,11 @@ function MyTabs() {
       }}
     >
       <Tab.Screen
-        name="Estadística"
+        name="Historial"
         component={Stats}
         options={{
           headerTitleAlign: "left",
-          tabBarLabel: "Estadística",
+          tabBarLabel: "Historial",
           headerTitleStyle: {
             fontSize: 25,
           },
@@ -47,11 +47,11 @@ function MyTabs() {
         }}
       />
       <Tab.Screen
-        name="Ajustes"
+        name="Planogramas"
         component={Profile}
         options={{
           headerTitleAlign: "left",
-          tabBarLabel: "Ajustes",
+          tabBarLabel: "Planogramas",
           headerTitleStyle: {
             fontSize: 25,
           },
