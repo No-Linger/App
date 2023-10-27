@@ -3,10 +3,12 @@ import React, { useState } from 'react';
 //import { useHistory } from 'react-router-dom'; // Importa useHistory
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { authClient } from "../services/firebaseConfig";
+import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import styles from '../../styles'
 import Svg,{Ellipse, Image,ClipPath} from 'react-native-svg';
 import Imagen from '../components/imagen.js';
+import CustomModal from '../components/modalLottie';
 import { Dimensions } from "react-native";
 import { LottieAnimation } from '../components';
 import Animated,{
@@ -25,6 +27,7 @@ const logoImageSource = require('../../assets/logoOxxo.png');
 export default function Login(props) {
     const {height, width}= Dimensions.get('window');
     const imagePosition = useSharedValue(1)
+    const [modalVisible, setModalVisible] = useState(false);
     const formButtonScale = useSharedValue(1);
     const imageAnimatedStyle=useAnimatedStyle(()=>{
       const interpolation=interpolate(imagePosition.value,[0,1],[-height/2,0])
@@ -70,65 +73,18 @@ export default function Login(props) {
     const [loggedIn, setLoggedIn] = useState(false);
     const AUTH = authClient
 
-    // const signIn = async() => {
-    //   try {
-    //     const response = await signInWithEmailAndPassword(AUTH, username, password);
-    //     console.log(response);
-    
-    //     // Verificar que el inicio de sesión fue exitoso antes de navegar
-    //     if (response) {
-    //       // Obtener el objeto de navegación
-    //       //const navigation = useNavigation();
-    
-    //       // Navegar a la pantalla de estadísticas
-    //       //navigation.navigate('Estadística'); // Debes usar el nombre de la pantalla en la navegación
-    //     }
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // };
 
-    
-    
-        // Add your authentication logic here.
-        // if (username === 'testuser' && password === 'testpassword') {
-        //   Alert.alert('Login Successful', 'You are now logged in!');
-        // } else {
-        //   Alert.alert('Login Failed', 'Invalid username or password');
-        // }
-
-    // const signIn = async() => {
-    //   try {
-    //     const response = await signInWithEmailAndPassword(AUTH, username, password);
-    //     console.log(response);
-    
-    //     // Verificar que el inicio de sesión fue exitoso antes de navegar
-    //     if (response) {
-    //       // Obtener el objeto de navegación
-    //       //const navigation = useNavigation();
-    
-    //       // Navegar a la pantalla de estadísticas
-    //       //navigation.navigate('Estadística'); // Debes usar el nombre de la pantalla en la navegación
-    //     }
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // };
-
-    
-    
-        // Add your authentication logic here.
-        // if (username === 'testuser' && password === 'testpassword') {
-        //   Alert.alert('Login Successful', 'You are now logged in!');
-        // } else {
-        //   Alert.alert('Login Failed', 'Invalid username or password');
-        // }
 
     const signIn = async() =>{
+      setModalVisible(true); // Muestra el modal
+      setTimeout(() => {
+        setModalVisible(false); // Cierra el modal después de 3 segundos
+      }, 3000);
         try{
             const response = await signInWithEmailAndPassword(AUTH,username,password)
             console.log(response)
             setLoggedIn(true);
+
             console.log(AUTH.currentUser.uid)
             props.onClick()
         }
@@ -152,7 +108,16 @@ export default function Login(props) {
       }
 
       return (
+        
         <View style={styles.container}> 
+          {/* <View style={styles.lottieAnimationStyle}>
+              <LottieAnimation
+              source={require("../../assets/lotties/keyLogin.json")}
+              width={"10"}
+              height={"10"}
+              // autoplay={true}
+             />
+          </View> */}
           <Animated.View style={[StyleSheet.absoluteFill,imageAnimatedStyle]}>
             <Svg height={height+100} width={width}>
               <ClipPath id="clipPathId">
@@ -169,6 +134,7 @@ export default function Login(props) {
             <Animated.View style={[styles.closeButtonContainer,closeButtonContainerStyle]}>
               <Text onPress={()=>imagePosition.value=1}>X</Text>
             </Animated.View>
+
           </Animated.View>
           <View style={styles.bottomContainer}>
             <Animated.View style={buttonsAnimatedStyle}>
@@ -179,14 +145,14 @@ export default function Login(props) {
           </View>
 
           <Animated.View style={[styles.formInputContainer,formAnimatedStyle]}>
-          <View style={styles.lottieAnimationStyle}>
+          {/* <View style={styles.lottieAnimationStyle}>
               <LottieAnimation
               source={require("../../assets/lotties/keyLogin.json")}
-              width={"50"}
-              height={"50"}
+              width={"10"}
+              height={"10"}
               // autoplay={true}
              />
-          </View>
+          </View> */}
             <TextInput
               placeholder="Email"
               placeholderTextColor="black"
@@ -212,6 +178,7 @@ export default function Login(props) {
               </Pressable>
             </Animated.View>
           </Animated.View>
+          <CustomModal isVisible={modalVisible} onModalClose={() => setModalVisible(false)} />
         </View>
       );
     }
