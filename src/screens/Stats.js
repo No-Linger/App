@@ -53,25 +53,28 @@ export default function Stats({ navigation }) {
     try {
       const jsonData = await saveDataToAsyncStorage();
       setStatData(jsonData);
-
+  
+      // Create a simplified JSON object to send to MongoDB
+      const simplifiedData = jsonData;
+  
+      // Send the simplified data to MongoDB
+      syncDataToMongoDB(simplifiedData);
+  
       const updatedRecords = { ...records };
       if (!updatedRecords[currentDate]) {
         updatedRecords[currentDate] = [];
       }
       updatedRecords[currentDate].push(jsonData);
       setRecords(updatedRecords);
-
+  
       await AsyncStorage.setItem("statData", JSON.stringify(updatedRecords));
-
-      // Call the function to sync data with the Flask server
-      syncDataToMongoDB(jsonData);
-
+  
       navigation.navigate("Cámara");
     } catch (error) {
       console.error("Error:", error);
     }
-  }
-
+  };
+  
   const handleClearData = async () => {
     try {
       await AsyncStorage.removeItem("statData");
