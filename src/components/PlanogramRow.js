@@ -9,7 +9,7 @@ import {
   Animated,
   Image,
   StyleSheet,
-  Dimensions,
+  Alert,
 } from "react-native";
 import LottieView from "lottie-react-native";
 import {
@@ -19,6 +19,7 @@ import {
 } from "../services/planograms";
 import Slider from "react-native-a11y-slider";
 import { ModelContext } from "../contexts/model";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default function PlanogramRow({
   planogramId,
@@ -46,41 +47,17 @@ export default function PlanogramRow({
     })
   ).current;
 
-  const [imageHeight, setImageHeight] = useState(0);
-
-  const getLocalImageSize = async (uri) => {
-    return new Promise((resolve, reject) => {
-      Image.getSize(
-        uri,
-        (width, height) => {
-          resolve({ width, height });
-        },
-        (error) => {
-          reject(error);
-        }
-      );
-    });
-  };
-
-  useEffect(() => {
-    const calculateImageHeight = async () => {
-      const { width, height } = await getLocalImageSize(planogram.localUri);
-      const deviceWidth = Dimensions.get("window").width;
-      const scaledheight = deviceWidth / (width / height);
-      setImageHeight(scaledheight);
-    };
-    if (planogram.downloaded) {
-      calculateImageHeight();
-    }
-  }, []);
+  const [containerHeight, setContainerHeight] = useState(null);
 
   const [rows, setRows] = useState(4);
   const [cols, setCols] = useState(4);
 
-  const generateLines = (count, isRow) => {
+  const generateLines = (count, isRow, imageWidth, imageHeight) => {
     const lines = [];
     for (let i = 0; i < count; i++) {
-      const position = ((100 / count) * i).toString() + "%";
+      const position = isRow
+        ? (imageHeight / count) * i
+        : (imageWidth / count) * i;
       lines.push(
         <View
           key={i}
@@ -101,19 +78,71 @@ export default function PlanogramRow({
     setPlanograms(newPlanograms);
   };
 
-  let downloadSuccessAnimation = useRef(null);
+  const showProcessAlert = () => {
+    return new Promise((resolve, reject) => {
+      Alert.alert(
+        planogram.processed ? "Reprocesar planograma" : "Procesar planograma",
+        "Esto podría tardar un poco.",
+        [
+          {
+            text: "Cancelar",
+            onPress: () => resolve(false),
+            style: "cancel",
+          },
+          {
+            text: planogram.processed ? "Reprocesar" : "Procesar",
+            onPress: () => resolve(true),
+          },
+        ],
+        { cancelable: false }
+      );
+    });
+  };
 
   const handlePlanogramProcess = async () => {
     setModalVisible(false);
     setProcessing(true);
+    console.log("Rows ", rows);
+    console.log("Cols ", cols);
     let newPlanograms = await processPlanogram(
       model,
-      planogram.localUri,
       planogramId,
-      [cols, rows]
+      planogram.localUri,
+      cols[0],
+      rows[0]
     );
     setProcessing(false);
     setPlanograms(newPlanograms);
+  };
+
+  const showDeleteAlert = () => {
+    return new Promise((resolve, reject) => {
+      Alert.alert(
+        "¿Estás seguro?",
+        "El planograma se eliminará de tu dispositivo. ",
+        [
+          {
+            text: "Cancelar",
+            onPress: () => resolve(false),
+            style: "cancel",
+          },
+          { text: "Eliminar", onPress: () => resolve(true) },
+        ],
+        { cancelable: false }
+      );
+    });
+  };
+
+  const handlePlanogramDelete = async () => {
+    const userResponse = await showDeleteAlert();
+    if (userResponse) {
+      let newPlanograms = await deletePlanogramRecord(
+        planogramId,
+        planogram.localUri
+      );
+      setPlanograms(newPlanograms);
+      setModalVisible(!modalVisible);
+    }
   };
 
   return (
@@ -149,8 +178,7 @@ export default function PlanogramRow({
             {!processing && (
               <TouchableOpacity onPress={() => setModalVisible(true)}>
                 <LottieView
-                  autoPlay={true}
-                  loop
+                  autoPlay={false}
                   source={require("../../assets/lotties/cube.json")}
                   style={{ width: 50, height: 50 }}
                 />
@@ -194,26 +222,64 @@ export default function PlanogramRow({
                       style={{
                         fontWeight: "600",
                         fontSize: 30,
+                        color: "black",
                       }}
                     >
                       {planogram.name}
                     </Text>
-                    <Text style={{ fontSize: 20 }}>{planogram.fecha}</Text>
+                    <Text style={{ fontSize: 18 }}>{planogram.fecha}</Text>
                   </View>
-                  <View style={styles.container}>
-                    <Image
-                      source={{ uri: planogram.localUri }}
-                      style={{ width: "100%", height: imageHeight }}
-                    />
-
-                    {generateLines(rows, true)}
-                    {generateLines(cols, false)}
+                  <View
+                    style={{
+                      flex: 3,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      position: "relative",
+                    }}
+                  >
+                    <View
+                      style={styles.container}
+                      onLayout={(event) => {
+                        const { height } = event.nativeEvent.layout;
+                        setContainerHeight(height);
+                      }}
+                    >
+                      {containerHeight &&
+                        planogram.width &&
+                        planogram.height && (
+                          <>
+                            <Image
+                              source={{ uri: planogram.localUri }}
+                              style={{
+                                width:
+                                  containerHeight *
+                                  (planogram.width / planogram.height),
+                                height: containerHeight,
+                                borderRadius: 10,
+                              }}
+                            />
+                            {generateLines(
+                              rows,
+                              true,
+                              containerHeight *
+                                (planogram.width / planogram.height),
+                              containerHeight
+                            )}
+                            {generateLines(
+                              cols,
+                              false,
+                              containerHeight *
+                                (planogram.width / planogram.height),
+                              containerHeight
+                            )}
+                          </>
+                        )}
+                    </View>
                   </View>
-                  <View style={{ flex: 4 }}>
+                  <View style={{ flex: 4, alignItems: "center" }}>
                     <Text
                       style={{
                         marginTop: 20,
-                        marginLeft: 20,
                         fontWeight: "600",
                       }}
                     >
@@ -231,12 +297,11 @@ export default function PlanogramRow({
                         max={24}
                         values={[]}
                         onChange={setCols}
-                        style={{ width: "70%", marginLeft: 20, marginTop: 10 }}
+                        style={{ width: "70%", marginTop: 10 }}
                         showLabel={false}
                       />
                       <Text
                         style={{
-                          marginLeft: 10,
                           fontWeight: "700",
                           fontSize: 30,
                         }}
@@ -247,7 +312,6 @@ export default function PlanogramRow({
                     <Text
                       style={{
                         marginTop: 20,
-                        marginLeft: 20,
                         fontWeight: "600",
                       }}
                     >
@@ -265,12 +329,11 @@ export default function PlanogramRow({
                         max={12}
                         values={[]}
                         onChange={setRows}
-                        style={{ width: "70%", marginLeft: 20, marginTop: 10 }}
+                        style={{ width: "70%", marginTop: 10 }}
                         showLabel={false}
                       />
                       <Text
                         style={{
-                          marginLeft: 10,
                           fontWeight: "700",
                           fontSize: 30,
                         }}
@@ -288,13 +351,7 @@ export default function PlanogramRow({
                       }}
                     >
                       <TouchableOpacity
-                        onPress={async () => {
-                          await deletePlanogramRecord(
-                            planogramId,
-                            planogram.localUri
-                          );
-                          setModalVisible(!modalVisible);
-                        }}
+                        onPress={handlePlanogramDelete}
                         style={{
                           borderColor: "red",
                           borderRadius: 10,
@@ -337,26 +394,30 @@ export default function PlanogramRow({
           </>
         )}
         {!planogram.downloaded && !downloading && (
-          <TouchableOpacity onPress={handlePlanogramDownload}>
-            <LottieView
-              autoPlay={true}
-              loop
-              source={require("../../assets/lotties/downloadAlert.json")}
-              style={{ width: 50, height: 50 }}
-            />
+          <TouchableOpacity
+            onPress={handlePlanogramDownload}
+            style={{ marginRight: 10 }}
+          >
+            <Icon name="cloud-download-outline" color={"blue"} size={30} />
           </TouchableOpacity>
         )}
         {!planogram.downloaded && downloading && (
           <ActivityIndicator style={{ width: 50, height: 50 }} />
         )}
-        {planogram.downloaded && !downloading && (
-          <LottieView
-            ref={downloadSuccessAnimation}
-            onLayout={() => downloadSuccessAnimation.current.play()}
-            autoPlay={true}
-            loop={false}
-            source={require("../../assets/lotties/downloadSuccess.json")}
-            style={{ width: 50, height: 50 }}
+        {planogram.downloaded && !downloading && !planogram.processed && (
+          <Icon
+            name="cog-play-outline"
+            color={"black"}
+            size={40}
+            style={{ marginRight: 10 }}
+          />
+        )}
+        {planogram.downloaded && !downloading && planogram.processed && (
+          <Icon
+            name="bookmark-check-outline"
+            color={"green"}
+            size={40}
+            style={{ marginRight: 10 }}
           />
         )}
       </View>
@@ -367,9 +428,9 @@ export default function PlanogramRow({
 const styles = StyleSheet.create({
   container: {
     position: "relative",
-    flex: 3,
+    flex: 1,
     justifyContent: "flex-start",
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   rowLine: {
     position: "absolute",

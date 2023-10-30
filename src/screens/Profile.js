@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+  useContext,
+} from "react";
 import {
   View,
   Text,
@@ -11,11 +17,14 @@ import {
   TextInput,
   Button,
   Image,
+  StyleSheet,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
+  addCustomePlanogram,
   getLocalPlanograms,
   getLocalPlanogramsMatrix,
+  processPlanogram,
   resetPlanogramTracker,
   updatePlanogramRecord,
 } from "../services/planograms";
@@ -23,8 +32,10 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import PlanogramRow from "../components/PlanogramRow";
 import Slider from "react-native-a11y-slider";
+import { ModelContext } from "../contexts/model";
 
 export default function Profile() {
+  const { model } = useContext(ModelContext);
   const [planograms, setPlanograms] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -47,7 +58,10 @@ export default function Profile() {
 
   const [rows, setRows] = useState(4);
   const [cols, setCols] = useState(4);
+  const [planogramName, setPlanogramName] = useState("");
+  const [currentDate, setCurrentDate] = useState("");
 
+  const [containerHeight, setContainerHeight] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const pickImage = async () => {
     let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -58,13 +72,72 @@ export default function Profile() {
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
       quality: 1,
     });
 
     if (!result.canceled) {
       console.log(result.assets);
+      setSelectedImage(result.assets[0]);
     }
+  };
+
+  const generateLines = (count, isRow, imageWidth, imageHeight) => {
+    const lines = [];
+    for (let i = 0; i < count; i++) {
+      const position = isRow
+        ? (imageHeight / count) * i
+        : (imageWidth / count) * i;
+      lines.push(
+        <View
+          key={i}
+          style={[
+            isRow ? styles.rowLine : styles.colLine,
+            isRow ? { top: position } : { left: position },
+          ]}
+        />
+      );
+    }
+    return lines;
+  };
+
+  function getCurrentDate() {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, "0"); // January is 0!
+    const yyyy = today.getFullYear();
+
+    return dd + "-" + mm + "-" + yyyy;
+  }
+
+  const handlePlanogramSaveAndProcess = async () => {
+    setModalVisible(false);
+    console.log("Rows ", rows);
+    console.log("Cols ", cols);
+    const { id, localUri } = await addCustomePlanogram(selectedImage.uri, {
+      name: planogramName,
+      fecha: currentDate,
+      url: null,
+      tienda: 0,
+      width: selectedImage.width,
+      height: selectedImage.height,
+    });
+    const newPlanograms = await processPlanogram(
+      model,
+      id,
+      localUri,
+      cols[0],
+      rows[0]
+    );
+    setPlanograms(newPlanograms);
+    await resetAddPlanogram();
+  };
+
+  const resetAddPlanogram = async () => {
+    setModalVisible(false);
+    setPlanogramName("");
+    setSelectedImage(null);
+    setCols(0);
+    setRows(0);
   };
 
   const onRefresh = useCallback(async () => {
@@ -81,6 +154,8 @@ export default function Profile() {
       console.log(response);
     };
     loadPlanograms();
+    const dateString = getCurrentDate();
+    setCurrentDate(dateString);
   }, []);
   return (
     <View style={{ flex: 1 }}>
@@ -92,7 +167,6 @@ export default function Profile() {
           marginBottom: 30,
         }}
       >
-        <Text style={{ fontSize: 30, fontWeight: "bold" }}>Planogramas :</Text>
         <View style={{ flexDirection: "row" }}>
           <View style={{ flex: 3 }} />
           <TouchableOpacity
@@ -136,6 +210,8 @@ export default function Profile() {
               >
                 <View style={{ flex: 1, marginTop: 30, marginLeft: 16 }}>
                   <TextInput
+                    value={planogramName}
+                    onChangeText={setPlanogramName}
                     style={{
                       fontWeight: "600",
                       fontSize: 30,
@@ -144,20 +220,97 @@ export default function Profile() {
                     placeholder="Nombre"
                     placeholderTextColor={"#777777"}
                   />
-                  <Text style={{ fontSize: 18 }}>21-10-2023</Text>
+                  <Text style={{ fontSize: 18 }}>{currentDate}</Text>
                 </View>
-                <View style={{ flex: 3 }}>
-                  <Button
-                    title="Pick an image from camera roll"
-                    onPress={pickImage}
-                  />
-                  {selectedImage && <Image source={{ uri: selectedImage }} />}
+                <View
+                  style={{
+                    flex: 3,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    position: "relative",
+                  }}
+                >
+                  {!selectedImage && (
+                    <TouchableOpacity
+                      onPress={pickImage}
+                      style={{
+                        borderWidth: 2,
+                        borderColor: "black",
+                        padding: 80,
+                        borderRadius: 20,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Icon name="selection-drag" size={80} />
+                      <Text
+                        style={{
+                          marginTop: 10,
+                          fontSize: 15,
+                          textAlign: "center",
+                        }}
+                      >
+                        Abrir galeria de imagenes
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  {selectedImage && (
+                    <>
+                      <View
+                        style={styles.container}
+                        onLayout={(event) => {
+                          const { height } = event.nativeEvent.layout;
+                          setContainerHeight(height);
+                        }}
+                      >
+                        <Image
+                          source={{ uri: selectedImage.uri, flex: 1 }}
+                          style={{
+                            width:
+                              containerHeight *
+                              (selectedImage.width / selectedImage.height),
+                            height: containerHeight,
+                            borderRadius: 10,
+                          }}
+                        />
+                        {generateLines(
+                          rows,
+                          true,
+                          containerHeight *
+                            (selectedImage.width / selectedImage.height),
+                          containerHeight
+                        )}
+                        {generateLines(
+                          cols,
+                          false,
+                          containerHeight *
+                            (selectedImage.width / selectedImage.height),
+                          containerHeight
+                        )}
+                      </View>
+                      <View
+                        style={{ position: "absolute", bottom: 10, right: 20 }}
+                      >
+                        <TouchableOpacity
+                          onPress={pickImage}
+                          style={{
+                            backgroundColor: "white",
+                            borderColor: "black",
+                            padding: 5,
+                            borderWidth: 2,
+                            borderRadius: 10,
+                          }}
+                        >
+                          <Icon name="camera-retake-outline" size={20} />
+                        </TouchableOpacity>
+                      </View>
+                    </>
+                  )}
                 </View>
-                <View style={{ flex: 4 }}>
+                <View style={{ flex: 4, alignItems: "center" }}>
                   <Text
                     style={{
                       marginTop: 20,
-                      marginLeft: 20,
                       fontWeight: "600",
                     }}
                   >
@@ -175,12 +328,11 @@ export default function Profile() {
                       max={24}
                       values={[]}
                       onChange={setCols}
-                      style={{ width: "70%", marginLeft: 20, marginTop: 10 }}
+                      style={{ width: "70%", marginTop: 10 }}
                       showLabel={false}
                     />
                     <Text
                       style={{
-                        marginLeft: 10,
                         fontWeight: "700",
                         fontSize: 30,
                       }}
@@ -191,7 +343,6 @@ export default function Profile() {
                   <Text
                     style={{
                       marginTop: 20,
-                      marginLeft: 20,
                       fontWeight: "600",
                     }}
                   >
@@ -207,14 +358,13 @@ export default function Profile() {
                     <Slider
                       min={1}
                       max={12}
-                      values={[]}
+                      values={[rows]}
                       onChange={setRows}
-                      style={{ width: "70%", marginLeft: 20, marginTop: 10 }}
+                      style={{ width: "70%", marginTop: 10 }}
                       showLabel={false}
                     />
                     <Text
                       style={{
-                        marginLeft: 10,
                         fontWeight: "700",
                         fontSize: 30,
                       }}
@@ -232,6 +382,7 @@ export default function Profile() {
                     }}
                   >
                     <TouchableOpacity
+                      onPress={resetAddPlanogram}
                       style={{
                         borderColor: "red",
                         borderRadius: 10,
@@ -248,10 +399,11 @@ export default function Profile() {
                           color: "red",
                         }}
                       >
-                        Eliminar
+                        Cancelar
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
+                      onPress={handlePlanogramSaveAndProcess}
                       style={{
                         borderColor: "black",
                         borderRadius: 10,
@@ -305,7 +457,7 @@ export default function Profile() {
       )}
       <View style={{ flex: 1, flexDirection: "row" }}>
         <TouchableOpacity
-          style={{ flex: 1 }}
+          style={{ flex: 1, opacity: 0 }}
           onPress={async () => {
             let planograms = await getLocalPlanograms();
             let planogramMatrix = await getLocalPlanogramsMatrix();
@@ -317,7 +469,7 @@ export default function Profile() {
           <Icon name="refresh" size={50} />
         </TouchableOpacity>
         <TouchableOpacity
-          style={{ flex: 1 }}
+          style={{ flex: 1, opacity: 0 }}
           onPress={async () => {
             let planograms = await resetPlanogramTracker();
             setPlanograms(planograms);
@@ -329,3 +481,26 @@ export default function Profile() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: "relative",
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+  },
+  rowLine: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: "white",
+  },
+  colLine: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    width: 1,
+    backgroundColor: "white",
+  },
+});
