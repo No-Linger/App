@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
         marginVertical:20,
         borderRadius:25,
         paddingLeft:20
+
     },
     formButtom:{
         backgroundColor:'rgba(123,104,238,0.8)',
@@ -53,22 +54,24 @@ const styles = StyleSheet.create({
         shadowOpacity:0.25,
         shadowRadius:3.84,
         elevation:5,
+        zindex:-1
+
     },
     formInputContainer:{
-        marginBottom:70,
+        marginBottom:30,
         //...StyleSheet.absoluteFill,
         zindex:-1,
         justifyContent:'center'
     },
-    closeButtomContainer:{
+    closeButtonContainer:{
     height:40,
-    width:40,
+    width:60,
     alignSelf:'center',
     justifyContent:'center',
     shadowColor:'#000',
     shadowOffset:{
         width:0,
-        height:5,
+        height:7
     },
     shadowOpacity:0.34,
     shadowRadius:6.27,
@@ -76,8 +79,21 @@ const styles = StyleSheet.create({
     backgroundColor:'white',
     alignItems:'center',
     borderRadius:20,
+    zindex:1
 
     },
+    lottieAnimationStyle:{
+        display:"flex",
+        justifyContent:"center",
+        alignItems:"center",
+        // marginBottom:150,
+        position: 'absolute',
+        top: '100',
+        left: '100'
+        // transform: 'translate(-50%, -50%)'
+
+
+    }
 
 });
 
