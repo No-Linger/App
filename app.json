@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "No-Linger",
+    "slug": "no-linger",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -51,9 +51,6 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "eas": {
-        "projectId": "887990da-6c94-4e0b-8f1e-d8fcec9934e8"
-      }
     }
   }
 }

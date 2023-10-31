@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "no-linger",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -39,6 +39,7 @@
     "react-native-chart-kit": "^6.12.0",
     "react-native-dotenv": "^3.4.9",
     "react-native-fs": "^2.20.0",
+    "react-native-modal": "^13.0.1",
     "react-native-gesture-handler": "~2.12.0",
     "react-native-pager-view": "6.2.0",
     "react-native-reanimated": "~3.3.0",
@@ -46,7 +47,6 @@
     "react-native-screens": "~3.22.0",
     "react-native-svg": "13.9.0",
     "react-native-vector-icons": "^10.0.0",
-    "react-native-web": "~0.19.6",
     "react-navigation": "^5.0.0",
     "react-router-dom": "^6.16.0",
     "recoil": "^0.7.7",
