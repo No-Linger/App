@@ -51,29 +51,40 @@ export default function Stats({ navigation }) {
   
   const saveDataAndLoadFecha = async () => {
     try {
+      // Capture data immediately
       const jsonData = await saveDataToAsyncStorage();
       setStatData(jsonData);
   
       // Create a simplified JSON object to send to MongoDB
       const simplifiedData = jsonData;
   
-      // Send the simplified data to MongoDB
-      syncDataToMongoDB(simplifiedData);
-  
-      const updatedRecords = { ...records };
-      if (!updatedRecords[currentDate]) {
-        updatedRecords[currentDate] = [];
+      // Create a temporary array to hold data that needs to be uploaded
+      const tempRecords = { ...records };
+      if (!tempRecords[currentDate]) {
+        tempRecords[currentDate] = [];
       }
-      updatedRecords[currentDate].push(jsonData);
-      setRecords(updatedRecords);
+      tempRecords[currentDate].push(jsonData);
   
-      await AsyncStorage.setItem("statData", JSON.stringify(updatedRecords));
+      // Log the tempRecords to see the captures
+      console.log("Temp Records:", tempRecords);
   
-      navigation.navigate("Cámara");
+      // Display the data immediately
+      setRecords(tempRecords);
+  
+      // Attempt to send the simplified data to MongoDB
+      try {
+        await syncDataToMongoDB(simplifiedData);
+      } catch (error) {
+        console.error("Error uploading to MongoDB:", error);
+      }
+  
+      // Save updated tempRecords to AsyncStorage
+      await AsyncStorage.setItem("statData", JSON.stringify(tempRecords));
     } catch (error) {
       console.error("Error:", error);
     }
   };
+  
   
   const handleClearData = async () => {
     try {
@@ -192,7 +203,6 @@ export default function Stats({ navigation }) {
     </ScrollView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
