@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Modal } from 'react-native';
-// import Modal from 'react-native-modal';
+//import Modal from 'react-native-modal';
 import LottieAnimation from './LottieAnimation'; // Asegúrate de que la ruta sea correcta
 
 const CustomModal = ({ isVisible, onModalClose }) => {
@@ -22,8 +22,8 @@ const CustomModal = ({ isVisible, onModalClose }) => {
         <View style={styles.lottieAnimationStyle}>
           <LottieAnimation
             source={require("../../assets/lotties/keyLogin.json")}
-            width={10}
-            height={10}
+            width={50}
+            height={50}
           />
         </View>
       </View>

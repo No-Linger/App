@@ -76,15 +76,17 @@ export default function Login(props) {
 
 
     const signIn = async () => {
-      setModalVisible(true); // Muestra el modal
-    
+
       try {
         const response = await signInWithEmailAndPassword(AUTH, username, password);
         console.log(response);
         setLoggedIn(true);
-    
+        setModalVisible(true); // Muestra el modal
+        setTimeout(() => {
+          setModalVisible(false); // Cierra el modal después de 3 segundos
+          props.onClick();
+        }, 3000);
         console.log(AUTH.currentUser.uid);
-        props.onClick();
       } catch (error) {
         console.log(error);
       } finally {
@@ -181,7 +183,8 @@ export default function Login(props) {
               </Pressable>
             </Animated.View>
           </Animated.View>
-          {/* <CustomModal isVisible={modalVisible} onModalClose={() => setModalVisible(false)} /> */}
+          {modalVisible && <CustomModal isVisible={modalVisible} onModalClose={() => setModalVisible(false)} />}
+          
         </View>
       );
     }

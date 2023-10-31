@@ -33,8 +33,7 @@ const styles = StyleSheet.create({
         marginHorizontal:20,
         marginVertical:20,
         borderRadius:25,
-        paddingLeft:20,
-        zindex:-1,
+        paddingLeft:20
 
     },
     formButtom:{
@@ -55,7 +54,7 @@ const styles = StyleSheet.create({
         shadowOpacity:0.25,
         shadowRadius:3.84,
         elevation:5,
-        zindex:-1,
+        zindex:-1
 
     },
     formInputContainer:{
