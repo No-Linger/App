@@ -8,16 +8,18 @@ import {
   Button,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import NetInfo from "@react-native-community/netinfo"; // Import NetInfo
 import Icon from "react-native-vector-icons/FontAwesome";
 import { LottieAnimation } from "../components";
 import { saveDataToAsyncStorage } from "../services/fetchService";
 import { syncDataToMongoDB } from "../services/statsUpdate";
 
 export default function Stats({ navigation }) {
-  const [statData, setStatData] = useState(null);//data from JSON
+  const [statData, setStatData] = useState(null); // Data from JSON
   const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
 
-  const [records, setRecords] = useState({}); //object with all the data saved. 
+  const [records, setRecords] = useState({}); // Object with all the data saved.
+  const [isConnected, setIsConnected] = useState(true); // To track internet connection.
 
   const [showRecords, setShowRecords] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -29,63 +31,81 @@ export default function Stats({ navigation }) {
     );
     return () => clearInterval(intervalId);
   }, []);
-  
+
   useEffect(() => {
+    // Check for internet connection on component mount
+    NetInfo.addEventListener((state) => {
+      setIsConnected(state.isConnected);
+    });
+
     const fetchData = async () => {
       try {
         // Retrieve data from AsyncStorage
         const data = await AsyncStorage.getItem("statData");
-  
+
         // Parse the data into parsedData, or initialize it as an empty array
         const parsedData = data ? JSON.parse(data) : [];
-  
+
         // Set the parsedData in the state
         setRecords(parsedData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-  
+
     fetchData();
   }, []);
-  
+
+  useEffect(() => {
+    // When the internet connection becomes available, sync the data with MongoDB
+    if (isConnected) {
+      syncDataWithMongoDB();
+    }
+  }, [isConnected]);
+
+  const syncDataWithMongoDB = async () => {
+    try {
+      for (const date in records) {
+        for (const data of records[date]) {
+          await syncDataToMongoDB(data);
+        }
+      }
+    } catch (error) {
+      console.error("Error uploading data to MongoDB:", error);
+    }
+  };
+
   const saveDataAndLoadFecha = async () => {
     try {
       // Capture data immediately
       const jsonData = await saveDataToAsyncStorage();
       setStatData(jsonData);
-  
-      // Create a simplified JSON object to send to MongoDB
-      const simplifiedData = jsonData;
-  
+
       // Create a temporary array to hold data that needs to be uploaded
       const tempRecords = { ...records };
       if (!tempRecords[currentDate]) {
         tempRecords[currentDate] = [];
       }
       tempRecords[currentDate].push(jsonData);
-  
+
       // Log the tempRecords to see the captures
       console.log("Temp Records:", tempRecords);
-  
+
       // Display the data immediately
       setRecords(tempRecords);
-  
-      // Attempt to send the simplified data to MongoDB
-      try {
-        await syncDataToMongoDB(simplifiedData);
-      } catch (error) {
-        console.error("Error uploading to MongoDB:", error);
+
+      // If there's an internet connection, sync data with MongoDB immediately
+      if (isConnected) {
+        await syncDataToMongoDB(jsonData);
       }
-  
+
       // Save updated tempRecords to AsyncStorage
       await AsyncStorage.setItem("statData", JSON.stringify(tempRecords));
     } catch (error) {
       console.error("Error:", error);
     }
   };
-  
-  
+
   const handleClearData = async () => {
     try {
       await AsyncStorage.removeItem("statData");
