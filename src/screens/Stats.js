@@ -15,9 +15,11 @@ import { saveDataToAsyncStorage } from "../services/fetchService";
 
 export default function TestStats() {
 
-  const [capture, setCapture] = useState([])
+  const [capture, setCapture] = useState([]);
+  const [history, setHistory] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
-
+  const [open, setOpen] = useState(false);
+  const [dateOpen, setDateOpen] = useState(false);
 
   // Función para obtener un número entero aleatorio en un rango específico
   function getRandomInt(min, max) {
@@ -71,8 +73,10 @@ export default function TestStats() {
           data[i]["uploaded"] = state;
         }
       }
+      setHistory(data);
       return data;
     } else {
+      setHistory([])
       return [];
     }
   };
@@ -117,8 +121,29 @@ export default function TestStats() {
   // Función para borrar los datos almacenados
   const clearData = async () => {
     await AsyncStorage.setItem("capturas", JSON.stringify([]))
-    setCapture([])
+    setCapture([]);
+    setHistory([]);
   };
+
+  const toggleOpen = () => {
+    setOpen(!open);
+  };
+
+  const toggleDateOpen = (date) => {
+    setDateOpen(prevDateOpen => ({
+      ...prevDateOpen,
+      [date]: !prevDateOpen[date],
+    }));
+  };
+
+  const dataByDate = {};
+  for (const item of history) {
+    const date = item.fecha;
+    if (!dataByDate[date]) {
+      dataByDate[date] = [];
+    }
+    dataByDate[date].push(item);
+  }
 
   // Renderizado del componente
   return (
@@ -167,6 +192,34 @@ export default function TestStats() {
       </View>
       </View>
       )}
-    </ScrollView>
+
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <TouchableOpacity onPress={toggleOpen}>
+          <Text style={{ padding: 10, backgroundColor: 'gray', fontSize: 15, color:'white' }}>
+            Datos Guardados
+          </Text>
+        </TouchableOpacity>
+        {open && (
+          <View>
+            {Object.keys(dataByDate).map(date => (
+              <View key={date}>
+                <TouchableOpacity onPress={() => toggleDateOpen(date)}>
+                  <Text style={{ fontWeight: 'bold' }}>{`Date: ${date}`}</Text>
+                </TouchableOpacity>
+                {dateOpen[date] && (
+                  <View>
+                    {dataByDate[date].map(item => (
+                      <View key={item.hora}>
+                        <Text>{`Hora: ${item.hora}, Planograma: ${item.planograma}, Precision: ${item.precision}, Sucursal: ${item.sucursal}, Uploaded: ${item.uploaded ? 'Yes' : 'No'}`}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+          )}
+        </View>
+      </ScrollView>
   );
 }
