@@ -1,10 +1,24 @@
-// Importamos las librerías de React y componentes necesarios
-import React, { useEffect, useState } from "react";
-import { View, Button, Text } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Button,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import NetInfo from "@react-native-community/netinfo";
+import NetInfo from "@react-native-community/netinfo"; // Import NetInfo
+import Icon from "react-native-vector-icons/FontAwesome";
+import { LottieAnimation } from "../components";
+import { saveDataToAsyncStorage } from "../services/fetchService";
 
 export default function TestStats() {
+
+  const [capture, setCapture] = useState([])
+  const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
+
+
   // Función para obtener un número entero aleatorio en un rango específico
   function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -75,6 +89,7 @@ export default function TestStats() {
     data.push(fakeData);
     let newRecords = await tryUploadRecords(data);
     await AsyncStorage.setItem("capturas", JSON.stringify(newRecords));
+    setCapture(fakeData);
   };
 
   // Estado para manejar la conexión a internet
@@ -99,24 +114,44 @@ export default function TestStats() {
     };
   }, [isConnected]);
 
-  // Función para obtener los datos almacenados
-  const getData = async () => {
-    let data = await AsyncStorage.getItem("capturas");
-    console.log(data);
-  };
-
   // Función para borrar los datos almacenados
   const clearData = async () => {
-    await AsyncStorage.setItem("capturas", JSON.stringify([]));
+    await AsyncStorage.setItem("capturas", JSON.stringify([]))
+    setCapture([])
   };
 
   // Renderizado del componente
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Connected : {isConnected ? "Sí" : "No"}</Text>
-      <Button onPress={handleCapturar} title="Capturar" />
-      <Button onPress={getData} title="Datos" />
-      <Button onPress={clearData} title="Borrar" />
-    </View>
+    <ScrollView>
+    <Text>¡Hola! Hoy es: {currentDate}</Text>
+
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Text>Connected : {isConnected ? "Sí" : "No"}</Text>
+        <Button onPress={handleCapturar} title="Capturar" />
+        <Button onPress={clearData} title="Borrar" />
+      </View>
+
+      {capture.fecha === currentDate ? (
+      <View style={{backgroundColor:'gainsboro', padding:15}}>
+        <Text>Captura</Text>
+        <Text>Planograma: {capture.planograma}</Text>
+        <Text>Fecha: {capture.fecha}</Text>
+        <Text>Hora: {capture.hora}</Text>
+        <Text>Precisión: {capture.precision}</Text>
+      </View> ) : (
+        <View>
+        <Text>
+          Aún no has realizado ninguna captura hoy.
+        </Text>
+        <LottieAnimation
+          source={require("../../assets/lotties/potatoeWalking.json")}
+          width={"50"}
+          height={"50"}
+        />
+        </View>
+      )}
+      
+
+    </ScrollView>
   );
 }
