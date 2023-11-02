@@ -34,7 +34,7 @@ export default function TestStats() {
   // Función para generar un JSON falso para simular los datos capturados
   const getFakeJson = () => {
     const precision = getRandomInt(97, 100);
-    const fecha = new Date().toLocaleDateString();
+    const fecha = "31/10/23";
     const hora = new Date().toLocaleTimeString();
     const planograma = getRandomArrayElement(["Sabritas", "CocaCola", "Barcel"]);
     const sucrusal = 123456;
@@ -208,12 +208,16 @@ export default function TestStats() {
                 </TouchableOpacity>
                 {dateOpen[date] && (
                   <View>
-                    {dataByDate[date].map(item => (
-                      <View key={item.hora}>
-                        <Text>{`Hora: ${item.hora}, Planograma: ${item.planograma}, Precision: ${item.precision}, Sucursal: ${item.sucursal}, Uploaded: ${item.uploaded ? 'Yes' : 'No'}`}</Text>
-                      </View>
-                    ))}
-                  </View>
+                  {dataByDate[date].map(item => (
+                    <View key={item.hora} style={{ marginBottom: 10 }}>
+                      <Text>{`Hora: ${item.hora}`}</Text>
+                      <Text>{`Planograma: ${item.planograma}`}</Text>
+                      <Text>{`Precision: ${item.precision}`}</Text>
+                      <Text>{`Sucursal: ${item.sucursal}`}</Text>
+                      <Text>{`Uploaded: ${item.uploaded ? 'Yes' : 'No'}`}</Text>
+                    </View>
+                  ))}
+                </View>                
                 )}
               </View>
             ))}
