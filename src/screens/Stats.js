@@ -123,7 +123,7 @@ export default function TestStats() {
   // Renderizado del componente
   return (
     <ScrollView>
-    <Text>¡Hola! Hoy es: {currentDate}</Text>
+      <Text>¡Hola! Hoy es: {currentDate}</Text>
 
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Text>Connected : {isConnected ? "Sí" : "No"}</Text>
@@ -132,14 +132,30 @@ export default function TestStats() {
       </View>
 
       {capture.fecha === currentDate ? (
-      <View style={{backgroundColor:'gainsboro', padding:15}}>
-        <Text>Captura</Text>
-        <Text>Planograma: {capture.planograma}</Text>
-        <Text>Fecha: {capture.fecha}</Text>
-        <Text>Hora: {capture.hora}</Text>
-        <Text>Precisión: {capture.precision}</Text>
-      </View> ) : (
-        <View>
+      <View style={{margin: 10 ,padding:15, backgroundColor:'gainsboro', overflow:'hidden', borderRadius:15}}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{fontWeight:'bold',  marginBottom:5 }}>Captura</Text>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom:5 }}>
+          <Text>Planograma:</Text>
+          <Text>{capture.planograma}</Text>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between',  marginBottom:5  }}>
+          <Text>Fecha:</Text>
+          <Text>{capture.fecha}</Text>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between',  marginBottom:5  }}>
+          <Text>Hora:</Text>
+          <Text>{capture.hora}</Text>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between',  marginBottom:5  }}>
+          <Text>recision:</Text>
+          <Text style={{ color: 'green' }}>{capture.precision}%</Text>
+        </View>
+      </View>
+        ) : (
+      <View style={{padding:15}}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 10, backgroundColor: 'gainsboro', overflow:'hidden', borderRadius: 15 }}>
         <Text>
           Aún no has realizado ninguna captura hoy.
         </Text>
@@ -148,10 +164,9 @@ export default function TestStats() {
           width={"50"}
           height={"50"}
         />
-        </View>
+      </View>
+      </View>
       )}
-      
-
     </ScrollView>
   );
 }
