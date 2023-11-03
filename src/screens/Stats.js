@@ -147,13 +147,12 @@ export default function TestStats() {
     dataByDate[date].push(item);
   }
 
-  // Renderizado del componente
   return (
     <ScrollView>
-      <Text>¡Hola! Hoy es: {currentDate}</Text>
+      <Text style={{marginLeft:10, marginTop:10, fontSize: 15, fontWeight:600}}>¡Hola! Hoy es: {currentDate}</Text>
   
       {loading ? (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', margin: 10, padding:2}}>
           <Text>LOADING</Text>
         </View>
       ) : (
@@ -195,14 +194,14 @@ export default function TestStats() {
         )
       )}
   
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <TouchableOpacity onPress={toggleOpen}>
-          <Text style={{ padding: 10, backgroundColor: 'gray', fontSize: 15, color: 'white' }}>
+      <View style={{ flex: 1, alignItems: 'center'}}>
+        <TouchableOpacity onPress={toggleOpen} style={{overflow:'hidden', borderRadius:15, padding:0}}>
+          <Text style={{ padding: 10, backgroundColor: 'gray', fontSize: 15, color: 'white', fontWeight:'600' }}>
             Datos Guardados
           </Text>
         </TouchableOpacity>
         {open && (
-          <View>
+          <View style={{ backgroundColor:'gainsboro', marginTop:10, alignItems: 'center'}}>
             {Object.keys(dataByDate).map(date => (
               <View key={date}>
                 <TouchableOpacity onPress={() => toggleDateOpen(date)}>
