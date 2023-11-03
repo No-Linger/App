@@ -46,7 +46,7 @@ export default function TestStats() {
   // Función para subir los datos a la API
   const uploadData = async (data) => {
     try {
-      let response = await fetch("http://10.48.70.252:8082/postStats", {
+      let response = await fetch("http://192.168.1.78:8082/postStats", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -194,37 +194,53 @@ export default function TestStats() {
         )
       )}
   
-      <View style={{ flex: 1, alignItems: 'center'}}>
-        <TouchableOpacity onPress={toggleOpen} style={{overflow:'hidden', borderRadius:15, padding:0}}>
-          <Text style={{ padding: 10, backgroundColor: 'gray', fontSize: 15, color: 'white', fontWeight:'600' }}>
-            Datos Guardados
-          </Text>
-        </TouchableOpacity>
-        {open && (
-          <View style={{ backgroundColor:'gainsboro', marginTop:10, alignItems: 'center'}}>
-            {Object.keys(dataByDate).map(date => (
-              <View key={date}>
-                <TouchableOpacity onPress={() => toggleDateOpen(date)}>
-                  <Text style={{ fontWeight: 'bold' }}>{`Date: ${date}`}</Text>
-                </TouchableOpacity>
-                {dateOpen[date] && (
-                  <View>
-                    {dataByDate[date].map(item => (
-                      <View key={item.hora} style={{ marginBottom: 10 }}>
-                        <Text>{`Hora: ${item.hora}`}</Text>
-                        <Text>{`Planograma: ${item.planograma}`}</Text>
-                        <Text>{`Precision: ${item.precision}`}</Text>
-                        <Text>{`Sucursal: ${item.sucursal}`}</Text>
-                        <Text>{`Uploaded: ${item.uploaded ? 'Yes' : 'No'}`}</Text>
-                      </View>
-                    ))}
+  <View style={{ margin: 10, padding: 10, backgroundColor: 'gainsboro', overflow: 'hidden', borderRadius: 15 }}>
+  
+  <View style={{ borderRadius: 15, overflow: 'hidden', padding: 10 }}>
+    <TouchableOpacity onPress={toggleOpen}>
+      <Text style={{ fontSize: 15, fontWeight: '600', textAlign:'center' }}>
+        Bitácora de Datos
+      </Text>
+    </TouchableOpacity>
+  </View>
+  {open && (
+    <View style={{ backgroundColor: 'gainsboro', marginTop: 10 }}>
+      {Object.keys(dataByDate).map(date => (
+        <View key={date} style={{ margin: 5, padding: 10, backgroundColor: 'white', borderRadius: 15 }}>
+          <TouchableOpacity onPress={() => toggleDateOpen(date)}>
+            <Text style={{ fontWeight: 'bold' }}>{`Fecha: ${date}`}</Text>
+          </TouchableOpacity>
+          {dateOpen[date] && (
+            <View style={{ flex: 1, padding: 5, marginLeft:5, overflow: 'hidden', borderRadius: 10 }}>
+              {dataByDate[date].map(item => (
+                <View key={item.hora} style={{ marginBottom: 5 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
+                  <Text>Planograma:</Text>
+                  <Text>{item.planograma}</Text>
                   </View>
-                )}
-              </View>
-            ))}
-          </View>
-        )}
-      </View>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
+                    <Text>Fecha:</Text>
+                    <Text>{item.fecha}</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
+                    <Text>Hora:</Text>
+                    <Text>{item.hora}</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
+                    <Text>Precision:</Text>
+                    <Text style={{ color: 'green' }}>{item.precision}%</Text>
+                  </View>
+                  <Text>___________________________</Text>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+      ))}
+    </View>
+  )}
+</View>
+
       <Button onPress={handleCapturar} title="Capturar" />
       <Button onPress={clearData} title="Borrar" />
     </ScrollView>
