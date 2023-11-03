@@ -64,7 +64,6 @@ const getLocalImageSize = async (uri) => {
         resolve({ width, height });
       },
       (error) => {
-        console.log("Aqui : ", error);
         reject(error);
       }
     );

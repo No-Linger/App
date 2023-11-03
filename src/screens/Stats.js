@@ -11,6 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { LottieAnimation } from "../components";
 import { saveDataToAsyncStorage } from "../services/fetchService";
+import NetInfo from "@react-native-community/netinfo";
 
 export default function Stats({ navigation }) {
   const [statData, setStatData] = useState(null); //data from JSON
@@ -23,12 +24,24 @@ export default function Stats({ navigation }) {
   const [showRecords, setShowRecords] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
 
+  const [isConnected, setIsConnected] = useState(null);
+
   useEffect(() => {
     const intervalId = setInterval(
       () => setCurrentDate(new Date().toLocaleDateString()),
       1000
     );
     return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const subscription = NetInfo.addEventListener((state) => {
+      setIsConnected(state.isConnected);
+    });
+
+    return () => {
+      subscription();
+    };
   }, []);
 
   useEffect(() => {
@@ -81,6 +94,14 @@ export default function Stats({ navigation }) {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>¡Hola! Hoy es: {currentDate}</Text>
+      <Text>
+        Network Status:{" "}
+        {isConnected === null
+          ? "Loading..."
+          : isConnected
+          ? "Connected"
+          : "Disconnected"}
+      </Text>
       {records[currentDate] && records[currentDate].length > 0 ? (
         <View style={styles.statsContainer}>
           <Text style={styles.statsTitle}>Captura</Text>
