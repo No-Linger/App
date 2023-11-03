@@ -159,7 +159,7 @@ export default function TestStats() {
         Object.keys(dataByDate).length === 0 || (Object.keys(dataByDate)[Object.keys(dataByDate).length - 1] != currentDate) ? (
           <View style={{ padding: 15 }}>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 10, backgroundColor: 'gainsboro', overflow: 'hidden', borderRadius: 15 }}>
-              <Text>
+              <Text style={{padding:10, backgroundColor:'gray', color:'white', overflow:'hidden', borderRadius:15}}>
                 Aún no has realizado ninguna captura hoy.
               </Text>
               <LottieAnimation
@@ -179,15 +179,15 @@ export default function TestStats() {
               <Text>{capture.planograma}</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
-              <Text>Fecha:</Text>
-              <Text>{capture.fecha}</Text>
-            </View>
+                    <Text>Fecha:</Text>
+                    <Text>{capture.fecha}</Text>
+                  </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
               <Text>Hora:</Text>
               <Text>{capture.hora}</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
-              <Text>Precision:</Text>
+              <Text>Precisión:</Text>
               <Text style={{ color: 'green' }}>{capture.precision}%</Text>
             </View>
           </View>
@@ -195,42 +195,37 @@ export default function TestStats() {
       )}
   
   <View style={{ margin: 10, padding: 10, backgroundColor: 'gainsboro', overflow: 'hidden', borderRadius: 15 }}>
-  
-  <View style={{ borderRadius: 15, overflow: 'hidden', padding: 10 }}>
+  <View style={{ borderRadius: 15, overflow: 'hidden', padding: 3 }}>
     <TouchableOpacity onPress={toggleOpen}>
       <Text style={{ fontSize: 15, fontWeight: '600', textAlign:'center' }}>
         Bitácora de Datos
       </Text>
     </TouchableOpacity>
   </View>
-  {open && (
-    <View style={{ backgroundColor: 'gainsboro', marginTop: 10 }}>
+  {open &&  (
+    <View style={{ backgroundColor: 'gainsboro', marginTop: 5 }}>
       {Object.keys(dataByDate).map(date => (
         <View key={date} style={{ margin: 5, padding: 10, backgroundColor: 'white', borderRadius: 15 }}>
           <TouchableOpacity onPress={() => toggleDateOpen(date)}>
-            <Text style={{ fontWeight: 'bold' }}>{`Fecha: ${date}`}</Text>
+            <Text style={{ fontWeight: 'bold', flexDirection: 'row-reverse' }}>{`Fecha: ${date}`}</Text>
           </TouchableOpacity>
           {dateOpen[date] && (
             <View style={{ flex: 1, padding: 5, marginLeft:5, overflow: 'hidden', borderRadius: 10 }}>
               {dataByDate[date].map(item => (
                 <View key={item.hora} style={{ marginBottom: 5 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5, marginTop:5 }}>
                   <Text>Planograma:</Text>
                   <Text>{item.planograma}</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
-                    <Text>Fecha:</Text>
-                    <Text>{item.fecha}</Text>
                   </View>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
                     <Text>Hora:</Text>
                     <Text>{item.hora}</Text>
                   </View>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
-                    <Text>Precision:</Text>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <Text>Precisión:</Text>
                     <Text style={{ color: 'green' }}>{item.precision}%</Text>
                   </View>
-                  <Text>___________________________</Text>
+                  <Text style={{textAlign:'center'}}>___________________________</Text>
                 </View>
               ))}
             </View>
@@ -239,8 +234,7 @@ export default function TestStats() {
       ))}
     </View>
   )}
-</View>
-
+    </View>
       <Button onPress={handleCapturar} title="Capturar" />
       <Button onPress={clearData} title="Borrar" />
     </ScrollView>
