@@ -39,3 +39,7 @@ yarn-error.*
 
 #Android Build
 android/
+
+# IOS Build
+
+ios/

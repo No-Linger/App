@@ -5,11 +5,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ModelProvider } from "./contexts/model";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import TestScreen from "./screens/TestScreen";
-
-const Stack = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
 
