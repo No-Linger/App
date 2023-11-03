@@ -34,7 +34,7 @@ export default function TestStats() {
   // Función para generar un JSON falso para simular los datos capturados
   const getFakeJson = () => {
     const precision = getRandomInt(97, 100);
-    const fecha = "31/10/23";
+    const fecha = new Date().toLocaleDateString();
     const hora = new Date().toLocaleTimeString();
     const planograma = getRandomArrayElement(["Sabritas", "CocaCola", "Barcel"]);
     const sucrusal = 123456;
@@ -156,31 +156,9 @@ export default function TestStats() {
         <Button onPress={clearData} title="Borrar" />
       </View>
 
-      {capture.fecha === currentDate ? (
-      <View style={{margin: 10 ,padding:15, backgroundColor:'gainsboro', overflow:'hidden', borderRadius:15}}>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{fontWeight:'bold',  marginBottom:5 }}>Captura</Text>
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom:5 }}>
-          <Text>Planograma:</Text>
-          <Text>{capture.planograma}</Text>
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between',  marginBottom:5  }}>
-          <Text>Fecha:</Text>
-          <Text>{capture.fecha}</Text>
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between',  marginBottom:5  }}>
-          <Text>Hora:</Text>
-          <Text>{capture.hora}</Text>
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between',  marginBottom:5  }}>
-          <Text>recision:</Text>
-          <Text style={{ color: 'green' }}>{capture.precision}%</Text>
-        </View>
-      </View>
-        ) : (
-      <View style={{padding:15}}>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 10, backgroundColor: 'gainsboro', overflow:'hidden', borderRadius: 15 }}>
+      {Object.keys(dataByDate).length > 0 && Object.keys(dataByDate)[Object.keys(dataByDate).length - 1] != currentDate ? (
+        <View style={{padding:15}}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 10, backgroundColor: 'gainsboro', overflow:'hidden', borderRadius: 15 }}>
         <Text>
           Aún no has realizado ninguna captura hoy.
         </Text>
@@ -191,39 +169,60 @@ export default function TestStats() {
         />
       </View>
       </View>
-      )}
-
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <TouchableOpacity onPress={toggleOpen}>
-          <Text style={{ padding: 10, backgroundColor: 'gray', fontSize: 15, color:'white' }}>
-            Datos Guardados
-          </Text>
-        </TouchableOpacity>
-        {open && (
-          <View>
-            {Object.keys(dataByDate).map(date => (
-              <View key={date}>
-                <TouchableOpacity onPress={() => toggleDateOpen(date)}>
-                  <Text style={{ fontWeight: 'bold' }}>{`Date: ${date}`}</Text>
-                </TouchableOpacity>
-                {dateOpen[date] && (
-                  <View>
+    ) : (
+  <View style={{ margin: 10, padding: 15, backgroundColor: 'gainsboro', overflow: 'hidden', borderRadius: 15 }}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>Captura</Text>
+    </View>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
+      <Text>Planograma:</Text>
+      <Text>{capture.planograma}</Text>
+    </View>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
+      <Text>Fecha:</Text>
+      <Text>{capture.fecha}</Text>
+    </View>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
+      <Text>Hora:</Text>
+      <Text>{capture.hora}</Text>
+    </View>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
+      <Text>Precision:</Text>
+      <Text style={{ color: 'green' }}>{capture.precision}%</Text>
+    </View>
+  </View>
+)}
+  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <TouchableOpacity onPress={toggleOpen}>
+      <Text style={{ padding: 10, backgroundColor: 'gray', fontSize: 15, color:'white' }}>
+        Datos Guardados
+      </Text>
+    </TouchableOpacity>
+    {open && (
+      <View>
+        {Object.keys(dataByDate).map(date => (
+          <View key={date}>
+            <TouchableOpacity onPress={() => toggleDateOpen(date)}>
+              <Text style={{ fontWeight: 'bold' }}>{`Date: ${date}`}</Text>
+            </TouchableOpacity>
+              {dateOpen[date] && (
+                <View>
                   {dataByDate[date].map(item => (
-                    <View key={item.hora} style={{ marginBottom: 10 }}>
-                      <Text>{`Hora: ${item.hora}`}</Text>
-                      <Text>{`Planograma: ${item.planograma}`}</Text>
-                      <Text>{`Precision: ${item.precision}`}</Text>
-                      <Text>{`Sucursal: ${item.sucursal}`}</Text>
-                      <Text>{`Uploaded: ${item.uploaded ? 'Yes' : 'No'}`}</Text>
+                   <View key={item.hora} style={{ marginBottom: 10 }}>
+                     <Text>{`Hora: ${item.hora}`}</Text>
+                     <Text>{`Planograma: ${item.planograma}`}</Text>
+                     <Text>{`Precision: ${item.precision}`}</Text>
+                     <Text>{`Sucursal: ${item.sucursal}`}</Text>
+                     <Text>{`Uploaded: ${item.uploaded ? 'Yes' : 'No'}`}</Text>
                     </View>
                   ))}
                 </View>                
-                )}
-              </View>
-            ))}
+              )}
           </View>
-          )}
-        </View>
-      </ScrollView>
+        ))}
+      </View>
+    )}
+   </View>
+  </ScrollView>
   );
 }
