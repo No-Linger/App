@@ -15,7 +15,6 @@ export default function TestScreen() {
     });
 
     if (!result.canceled) {
-      console.log(result.assets[0]);
       setImage(result.assets[0]);
     }
   };

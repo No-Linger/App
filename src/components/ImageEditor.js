@@ -1,42 +1,33 @@
-import React, { useRef, useState } from "react";
-import {
-  TouchableOpacity,
-  View,
-  Text,
-  Dimensions,
-  Image,
-  StyleSheet,
-} from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { TouchableOpacity, View, Text } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
   PanGestureHandler,
-  PinchGestureHandler,
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
-  interpolate,
   Easing,
   withTiming,
 } from "react-native-reanimated";
-import { cropImage } from "../services/imageEditorService";
+import { cropImage, rotateImage } from "../services/imageEditorService";
 
-export default function ImageEditor({ image, onCancel }) {
-  // Crop square tool
-  const [isCroping, setIsCroping] = useState(false);
+export default function ImageEditor({ image, onCancel, onComplete }) {
+  //Image display
+  const [editedImage, setEditedImage] = useState(null);
 
-  const [cropedImage, setCropedImage] = useState(null);
+  const [actualImage, setActualImage] = useState(null);
 
+  const [containerWidth, setContainerWidth] = useState(null);
+  const [containerHeight, setContainerHeight] = useState(null);
   const [imageFixedWidth, setImageFixedWidth] = useState(0);
   const [imageFixedHeight, setImageFixedHeight] = useState(0);
 
+  // Crop square tool
+  const [isCroping, setIsCroping] = useState(false);
   const [descaleFactor, setDescaleFactor] = useState(0);
-
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
 
   const croperWidth = useSharedValue(100);
   const croperHeight = useSharedValue(100);
@@ -44,23 +35,29 @@ export default function ImageEditor({ image, onCancel }) {
   const croperCornerX = useSharedValue(0);
   const croperCornerY = useSharedValue(0);
 
+  const tempX = useSharedValue(0);
+  const tempY = useSharedValue(0);
+
   const panRef = useRef(null);
 
   const MIN_WIDTH = 100;
   const MIN_HEIGHT = 100;
 
+  const deltaX = useSharedValue(0);
+  const deltaY = useSharedValue(0);
+
   const onPanGestureEvent = useAnimatedGestureHandler({
     onStart: (_, context) => {
-      context.startX = translateX.value;
-      context.startY = translateY.value;
+      context.startX = croperCornerX.value;
+      context.startY = croperCornerY.value;
     },
     onActive: (event, context) => {
-      translateX.value = context.startX + event.translationX;
-      translateY.value = context.startY + event.translationY;
+      croperCornerX.value = context.startX + event.translationX;
+      croperCornerY.value = context.startY + event.translationY;
     },
     onFinish: (event, context) => {
-      croperCornerX.value = croperCornerX.value + event.translationX;
-      croperCornerY.value = croperCornerY.value + event.translationY;
+      tempX.value = tempX.value + event.translationX;
+      tempY.value = tempY.value + event.translationY;
     },
   });
 
@@ -95,19 +92,14 @@ export default function ImageEditor({ image, onCancel }) {
         );
       },
       onFinish: (event, context) => {
-        if (corner === "bottomRight") {
-          croperCornerX.value = croperCornerX.value - event.translationX / 2;
-          croperCornerY.value = croperCornerY.value - event.translationY / 2;
-        } else if (corner === "bottomLeft") {
-          croperCornerX.value = croperCornerX.value + event.translationX / 2;
-          croperCornerY.value = croperCornerY.value - event.translationY / 2;
-        } else if (corner === "topRight") {
-          croperCornerX.value = croperCornerX.value - event.translationX / 2;
-          croperCornerY.value = croperCornerY.value + event.translationY / 2;
-        } else if (corner === "topLeft") {
-          croperCornerX.value = croperCornerX.value + event.translationX / 2;
-          croperCornerY.value = croperCornerY.value + event.translationY / 2;
-        }
+        deltaX.value = context.startWidth - croperWidth.value;
+        deltaY.value = context.startHeight - croperHeight.value;
+
+        tempX.value = tempX.value + deltaX.value / 2;
+        tempY.value = tempY.value + deltaY.value / 2;
+
+        deltaX.value = 0;
+        deltaY.value = 0;
       },
     });
   };
@@ -115,8 +107,8 @@ export default function ImageEditor({ image, onCancel }) {
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { translateX: translateX.value },
-        { translateY: translateY.value },
+        { translateX: croperCornerX.value },
+        { translateY: croperCornerY.value },
       ],
       width: croperWidth.value,
       height: croperHeight.value,
@@ -139,19 +131,55 @@ export default function ImageEditor({ image, onCancel }) {
   const handleImageCrop = async () => {
     try {
       let res = await cropImage(
-        image.uri,
-        croperCornerX.value,
-        croperCornerY.value,
+        actualImage ? actualImage.uri : image.uri,
+        tempX.value,
+        tempY.value,
         croperWidth.value,
         croperHeight.value,
         descaleFactor
       );
-      setCropedImage(res);
-      console.log("Resultado : ", res);
+      setActualImage(res);
+      setIsCroping(false);
     } catch (err) {
       console.log(err);
     }
   };
+
+  const updateImageStyles = (
+    containerWidth,
+    containerHeight,
+    imageWidth,
+    imageHeight
+  ) => {
+    if (imageWidth > imageHeight) {
+      setImageFixedHeight(containerWidth * (imageHeight / imageWidth));
+      setImageFixedWidth(containerWidth);
+      setDescaleFactor(imageWidth / containerWidth);
+      croperHeight.value = containerWidth * (imageHeight / imageWidth);
+      croperWidth.value = containerWidth;
+    } else {
+      setImageFixedHeight(containerHeight);
+      setImageFixedWidth(containerHeight * (imageWidth / imageHeight));
+      setDescaleFactor(imageHeight / containerHeight);
+      croperHeight.value = containerHeight;
+      croperWidth.value = containerHeight * (imageWidth / imageHeight);
+    }
+    croperCornerX.value = 0;
+    croperCornerY.value = 0;
+    tempX.value = 0;
+    tempY.value = 0;
+  };
+
+  useEffect(() => {
+    if (actualImage && containerHeight && containerWidth) {
+      updateImageStyles(
+        containerWidth,
+        containerHeight,
+        actualImage.width,
+        actualImage.height
+      );
+    }
+  }, [actualImage, containerHeight]);
 
   // Ratate Tool
   const [isRotating, setIsRotating] = useState(false);
@@ -162,11 +190,22 @@ export default function ImageEditor({ image, onCancel }) {
     rotation.value = 0;
   };
 
-  const rotateImage = () => {
+  const handeleRotateImage = () => {
     rotation.value = withTiming(rotation.value + 90, {
       duration: 75,
       easing: Easing.linear,
     });
+  };
+
+  const handleRotateImageConfirm = async () => {
+    console.log("Aqui", rotation.value);
+    let result = await rotateImage(
+      actualImage ? actualImage.uri : image.uri,
+      rotation.value
+    );
+    rotation.value = 0;
+    setActualImage(result);
+    setIsRotating(false);
   };
 
   const animatedRotateStyle = useAnimatedStyle(() => {
@@ -174,9 +213,6 @@ export default function ImageEditor({ image, onCancel }) {
       transform: [{ rotate: `${rotation.value}deg` }],
     };
   });
-
-  //Image display
-  const [containerHeight, setContainerHeight] = useState(null);
 
   return (
     <View style={{ flex: 1, backgroundColor: "black" }}>
@@ -206,7 +242,10 @@ export default function ImageEditor({ image, onCancel }) {
           }}
         >
           <TouchableOpacity
-            onPress={() => setIsRotating(!isRotating)}
+            onPress={() => {
+              setIsRotating(!isRotating);
+              rotation.value = 0;
+            }}
             disabled={isCroping}
           >
             <Icon
@@ -228,30 +267,30 @@ export default function ImageEditor({ image, onCancel }) {
           </TouchableOpacity>
         </View>
       </View>
-      <GestureHandlerRootView style={{ flex: 10, justifyContent: "center" }}>
+      <GestureHandlerRootView
+        style={{ flex: 10, justifyContent: "center", alignItems: "center" }}
+      >
         <View
           style={{
             height: "85%",
+            width: "90%",
             justifyContent: "center",
             alignItems: "center",
             position: "relative",
           }}
           onLayout={(event) => {
-            let { height } = event.nativeEvent.layout;
+            let { width, height } = event.nativeEvent.layout;
             setContainerHeight(height);
-            setImageFixedHeight(height);
-            setImageFixedWidth(height * (image.width / image.height));
-            setDescaleFactor(image.height / height);
-            croperHeight.value = height;
-            croperWidth.value = height * (image.width / image.height);
+            setContainerWidth(width);
+            updateImageStyles(width, height, image.width, image.height);
           }}
         >
           <Animated.Image
-            source={{ uri: cropedImage ? cropedImage.uri : image.uri }}
+            source={{ uri: actualImage ? actualImage.uri : image.uri }}
             style={[
               {
-                width: containerHeight * (image.width / image.height),
-                height: containerHeight,
+                width: imageFixedWidth,
+                height: imageFixedHeight,
               },
               animatedRotateStyle,
             ]}
@@ -269,7 +308,7 @@ export default function ImageEditor({ image, onCancel }) {
                   backgroundColor: "transparent",
                   opacity: isCroping ? 1 : 0,
                   position: "absolute",
-                  borderColor: "#CEF1FF",
+                  borderColor: "#FBFDFF",
                   borderWidth: 2,
                   zIndex: 2,
                 },
@@ -318,9 +357,9 @@ export default function ImageEditor({ image, onCancel }) {
             }}
           >
             <TouchableOpacity onPress={handleImageCrop}>
-              <Text style={{ color: "white", fontSize: 20 }}>Crop</Text>
+              <Icon name="content-cut" color="white" size={25} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setCropedImage(null)}>
+            <TouchableOpacity onPress={() => setEditedImage(null)}>
               <Text style={{ color: "white", fontSize: 20 }}>Reset</Text>
             </TouchableOpacity>
           </View>
@@ -335,11 +374,17 @@ export default function ImageEditor({ image, onCancel }) {
               gap: 30,
             }}
           >
-            <TouchableOpacity onPress={rotateImage}>
+            <TouchableOpacity onPress={handeleRotateImage}>
               <Icon name="rotate-left-variant" color="white" size={25} />
             </TouchableOpacity>
             <TouchableOpacity onPress={resetRotation}>
               <Text style={{ color: "white", fontSize: 20 }}>Reset</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleRotateImageConfirm}
+              style={{ marginLeft: 10 }}
+            >
+              <Text style={{ color: "white", fontSize: 20 }}>Listo</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -372,6 +417,7 @@ export default function ImageEditor({ image, onCancel }) {
                 name="arrow-right-thin-circle-outline"
                 size={20}
                 color="white"
+                onPress={() => onComplete(actualImage ? actualImage : image)}
               />
               <Text style={{ color: "white", fontWeight: "600", fontSize: 14 }}>
                 Continuar
