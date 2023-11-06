@@ -26,3 +26,13 @@ export const cropImage = async (
   ]);
   return result;
 };
+
+export const rotateImage = async (uri, degrees) => {
+  console.log(degrees);
+  const result = await ImageManipulator.manipulateAsync(uri, [
+    {
+      rotate: degrees,
+    },
+  ]);
+  return result;
+};
