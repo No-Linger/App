@@ -12,6 +12,8 @@ import NetInfo from "@react-native-community/netinfo"; // Import NetInfo
 import Icon from "react-native-vector-icons/FontAwesome";
 import { LottieAnimation } from "../components";
 import { saveDataToAsyncStorage } from "../services/fetchService";
+import NetInfo from "@react-native-community/netinfo";
+
 
 export default function TestStats() {
 
@@ -27,10 +29,12 @@ export default function TestStats() {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
+
   // Función para obtener un elemento aleatorio de un arreglo
   function getRandomArrayElement(arr) {
     return arr[getRandomInt(0, arr.length - 1)];
   }
+
 
   // Función para generar un JSON falso para simular los datos capturados
   const getFakeJson = () => {
@@ -63,6 +67,7 @@ export default function TestStats() {
       return false;
     }
   };
+
 
   // Función para intentar subir los registros almacenados
   const tryUploadRecords = async (data) => {
@@ -148,6 +153,7 @@ export default function TestStats() {
   }
 
   return (
+
     <ScrollView>
       <Text style={{marginLeft:10, marginTop:10, fontSize: 15, fontWeight:600}}>¡Hola! Hoy es: {currentDate}</Text>
   
@@ -239,4 +245,6 @@ export default function TestStats() {
       <Button onPress={clearData} title="Borrar" />
     </ScrollView>
   );
+
 }  
+

@@ -4,6 +4,7 @@ import Login from "./screens/Login";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { ModelProvider } from "./contexts/model";
 
 const Tab = createBottomTabNavigator();
 
@@ -16,11 +17,11 @@ function MyTabs() {
       }}
     >
       <Tab.Screen
-        name="Estadística"
+        name="Historial"
         component={Stats}
         options={{
           headerTitleAlign: "left",
-          tabBarLabel: "Estadística",
+          tabBarLabel: "Historial",
           headerTitleStyle: {
             fontSize: 25,
           },
@@ -41,11 +42,11 @@ function MyTabs() {
         }}
       />
       <Tab.Screen
-        name="Ajustes"
+        name="Planogramas"
         component={Profile}
         options={{
           headerTitleAlign: "left",
-          tabBarLabel: "Ajustes",
+          tabBarLabel: "Planogramas",
           headerTitleStyle: {
             fontSize: 25,
           },
@@ -59,16 +60,20 @@ function MyTabs() {
 }
 
 export default function Main() {
+  //const [isLoged, setIsLoged] = useState(false);
   const [isLoged, setIsLoged] = useState(true);
   if (isLoged) {
     return (
-      <NavigationContainer>
-        <MyTabs />
-      </NavigationContainer>
+      <ModelProvider>
+        <NavigationContainer>
+          <MyTabs />
+        </NavigationContainer>
+      </ModelProvider>
     );
   } else {
     return (
       <Login
+        setIsLoged={setIsLoged}
         onClick={() => {
           setIsLoged(true);
         }}
