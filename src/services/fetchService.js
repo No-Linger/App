@@ -4,10 +4,12 @@ const generateRandomPercentage = () => Math.round(Math.random() * 100);
 
 const saveDataToAsyncStorage = async () => {
   const jsonData = {
+    planograma : 'Sabritas',
     fecha: new Date().toLocaleDateString(),
     hora: new Date().toLocaleTimeString(),
     porcentaje_modelo: generateRandomPercentage(),
     porcentaje_error: generateRandomPercentage(),
+    id_sucursal: 123456
   };
 
   try {
