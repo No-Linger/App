@@ -20,6 +20,7 @@ import {
 import Slider from "react-native-a11y-slider";
 import { ModelContext } from "../contexts/model";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import * as Haptics from "expo-haptics";
 
 export default function PlanogramRow({
   planogramId,
@@ -41,6 +42,8 @@ export default function PlanogramRow({
       onPanResponderRelease: (e, gestureState) => {
         if (gestureState.dy > 50) {
           setModalVisible(false);
+          setRows(planogram.rows);
+          setCols(planogram.cols);
         }
         Animated.timing(panY, { toValue: 0, useNativeDriver: false }).start();
       },
@@ -49,8 +52,8 @@ export default function PlanogramRow({
 
   const [containerHeight, setContainerHeight] = useState(null);
 
-  const [rows, setRows] = useState(4);
-  const [cols, setCols] = useState(4);
+  const [rows, setRows] = useState(planogram.rows);
+  const [cols, setCols] = useState(planogram.cols);
 
   const generateLines = (count, isRow, imageWidth, imageHeight) => {
     const lines = [];
@@ -72,38 +75,17 @@ export default function PlanogramRow({
   };
 
   const handlePlanogramDownload = async () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setDownloading(true);
     let newPlanograms = await downloadPlanogram(planogramId);
     setDownloading(false);
     setPlanograms(newPlanograms);
   };
 
-  const showProcessAlert = () => {
-    return new Promise((resolve, reject) => {
-      Alert.alert(
-        planogram.processed ? "Reprocesar planograma" : "Procesar planograma",
-        "Esto podría tardar un poco.",
-        [
-          {
-            text: "Cancelar",
-            onPress: () => resolve(false),
-            style: "cancel",
-          },
-          {
-            text: planogram.processed ? "Reprocesar" : "Procesar",
-            onPress: () => resolve(true),
-          },
-        ],
-        { cancelable: false }
-      );
-    });
-  };
-
   const handlePlanogramProcess = async () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setModalVisible(false);
     setProcessing(true);
-    console.log("Rows ", rows);
-    console.log("Cols ", cols);
     let newPlanograms = await processPlanogram(
       model,
       planogramId,
@@ -116,6 +98,7 @@ export default function PlanogramRow({
   };
 
   const showDeleteAlert = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     return new Promise((resolve, reject) => {
       Alert.alert(
         "¿Estás seguro?",
@@ -145,6 +128,11 @@ export default function PlanogramRow({
     }
   };
 
+  useEffect(() => {
+    setCols(planogram.cols);
+    setRows(planogram.rows);
+  }, [planogram]);
+
   return (
     <View
       style={{
@@ -159,10 +147,10 @@ export default function PlanogramRow({
       }}
     >
       <View style={{ flex: 1, flexDirection: "column", marginLeft: 10 }}>
-        <Text style={{ fontWeight: "500", fontSize: 15 }}>
+        <Text style={{ fontWeight: "600", fontSize: 18 }}>
           {planogram.name}
         </Text>
-        <Text style={{ fontWeight: "400", fontSize: 10 }}>
+        <Text style={{ fontWeight: "400", fontSize: 14 }}>
           {planogram.fecha}
         </Text>
       </View>
@@ -171,16 +159,18 @@ export default function PlanogramRow({
           flex: 1,
           flexDirection: "row",
           justifyContent: "flex-end",
+          alignItems: "center",
         }}
       >
         {planogram.downloaded && (
           <>
             {!processing && (
               <TouchableOpacity onPress={() => setModalVisible(true)}>
-                <LottieView
-                  autoPlay={false}
-                  source={require("../../assets/lotties/cube.json")}
-                  style={{ width: 50, height: 50 }}
+                <Icon
+                  name="square-edit-outline"
+                  color={"black"}
+                  size={30}
+                  style={{ marginRight: 5 }}
                 />
               </TouchableOpacity>
             )}
@@ -347,7 +337,7 @@ export default function PlanogramRow({
                         alignItems: "center",
                         justifyContent: "center",
                         flexDirection: "row",
-                        gap: 20,
+                        gap: 10,
                       }}
                     >
                       <TouchableOpacity
@@ -356,8 +346,8 @@ export default function PlanogramRow({
                           borderColor: "red",
                           borderRadius: 10,
                           borderWidth: 2,
-                          padding: 15,
-                          width: "40%",
+                          padding: 10,
+                          width: "45%",
                           alignItems: "center",
                         }}
                       >
@@ -377,13 +367,13 @@ export default function PlanogramRow({
                           borderColor: "black",
                           borderRadius: 10,
                           borderWidth: 2,
-                          padding: 15,
-                          width: "40%",
+                          padding: 10,
+                          width: "45%",
                           alignItems: "center",
                         }}
                       >
-                        <Text style={{ fontWeight: "600", fontSize: 20 }}>
-                          Procesar
+                        <Text style={{ fontWeight: "600", fontSize: 18 }}>
+                          {planogram.processed ? "Re-procesar" : "Procesar"}
                         </Text>
                       </TouchableOpacity>
                     </View>
@@ -398,7 +388,12 @@ export default function PlanogramRow({
             onPress={handlePlanogramDownload}
             style={{ marginRight: 10 }}
           >
-            <Icon name="cloud-download-outline" color={"blue"} size={30} />
+            <Icon
+              name="file-download-outline"
+              color={"black"}
+              size={30}
+              style={{ marginRight: 5 }}
+            />
           </TouchableOpacity>
         )}
         {!planogram.downloaded && downloading && (
@@ -406,18 +401,18 @@ export default function PlanogramRow({
         )}
         {planogram.downloaded && !downloading && !planogram.processed && (
           <Icon
-            name="cog-play-outline"
+            name="image-auto-adjust"
             color={"black"}
-            size={40}
-            style={{ marginRight: 10 }}
+            size={30}
+            style={{ marginRight: 14 }}
           />
         )}
         {planogram.downloaded && !downloading && planogram.processed && (
           <Icon
-            name="bookmark-check-outline"
-            color={"green"}
-            size={40}
-            style={{ marginRight: 10 }}
+            name="checkbox-marked-circle-outline"
+            color={"black"}
+            size={28}
+            style={{ marginRight: 14 }}
           />
         )}
       </View>
