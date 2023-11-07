@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { TouchableOpacity, View, Text } from "react-native";
+import { TouchableOpacity, View, Text, Dimensions } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
   PanGestureHandler,
@@ -214,8 +214,16 @@ export default function ImageEditor({ image, onCancel, onComplete }) {
     };
   });
 
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
+
   return (
-    <View style={{ flex: 1, backgroundColor: "black" }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "black",
+      }}
+    >
       <View
         style={{
           flex: 1,
@@ -410,14 +418,14 @@ export default function ImageEditor({ image, onCancel, onComplete }) {
                 gap: 5,
               }}
               onPress={() => {
-                console.log(imageFixedWidth, imageFixedHeight);
+                console.log("miau");
+                onComplete(actualImage ? actualImage : image);
               }}
             >
               <Icon
                 name="arrow-right-thin-circle-outline"
                 size={20}
                 color="white"
-                onPress={() => onComplete(actualImage ? actualImage : image)}
               />
               <Text style={{ color: "white", fontWeight: "600", fontSize: 14 }}>
                 Continuar

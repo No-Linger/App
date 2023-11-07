@@ -33,12 +33,18 @@ import { Accelerometer } from "expo-sensors";
 
 import { useIsFocused } from "@react-navigation/native";
 
+import * as ImagePicker from "expo-image-picker";
+import ImageEditor from "../components/ImageEditor";
+
 import {
   getLocalPlanograms,
   getLocalPlanogramsMatrix,
 } from "../services/planograms";
 
 import PagerView from "react-native-pager-view";
+import ResultImageDisplay from "../components/ResultImageDisplay";
+
+import * as Haptics from "expo-haptics";
 
 export default function TakePicture() {
   const { model } = useContext(ModelContext);
@@ -49,6 +55,7 @@ export default function TakePicture() {
 
   const [capturedPhoto, setCapturedPhoto] = useState(null);
   const [photoAccepted, setPhotoAccepted] = useState(false);
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedImages, setProcessedImages] = useState([]);
 
@@ -132,6 +139,8 @@ export default function TakePicture() {
   };
 
   const [comparationError, setComparationError] = useState(0);
+  const [comparationResults, setComparationResults] = useState(null);
+  const [falseCount, setFalseCount] = useState(0);
   const processImage = async () => {
     if (model) {
       setPhotoAccepted(true);
@@ -148,16 +157,18 @@ export default function TakePicture() {
         selectedPlanogram.rows,
         selectedPlanogram.cols
       );
-      console.log(predicitons);
       let planogramMatrix = await getLocalPlanogramsMatrix();
       planogramMatrix = planogramMatrix[selectedPlanogram.id];
-      const { compareMatrix, error } = await comparePlanogram(
-        planogramMatrix,
-        predicitons,
-        selectedPlanogram.rows,
-        selectedPlanogram.cols
-      );
-      setComparationError(error);
+      const { compareMatrix, errorPercentage, falseCount } =
+        await comparePlanogram(
+          planogramMatrix,
+          predicitons,
+          selectedPlanogram.rows,
+          selectedPlanogram.cols
+        );
+      setComparationResults(compareMatrix);
+      setComparationError(errorPercentage);
+      setFalseCount(falseCount);
       setIsProcessing(false);
     }
   };
@@ -168,6 +179,7 @@ export default function TakePicture() {
     setProcessedImages([]);
     setCapturedPhoto(null);
     setSelectedPlanogram(null);
+    setImageEdited(false);
   };
 
   useEffect(() => {
@@ -223,6 +235,7 @@ export default function TakePicture() {
   const currentPageHelper = (e) => {
     const pageIndex = e.nativeEvent.position;
     setCurrentPage(pageIndex);
+    Haptics.selectionAsync();
   };
 
   const handlePlanogramSelect = async () => {
@@ -231,8 +244,8 @@ export default function TakePicture() {
         console.log("Procesar planograma para usarlo!");
         return;
       }
-      console.log(planograms[currentPage]);
       setSelectedPlanogram(planograms[currentPage]);
+      await pickImage();
     }
   };
 
@@ -241,6 +254,23 @@ export default function TakePicture() {
       await handleGetLocalPlanograms();
     })();
   }, []);
+
+  const pickImage = async () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setCapturedPhoto(result.assets[0]);
+    } else {
+      resetProcess();
+    }
+  };
+
+  const [imageEdited, setImageEdited] = useState(false);
 
   return (
     <View style={{ flex: 1 }}>
@@ -267,13 +297,21 @@ export default function TakePicture() {
       )}
       {model && !selectedPlanogram && (
         <View style={{ flex: 1 }}>
-          <View style={{ flex: 2, justifyContent: "flex-end" }}>
+          <View
+            style={{
+              flex: 2,
+              justifyContent: "center",
+            }}
+          >
             <Text style={{ fontSize: 30, fontWeight: "600", paddingLeft: 20 }}>
               Selecciona un planograma!
             </Text>
           </View>
           <PagerView
-            style={{ flex: 6 }}
+            style={{
+              flex: 3,
+              justifyContent: "center",
+            }}
             initialPage={0}
             ref={pagerRef}
             onPageSelected={currentPageHelper}
@@ -283,47 +321,48 @@ export default function TakePicture() {
                 key={item.id}
                 style={{
                   alignItems: "center",
-                  justifyContent: "flex-start",
+                  justifyContent: "center",
                   flex: 1,
                   opacity: item.processed ? 1 : 0.4,
                 }}
               >
-                <View
-                  style={{
-                    flex: 3,
-                    justifyContent: "flex-start",
-                    marginTop: "30%",
-                  }}
-                  onLayout={(event) => {
-                    const { height } = event.nativeEvent.layout;
-                    setContainerSelectHeight(height);
-                  }}
-                >
-                  <Image
-                    source={{ uri: item.localUri }}
+                <View style={{ flex: 1, justifyContent: "center" }}>
+                  <View
                     style={{
-                      width: containerSelectHeight * (item.width / item.height),
-                      height: containerSelectHeight,
-                      borderRadius: 10,
+                      height: "70%",
                     }}
-                  />
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Text style={{ fontWeight: "500", fontSize: 18 }}>
-                    {item.name}
-                  </Text>
-                  <Text style={{ fontWeight: "400", fontSize: 18 }}>
-                    {item.fecha}
-                  </Text>
-                  <Text style={{ fontWeight: "300", fontSize: 18 }}>
-                    Mesh : {item.cols} x {item.rows}
-                  </Text>
+                    onLayout={(event) => {
+                      const { height } = event.nativeEvent.layout;
+                      setContainerSelectHeight(height);
+                    }}
+                  >
+                    <Image
+                      source={{ uri: item.localUri }}
+                      style={{
+                        width:
+                          containerSelectHeight * (item.width / item.height),
+                        height: containerSelectHeight,
+                        borderRadius: 10,
+                      }}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      marginTop: "5%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={{ fontWeight: "500", fontSize: 18 }}>
+                      {item.name}
+                    </Text>
+                    <Text style={{ fontWeight: "400", fontSize: 18 }}>
+                      {item.fecha}
+                    </Text>
+                    <Text style={{ fontWeight: "300", fontSize: 18 }}>
+                      Mesh : {item.cols} x {item.rows}
+                    </Text>
+                  </View>
                 </View>
               </View>
             ))}
@@ -345,98 +384,30 @@ export default function TakePicture() {
               }}
               onPress={handlePlanogramSelect}
             >
-              <Text style={{ fontSize: 18 }}>Seleccionar</Text>
+              <Text style={{ fontSize: 18 }}>Comparar</Text>
             </TouchableOpacity>
           </View>
         </View>
       )}
-      {!capturedPhoto && !photoAccepted && model && selectedPlanogram && (
-        <>
-          <View style={{ flex: 5, marginTop: "15%", position: "relative" }}>
-            <Camera
-              style={{ flex: 1 }}
-              type={Camera.Constants.Type.back}
-              ref={cameraRef}
-              key={cameraKey}
-            >
-              <View
-                style={{
-                  flex: 1,
-                  backgroundColor: "transparent",
-                  flexDirection: "row",
+      {capturedPhoto &&
+        !imageEdited &&
+        !photoAccepted &&
+        model &&
+        selectedPlanogram && (
+          <>
+            <View style={{ flex: 1, marginTop: "15%" }}>
+              <ImageEditor
+                image={capturedPhoto}
+                onCancel={() => resetProcess()}
+                onComplete={(newPhoto) => {
+                  setCapturedPhoto(newPhoto);
+                  setImageEdited(true);
                 }}
-              ></View>
-              {"PORTRAIT" == orientation && (
-                <>
-                  <Animated.View
-                    style={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      width: 150,
-                      height: 150,
-                      backgroundColor: "black",
-                      opacity: 0.65,
-                      transform: [
-                        { translateX: -75 },
-                        { translateY: -75 },
-                        { scale: scale },
-                      ],
-                      borderRadius: 20,
-                      flex: 1,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Icon
-                      name="phone-rotate-landscape"
-                      color={"#ffffff"}
-                      size={60}
-                    />
-                    <Text style={{ color: "white", marginTop: 5 }}>
-                      ¡Gira el dispositivo!{" "}
-                    </Text>
-                  </Animated.View>
-                </>
-              )}
-            </Camera>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-            }}
-          >
-            <TouchableOpacity
-              disabled={"PORTRAIT" == orientation}
-              onPress={takePicture}
-              style={{
-                padding: 10,
-                borderWidth: 2,
-                borderRadius: 15,
-              }}
-            >
-              <Icon name="camera-iris" size={40} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setSelectedPlanogram(null)}
-              style={{
-                position: "absolute",
-                bottom: "15%",
-                left: "5%",
-                padding: 5,
-                borderWidth: 2,
-                borderRadius: 15,
-              }}
-            >
-              <Icon name="undo-variant" size={30} color="black" />
-            </TouchableOpacity>
-          </View>
-        </>
-      )}
-      {capturedPhoto && !photoAccepted && (
+              />
+            </View>
+          </>
+        )}
+      {capturedPhoto && imageEdited && !photoAccepted && (
         <View style={{ flex: 1 }}>
           <View style={{ flex: 3 }}>
             <View style={{ flex: 3, justifyContent: "flex-end" }}>
@@ -485,7 +456,7 @@ export default function TakePicture() {
               }}
             >
               <TouchableOpacity
-                onPress={() => setCapturedPhoto(null)}
+                onPress={resetProcess}
                 style={{
                   padding: 15,
                   borderWidth: 2,
@@ -544,51 +515,63 @@ export default function TakePicture() {
           <View
             style={{
               flex: 1,
-              marginTop: "15%",
-              justifyContent: "left",
-              alignItems: "flex-start",
+              marginTop: "18%",
             }}
           >
-            <TouchableOpacity
-              onPress={resetProcess}
+            <View
               style={{
-                padding: 14,
-                borderWidth: 2,
-                borderRadius: 15,
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "flex-start",
               }}
             >
-              <Icon name="replay" size={20} color="black" />
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              alignContent: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text
+              <Text
+                style={{ fontSize: 30, fontWeight: "600", marginLeft: "3%" }}
+              >
+                Resultados :{" "}
+              </Text>
+            </View>
+            <View
               style={{
-                fontSize: 20,
-                fontWeight: "600",
-                color: comparationError > 80 ? "red" : "blue",
+                flex: 5,
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              Error en el acomodo : {comparationError} %
-            </Text>
-          </View>
-          <View
-            style={{ flex: 9, alignItems: "center", justifyContent: "center" }}
-          >
-            <ScrollView style={styles.container}>
-              <View style={styles.imageGrid}>
-                {processedImages.map((url, index) => (
-                  <View key={url} style={styles.imageContainer}>
-                    <Image source={{ uri: url }} style={styles.image} />
-                  </View>
-                ))}
-              </View>
-            </ScrollView>
+              <ResultImageDisplay
+                image={capturedPhoto}
+                rows={selectedPlanogram.rows}
+                cols={selectedPlanogram.cols}
+                results={comparationResults}
+              />
+            </View>
+            <View
+              style={{
+                flex: 2,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ fontSize: 17, fontWeight: "500" }}>
+                {`Comparando con : ${selectedPlanogram.name}  \nError en el acomodo : ${comparationError}%  \nMal colocados : ${falseCount}`}
+              </Text>
+            </View>
+            <View
+              style={{
+                flex: 2,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  padding: "4%",
+                }}
+                onPress={resetProcess}
+              >
+                <Icon name="check-decagram-outline" size={50} color="#414CF8" />
+              </TouchableOpacity>
+            </View>
           </View>
         </>
       )}

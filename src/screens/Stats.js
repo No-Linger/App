@@ -12,14 +12,13 @@ import NetInfo from "@react-native-community/netinfo"; // Import NetInfo
 import Icon from "react-native-vector-icons/FontAwesome";
 import { LottieAnimation } from "../components";
 import { saveDataToAsyncStorage } from "../services/fetchService";
-import NetInfo from "@react-native-community/netinfo";
-
 
 export default function TestStats() {
-
   const [capture, setCapture] = useState([]);
   const [history, setHistory] = useState([]);
-  const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
+  const [currentDate, setCurrentDate] = useState(
+    new Date().toLocaleDateString()
+  );
   const [open, setOpen] = useState(false);
   const [dateOpen, setDateOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -29,28 +28,30 @@ export default function TestStats() {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-
   // Función para obtener un elemento aleatorio de un arreglo
   function getRandomArrayElement(arr) {
     return arr[getRandomInt(0, arr.length - 1)];
   }
-
 
   // Función para generar un JSON falso para simular los datos capturados
   const getFakeJson = () => {
     const precision = getRandomInt(97, 100);
     const fecha = new Date().toLocaleDateString();
     const hora = new Date().toLocaleTimeString();
-    const planograma = getRandomArrayElement(["Sabritas", "CocaCola", "Barcel"]);
+    const planograma = getRandomArrayElement([
+      "Sabritas",
+      "CocaCola",
+      "Barcel",
+    ]);
     const sucrusal = 123456;
-    const fakeJSON = { planograma, fecha, hora, precision, sucrusal};
+    const fakeJSON = { planograma, fecha, hora, precision, sucrusal };
     return fakeJSON;
   };
 
   // Función para subir los datos a la API
   const uploadData = async (data) => {
     try {
-      let response = await fetch("http://192.168.1.78:8082/postStats", {
+      let response = await fetch("http://10.48.71.99:8082/postStats", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,7 +69,6 @@ export default function TestStats() {
     }
   };
 
-
   // Función para intentar subir los registros almacenados
   const tryUploadRecords = async (data) => {
     console.log("try upload", data);
@@ -83,7 +83,7 @@ export default function TestStats() {
       setLoading(false);
       return data;
     } else {
-      setHistory([])
+      setHistory([]);
       return [];
     }
   };
@@ -127,7 +127,7 @@ export default function TestStats() {
 
   // Función para borrar los datos almacenados
   const clearData = async () => {
-    await AsyncStorage.setItem("capturas", JSON.stringify([]))
+    await AsyncStorage.setItem("capturas", JSON.stringify([]));
     setCapture([]);
     setHistory([]);
   };
@@ -137,7 +137,7 @@ export default function TestStats() {
   };
 
   const toggleDateOpen = (date) => {
-    setDateOpen(prevDateOpen => ({
+    setDateOpen((prevDateOpen) => ({
       ...prevDateOpen,
       [date]: !prevDateOpen[date],
     }));
@@ -153,98 +153,209 @@ export default function TestStats() {
   }
 
   return (
-
     <ScrollView>
-      <Text style={{marginLeft:10, marginTop:10, fontSize: 15, fontWeight:600}}>¡Hola! Hoy es: {currentDate}</Text>
-  
+      <Text
+        style={{ marginLeft: 10, marginTop: 10, fontSize: 15, fontWeight: 600 }}
+      >
+        ¡Hola! Hoy es: {currentDate}
+      </Text>
+
       {loading ? (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', margin: 10, padding:2}}>
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            margin: 10,
+            padding: 2,
+          }}
+        >
           <Text>LOADING</Text>
         </View>
-      ) : (
-        Object.keys(dataByDate).length === 0 || (Object.keys(dataByDate)[Object.keys(dataByDate).length - 1] != currentDate) ? (
-          <View style={{ padding: 15 }}>
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 10, backgroundColor: 'gainsboro', overflow: 'hidden', borderRadius: 15 }}>
-              <Text style={{padding:10, backgroundColor:'gray', color:'white', overflow:'hidden', borderRadius:15}}>
-                Aún no has realizado ninguna captura hoy.
-              </Text>
-              <LottieAnimation
-                source={require("../../assets/lotties/potatoeWalking.json")}
-                width={50}
-                height={50}
-              />
-            </View>
+      ) : Object.keys(dataByDate).length === 0 ||
+        Object.keys(dataByDate)[Object.keys(dataByDate).length - 1] !=
+          currentDate ? (
+        <View style={{ padding: 15 }}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 10,
+              backgroundColor: "gainsboro",
+              overflow: "hidden",
+              borderRadius: 15,
+            }}
+          >
+            <Text
+              style={{
+                padding: 10,
+                backgroundColor: "gray",
+                color: "white",
+                overflow: "hidden",
+                borderRadius: 15,
+              }}
+            >
+              Aún no has realizado ninguna captura hoy.
+            </Text>
+            <LottieAnimation
+              source={require("../../assets/lotties/potatoeWalking.json")}
+              width={50}
+              height={50}
+            />
           </View>
-        ) : (
-          <View style={{ margin: 10, padding: 15, backgroundColor: 'gainsboro', overflow: 'hidden', borderRadius: 15 }}>
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>Captura</Text>
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
-              <Text>Planograma:</Text>
-              <Text>{capture.planograma}</Text>
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
-                    <Text>Fecha:</Text>
-                    <Text>{capture.fecha}</Text>
-                  </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
-              <Text>Hora:</Text>
-              <Text>{capture.hora}</Text>
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
-              <Text>Precisión:</Text>
-              <Text style={{ color: 'green' }}>{capture.precision}%</Text>
-            </View>
-          </View>
-        )
-      )}
-  
-  <View style={{ margin: 10, padding: 10, backgroundColor: 'gainsboro', overflow: 'hidden', borderRadius: 15 }}>
-  <View style={{ borderRadius: 15, overflow: 'hidden', padding: 3 }}>
-    <TouchableOpacity onPress={toggleOpen}>
-      <Text style={{ fontSize: 15, fontWeight: '600', textAlign:'center' }}>
-        Bitácora de Datos
-      </Text>
-    </TouchableOpacity>
-  </View>
-  {open &&  (
-    <View style={{ backgroundColor: 'gainsboro', marginTop: 5 }}>
-      {Object.keys(dataByDate).map(date => (
-        <View key={date} style={{ margin: 5, padding: 10, backgroundColor: 'white', borderRadius: 15 }}>
-          <TouchableOpacity onPress={() => toggleDateOpen(date)}>
-            <Text style={{ fontWeight: 'bold', flexDirection: 'row-reverse' }}>{`Fecha: ${date}`}</Text>
-          </TouchableOpacity>
-          {dateOpen[date] && (
-            <View style={{ flex: 1, padding: 5, marginLeft:5, overflow: 'hidden', borderRadius: 10 }}>
-              {dataByDate[date].map(item => (
-                <View key={item.hora} style={{ marginBottom: 5 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5, marginTop:5 }}>
-                  <Text>Planograma:</Text>
-                  <Text>{item.planograma}</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
-                    <Text>Hora:</Text>
-                    <Text>{item.hora}</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text>Precisión:</Text>
-                    <Text style={{ color: 'green' }}>{item.precision}%</Text>
-                  </View>
-                  <Text style={{textAlign:'center'}}>___________________________</Text>
-                </View>
-              ))}
-            </View>
-          )}
         </View>
-      ))}
-    </View>
-  )}
-    </View>
+      ) : (
+        <View
+          style={{
+            margin: 10,
+            padding: 15,
+            backgroundColor: "gainsboro",
+            overflow: "hidden",
+            borderRadius: 15,
+          }}
+        >
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Captura</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 5,
+            }}
+          >
+            <Text>Planograma:</Text>
+            <Text>{capture.planograma}</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 5,
+            }}
+          >
+            <Text>Fecha:</Text>
+            <Text>{capture.fecha}</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 5,
+            }}
+          >
+            <Text>Hora:</Text>
+            <Text>{capture.hora}</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 5,
+            }}
+          >
+            <Text>Precisión:</Text>
+            <Text style={{ color: "green" }}>{capture.precision}%</Text>
+          </View>
+        </View>
+      )}
+
+      <View
+        style={{
+          margin: 10,
+          padding: 10,
+          backgroundColor: "gainsboro",
+          overflow: "hidden",
+          borderRadius: 15,
+        }}
+      >
+        <View style={{ borderRadius: 15, overflow: "hidden", padding: 3 }}>
+          <TouchableOpacity onPress={toggleOpen}>
+            <Text
+              style={{ fontSize: 15, fontWeight: "600", textAlign: "center" }}
+            >
+              Bitácora de Datos
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {open && (
+          <View style={{ backgroundColor: "gainsboro", marginTop: 5 }}>
+            {Object.keys(dataByDate).map((date) => (
+              <View
+                key={date}
+                style={{
+                  margin: 5,
+                  padding: 10,
+                  backgroundColor: "white",
+                  borderRadius: 15,
+                }}
+              >
+                <TouchableOpacity onPress={() => toggleDateOpen(date)}>
+                  <Text
+                    style={{ fontWeight: "bold", flexDirection: "row-reverse" }}
+                  >{`Fecha: ${date}`}</Text>
+                </TouchableOpacity>
+                {dateOpen[date] && (
+                  <View
+                    style={{
+                      flex: 1,
+                      padding: 5,
+                      marginLeft: 5,
+                      overflow: "hidden",
+                      borderRadius: 10,
+                    }}
+                  >
+                    {dataByDate[date].map((item) => (
+                      <View key={item.hora} style={{ marginBottom: 5 }}>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            marginBottom: 5,
+                            marginTop: 5,
+                          }}
+                        >
+                          <Text>Planograma:</Text>
+                          <Text>{item.planograma}</Text>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            marginBottom: 5,
+                          }}
+                        >
+                          <Text>Hora:</Text>
+                          <Text>{item.hora}</Text>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Text>Precisión:</Text>
+                          <Text style={{ color: "green" }}>
+                            {item.precision}%
+                          </Text>
+                        </View>
+                        <Text style={{ textAlign: "center" }}>
+                          ___________________________
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
       <Button onPress={handleCapturar} title="Capturar" />
       <Button onPress={clearData} title="Borrar" />
     </ScrollView>
   );
-
-}  
-
+}
