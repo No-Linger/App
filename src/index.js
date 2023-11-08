@@ -35,9 +35,9 @@ function MyTabs() {
         component={TakePicture}
         options={{
           headerShown: false,
-          tabBarLabel: "Cámara",
+          tabBarLabel: "Analizar",
           tabBarIcon: ({ color, size }) => (
-            <Icon name="camera" color={color} size={size} />
+            <Icon name="compare" color={color} size={size} />
           ),
         }}
       />
@@ -51,7 +51,7 @@ function MyTabs() {
             fontSize: 25,
           },
           tabBarIcon: ({ color, size }) => (
-            <Icon name="account-cog" color={color} size={size} />
+            <Icon name="image-multiple-outline" color={color} size={size} />
           ),
         }}
       />

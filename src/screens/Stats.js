@@ -23,27 +23,30 @@ export default function TestStats() {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-
   // Función para obtener un elemento aleatorio de un arreglo
   function getRandomArrayElement(arr) {
     return arr[getRandomInt(0, arr.length - 1)];
   }
-
 
   // Función para generar un JSON falso para simular los datos capturados
   const getFakeJson = () => {
     const precision = getRandomInt(97, 100);
     const fecha = new Date().toLocaleDateString();
     const hora = new Date().toLocaleTimeString();
-    const planograma = getRandomArrayElement(["Sabritas", "CocaCola", "Barcel"]);
+    const planograma = getRandomArrayElement([
+      "Sabritas",
+      "CocaCola",
+      "Barcel",
+    ]);
     const sucrusal = 123456;
-    const fakeJSON = { planograma, fecha, hora, precision, sucrusal};
+    const fakeJSON = { planograma, fecha, hora, precision, sucrusal };
     return fakeJSON;
   };
 
   // Función para subir los datos a la API
   const uploadData = async (data) => {
     try {
+
       let response = await fetch("http://10.48.66.206:8082/postStats", {
         method: "POST",
         headers: {
@@ -62,7 +65,6 @@ export default function TestStats() {
     }
   };
 
-
   // Función para intentar subir los registros almacenados
   const tryUploadRecords = async (data) => {
     console.log("try upload", data);
@@ -77,7 +79,7 @@ export default function TestStats() {
       setLoading(false);
       return data;
     } else {
-      setHistory([])
+      setHistory([]);
       return [];
     }
   };
@@ -121,7 +123,7 @@ export default function TestStats() {
 
   // Función para borrar los datos almacenados
   const clearData = async () => {
-    await AsyncStorage.setItem("capturas", JSON.stringify([]))
+    await AsyncStorage.setItem("capturas", JSON.stringify([]));
     setCapture([]);
     setHistory([]);
   };
@@ -131,7 +133,7 @@ export default function TestStats() {
   };
 
   const toggleDateOpen = (date) => {
-    setDateOpen(prevDateOpen => ({
+    setDateOpen((prevDateOpen) => ({
       ...prevDateOpen,
       [date]: !prevDateOpen[date],
     }));

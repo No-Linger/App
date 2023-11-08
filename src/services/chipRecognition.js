@@ -135,7 +135,7 @@ const calculateError = async (resultMatrix) => {
       }
     }
   }
-  return (falseCount / totalCount) * 100;
+  return { errorPercentage: (falseCount / totalCount) * 100, falseCount };
 };
 
 export const comparePlanogram = async (
@@ -146,8 +146,6 @@ export const comparePlanogram = async (
 ) => {
   try {
     let res = [];
-    console.log("Planograma :", planogramMatrix);
-    console.log("Resultado :", gridImages);
     console.log(planogramMatrix);
     for (let i = 0; i < rows; i++) {
       let temp = [];
@@ -156,10 +154,8 @@ export const comparePlanogram = async (
       }
       res.push(temp);
     }
-    console.log("Comparacion  : ", res);
-    const error = await calculateError(res);
-    console.log("Error : ", error);
-    return { compareMatrix: res, error };
+    const { errorPercentage, falseCount } = await calculateError(res);
+    return { compareMatrix: res, errorPercentage, falseCount };
   } catch (err) {
     console.log(err);
   }
