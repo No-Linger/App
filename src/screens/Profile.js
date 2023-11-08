@@ -33,6 +33,7 @@ import * as ImagePicker from "expo-image-picker";
 import PlanogramRow from "../components/PlanogramRow";
 import Slider from "react-native-a11y-slider";
 import { ModelContext } from "../contexts/model";
+import * as Haptics from "expo-haptics";
 
 export default function Profile() {
   const { model } = useContext(ModelContext);
@@ -63,23 +64,6 @@ export default function Profile() {
 
   const [containerHeight, setContainerHeight] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
-  const pickImage = async () => {
-    let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      alert("Sorry, we need camera roll permissions to make this work!");
-      return;
-    }
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      console.log(result.assets);
-      setSelectedImage(result.assets[0]);
-    }
-  };
 
   const generateLines = (count, isRow, imageWidth, imageHeight) => {
     const lines = [];
@@ -111,8 +95,6 @@ export default function Profile() {
 
   const handlePlanogramSaveAndProcess = async () => {
     setModalVisible(false);
-    console.log("Rows ", rows);
-    console.log("Cols ", cols);
     const { id, localUri } = await addCustomePlanogram(selectedImage.uri, {
       name: planogramName,
       fecha: currentDate,
@@ -133,6 +115,7 @@ export default function Profile() {
   };
 
   const resetAddPlanogram = async () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setModalVisible(false);
     setPlanogramName("");
     setSelectedImage(null);
@@ -151,37 +134,54 @@ export default function Profile() {
     const loadPlanograms = async () => {
       const response = await getLocalPlanograms();
       setPlanograms(response);
-      console.log(response);
     };
     loadPlanograms();
     const dateString = getCurrentDate();
     setCurrentDate(dateString);
   }, []);
+
+  const pickImage = async () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0]);
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <View
         style={{
           flex: 1,
           marginHorizontal: 15,
-          marginTop: 10,
-          marginBottom: 30,
+          marginVertical: 15,
+          alignContent: "center",
+          justifyContent: "center",
         }}
       >
         <View style={{ flexDirection: "row" }}>
-          <View style={{ flex: 3 }} />
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
             style={{
-              padding: 5,
+              padding: 10,
               borderColor: "black",
               borderWidth: 2,
               flex: 1,
-              borderRadius: 20,
+              borderRadius: 15,
               alignItems: "center",
               justifyContent: "center",
+              width: "5%",
+              height: "100%",
+              flexDirection: "row",
             }}
           >
-            <Text>+ Añadir</Text>
+            <Icon name="file-image-plus-outline" size={20} />
+            <Text style={{ fontSize: 18, fontWeight: "400" }}> Añadir</Text>
           </TouchableOpacity>
           <Modal
             animationType="slide"
@@ -460,10 +460,7 @@ export default function Profile() {
           style={{ flex: 1, opacity: 0 }}
           onPress={async () => {
             let planograms = await getLocalPlanograms();
-            let planogramMatrix = await getLocalPlanogramsMatrix();
             setPlanograms(planograms);
-            console.log("PLANOGRAM TRACKER", planograms);
-            console.log("PLANOGRAMS MATRIX", planogramMatrix);
           }}
         >
           <Icon name="refresh" size={50} />

@@ -1,4 +1,5 @@
-import { PLANOGRAM_API } from "@env";
+//import { PLANOGRAM_API } from "@env";
+const PLANOGRAM_API = "http://10.48.71.99:8082";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system";
 import { classifyGrid, sliceImage } from "./chipRecognition";
@@ -34,7 +35,6 @@ export const updatePlanogramRecord = async () => {
   try {
     const response = await fetch(PLANOGRAM_API + "/getPlanograms");
     const data = await response.json();
-    console.log(data);
     let actualPlanograms = await getLocalPlanograms();
     let actualPlanogramsKeys = Object.keys(actualPlanograms);
     for (let planogram of data.planograms) {
@@ -48,7 +48,6 @@ export const updatePlanogramRecord = async () => {
       }
     }
     await AsyncStorage.setItem("planograms", JSON.stringify(actualPlanograms));
-    console.log("Planogram storage updated!");
     return actualPlanograms;
   } catch (err) {
     console.log(err);
@@ -60,7 +59,6 @@ const getLocalImageSize = async (uri) => {
     Image.getSize(
       uri,
       (width, height) => {
-        console.log(width, height);
         resolve({ width, height });
       },
       (error) => {
@@ -81,7 +79,6 @@ export const downloadPlanogram = async (planogramId) => {
       actualPlanograms[planogramId].url,
       localUri
     );
-    console.log(uri);
     const { width, height } = await getLocalImageSize(uri);
     actualPlanograms[planogramId]["downloaded"] = true;
     actualPlanograms[planogramId]["localUri"] = uri;
