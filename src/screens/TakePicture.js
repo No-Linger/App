@@ -273,7 +273,7 @@ export default function TakePicture() {
   const [imageEdited, setImageEdited] = useState(false);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#FAFBFF" }}>
       {!model && (
         <>
           <View
@@ -281,7 +281,6 @@ export default function TakePicture() {
               flex: 9,
               alignItems: "center",
               justifyContent: "center",
-              marginTop: "10%",
             }}
           >
             <LottieAnimation
@@ -395,7 +394,7 @@ export default function TakePicture() {
         model &&
         selectedPlanogram && (
           <>
-            <View style={{ flex: 1, marginTop: "15%" }}>
+            <View style={{ flex: 1 }}>
               <ImageEditor
                 image={capturedPhoto}
                 onCancel={() => resetProcess()}
@@ -569,7 +568,7 @@ export default function TakePicture() {
                 }}
                 onPress={resetProcess}
               >
-                <Icon name="check-decagram-outline" size={50} color="#414CF8" />
+                <Icon name="check-decagram-outline" size={50} color="black" />
               </TouchableOpacity>
             </View>
           </View>

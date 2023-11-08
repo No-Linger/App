@@ -153,7 +153,7 @@ export default function TestStats() {
   }
 
   return (
-    <ScrollView>
+    <ScrollView style={{ backgroundColor: "#FAFBFF" }}>
       <Text
         style={{ marginLeft: 10, marginTop: 10, fontSize: 15, fontWeight: 600 }}
       >
