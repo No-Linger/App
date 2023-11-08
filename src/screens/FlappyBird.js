@@ -189,14 +189,14 @@ export default function FlappyBird() {
             )}
           </>
         ) : (
-          <View style={{ alignItems: "center", backgroundColor:'darkslateblue', margin:15 , borderRadius:10, padding:10, marginTop:5 }}>
-            <Text style={{ fontSize: 22, marginBottom: 20, fontWeight:'bold', textAlign:'center', color:'white' }}>
+          <View style={{ alignItems: "center", backgroundColor:'darkslateblue', margin:15 , borderRadius:10, padding:15, marginTop:5 }}>
+            <Text style={{ fontSize: 25, marginBottom: 20, fontWeight:'bold', textAlign:'center', color:'khaki', marginTop:10 }}>
               Bienvenido {'\n'} a{'\n'} FlappyBird
             </Text>
-            <Text style={{padding:10, textAlign:'center', color:'white'}}>
+            <Text style={{padding:10, textAlign:'center', color:'white', marginBottom:10}}>
                 Esta es una pantalla de carga {'\n'} en lo que esperas a que cargue{'\n'} lo que sea que esté cargando
             </Text>
-            <Button title="Empezar" onPress={startGame} />
+            <Button title="Empezar" onPress={startGame}/>
           </View>
         )}
       </View>
