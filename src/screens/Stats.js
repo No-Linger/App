@@ -1,27 +1,22 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Button,
-} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import NetInfo from "@react-native-community/netinfo"; // Import NetInfo
-import Icon from "react-native-vector-icons/FontAwesome";
+import NetInfo from "@react-native-community/netinfo";
 import { LottieAnimation } from "../components";
-import { saveDataToAsyncStorage } from "../services/fetchService";
+import { useNavigation } from '@react-navigation/native';
+
+import StatsData from "./StatsData";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import SelfData from "./SelfData";
+const Tab = createMaterialTopTabNavigator();
 
 export default function TestStats() {
-  const [capture, setCapture] = useState([]);
+  const [capture, setCapture] = useState([])
   const [history, setHistory] = useState([]);
-  const [currentDate, setCurrentDate] = useState(
-    new Date().toLocaleDateString()
-  );
-  const [open, setOpen] = useState(false);
+  const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
+  const [open, setOpen] = useState(true);
   const [dateOpen, setDateOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
 
   // Función para obtener un número entero aleatorio en un rango específico
   function getRandomInt(min, max) {
@@ -51,7 +46,8 @@ export default function TestStats() {
   // Función para subir los datos a la API
   const uploadData = async (data) => {
     try {
-      let response = await fetch("http://10.48.71.99:8082/postStats", {
+
+      let response = await fetch("http://10.48.66.206:8082/postStats", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -143,6 +139,7 @@ export default function TestStats() {
     }));
   };
 
+  //Acomodo de datos por fecha
   const dataByDate = {};
   for (const item of history) {
     const date = item.fecha;
@@ -153,209 +150,36 @@ export default function TestStats() {
   }
 
   return (
-    <ScrollView>
-      <Text
-        style={{ marginLeft: 10, marginTop: 10, fontSize: 15, fontWeight: 600 }}
-      >
-        ¡Hola! Hoy es: {currentDate}
-      </Text>
-
-      {loading ? (
-        <View
-          style={{
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            margin: 10,
-            padding: 2,
-          }}
-        >
-          <Text>LOADING</Text>
-        </View>
-      ) : Object.keys(dataByDate).length === 0 ||
-        Object.keys(dataByDate)[Object.keys(dataByDate).length - 1] !=
-          currentDate ? (
-        <View style={{ padding: 15 }}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 10,
-              backgroundColor: "gainsboro",
-              overflow: "hidden",
-              borderRadius: 15,
-            }}
-          >
-            <Text
-              style={{
-                padding: 10,
-                backgroundColor: "gray",
-                color: "white",
-                overflow: "hidden",
-                borderRadius: 15,
-              }}
-            >
-              Aún no has realizado ninguna captura hoy.
-            </Text>
-            <LottieAnimation
-              source={require("../../assets/lotties/potatoeWalking.json")}
-              width={50}
-              height={50}
-            />
-          </View>
-        </View>
-      ) : (
-        <View
-          style={{
-            margin: 10,
-            padding: 15,
-            backgroundColor: "gainsboro",
-            overflow: "hidden",
-            borderRadius: 15,
-          }}
-        >
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
-            <Text style={{ fontWeight: "bold", marginBottom: 5 }}>Captura</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginBottom: 5,
-            }}
-          >
-            <Text>Planograma:</Text>
-            <Text>{capture.planograma}</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginBottom: 5,
-            }}
-          >
-            <Text>Fecha:</Text>
-            <Text>{capture.fecha}</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginBottom: 5,
-            }}
-          >
-            <Text>Hora:</Text>
-            <Text>{capture.hora}</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginBottom: 5,
-            }}
-          >
-            <Text>Precisión:</Text>
-            <Text style={{ color: "green" }}>{capture.precision}%</Text>
-          </View>
-        </View>
-      )}
-
-      <View
-        style={{
-          margin: 10,
-          padding: 10,
-          backgroundColor: "gainsboro",
-          overflow: "hidden",
-          borderRadius: 15,
-        }}
-      >
-        <View style={{ borderRadius: 15, overflow: "hidden", padding: 3 }}>
-          <TouchableOpacity onPress={toggleOpen}>
-            <Text
-              style={{ fontSize: 15, fontWeight: "600", textAlign: "center" }}
-            >
-              Bitácora de Datos
-            </Text>
-          </TouchableOpacity>
-        </View>
-        {open && (
-          <View style={{ backgroundColor: "gainsboro", marginTop: 5 }}>
-            {Object.keys(dataByDate).map((date) => (
-              <View
-                key={date}
-                style={{
-                  margin: 5,
-                  padding: 10,
-                  backgroundColor: "white",
-                  borderRadius: 15,
-                }}
-              >
-                <TouchableOpacity onPress={() => toggleDateOpen(date)}>
-                  <Text
-                    style={{ fontWeight: "bold", flexDirection: "row-reverse" }}
-                  >{`Fecha: ${date}`}</Text>
-                </TouchableOpacity>
-                {dateOpen[date] && (
-                  <View
-                    style={{
-                      flex: 1,
-                      padding: 5,
-                      marginLeft: 5,
-                      overflow: "hidden",
-                      borderRadius: 10,
-                    }}
-                  >
-                    {dataByDate[date].map((item) => (
-                      <View key={item.hora} style={{ marginBottom: 5 }}>
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            marginBottom: 5,
-                            marginTop: 5,
-                          }}
-                        >
-                          <Text>Planograma:</Text>
-                          <Text>{item.planograma}</Text>
-                        </View>
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            marginBottom: 5,
-                          }}
-                        >
-                          <Text>Hora:</Text>
-                          <Text>{item.hora}</Text>
-                        </View>
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <Text>Precisión:</Text>
-                          <Text style={{ color: "green" }}>
-                            {item.precision}%
-                          </Text>
-                        </View>
-                        <Text style={{ textAlign: "center" }}>
-                          ___________________________
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-                )}
-              </View>
-            ))}
-          </View>
+    <Tab.Navigator>
+      <Tab.Screen name="Captura">
+      {() => (
+          <SelfData
+            capture={capture}
+            history={history}
+            currentDate={currentDate}
+            open={open}
+            setOpen={setOpen}
+            dateOpen={dateOpen}
+            setDateOpen={setDateOpen}
+            loading={loading}
+            setLoading={setLoading}
+            dataByDate={dataByDate}
+            handleCapturar = {handleCapturar}
+            clearData = {clearData}
+          />
         )}
-      </View>
-      <Button onPress={handleCapturar} title="Capturar" />
-      <Button onPress={clearData} title="Borrar" />
-    </ScrollView>
+      </Tab.Screen>
+      <Tab.Screen name="Bitácora">
+  {() => (
+    <StatsData
+      dataByDate={dataByDate}
+      open={open}
+      toggleOpen={toggleOpen}
+      dateOpen={dateOpen}
+      toggleDateOpen={toggleDateOpen}
+    />
+  )}
+      </Tab.Screen>
+    </Tab.Navigator>
   );
 }
