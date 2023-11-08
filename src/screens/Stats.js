@@ -23,10 +23,12 @@ export default function TestStats() {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
+
   // Función para obtener un elemento aleatorio de un arreglo
   function getRandomArrayElement(arr) {
     return arr[getRandomInt(0, arr.length - 1)];
   }
+
 
   // Función para generar un JSON falso para simular los datos capturados
   const getFakeJson = () => {
@@ -59,6 +61,7 @@ export default function TestStats() {
       return false;
     }
   };
+
 
   // Función para intentar subir los registros almacenados
   const tryUploadRecords = async (data) => {

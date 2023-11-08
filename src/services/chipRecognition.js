@@ -42,18 +42,18 @@ export const loadModel = async () => {
   }
 };
 
-export const sliceImage = async (uri) => {
+export const sliceImage = async (uri, rows, cols) => {
   const imageInfo = await ImageManipulator.manipulateAsync(uri);
   const { width, height } = imageInfo;
   console.log(width, height);
 
-  const pieceWidth = width / COLS;
-  const pieceHeight = height / ROWS;
+  const pieceWidth = width / cols;
+  const pieceHeight = height / rows;
 
   const slices = [];
 
-  for (let y = 0; y < ROWS; y++) {
-    for (let x = 0; x < COLS; x++) {
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
       const slice = await ImageManipulator.manipulateAsync(uri, [
         {
           crop: {
@@ -96,23 +96,24 @@ export const preprocessImage = async (uri) => {
 export const getLabel = async (results) => {
   const predictionLabel = await tf.argMax(results, 1).data();
   const categorieId = predictionLabel[0];
-  return categories[categorieId];
+  return categorieId;
 };
 
-export const classifyGrid = async (model, imagesUris) => {
+export const classifyGrid = async (model, imagesUris, rows, cols) => {
   let result = [];
   let imageTensor;
   let start = performance.now();
   let counter = 0;
-  for (let i = 0; i < ROWS; i++) {
+  for (let i = 0; i < rows; i++) {
     let temp = [];
-    for (let j = 0; j < COLS; j++) {
+    for (let j = 0; j < cols; j++) {
       imageTensor = await preprocessImage(imagesUris[counter]);
       let predcition = tf.tidy(() => {
         return model.predict(imageTensor);
       });
       let label = await getLabel(predcition);
       temp.push(label);
+      console.log(categories[label]);
       counter++;
     }
     result.push(temp);
@@ -122,20 +123,43 @@ export const classifyGrid = async (model, imagesUris) => {
   return result;
 };
 
-export const comparePlanogram = async (planogramId, gridImages) => {
+const calculateError = async (resultMatrix) => {
+  let totalCount = 0;
+  let falseCount = 0;
+
+  for (let i = 0; i < resultMatrix.length; i++) {
+    for (let j = 0; j < resultMatrix[i].length; j++) {
+      totalCount++;
+      if (resultMatrix[i][j] === false) {
+        falseCount++;
+      }
+    }
+  }
+  return (falseCount / totalCount) * 100;
+};
+
+export const comparePlanogram = async (
+  planogramMatrix,
+  gridImages,
+  rows,
+  cols
+) => {
   try {
     let res = [];
-    const jsonPlanogramValue = await AsyncStorage.getItem(planogramId);
-    const { grid, labels } = JSON.parse(jsonPlanogramValue);
-    for (let i = 0; i < grid[1]; i++) {
+    console.log("Planograma :", planogramMatrix);
+    console.log("Resultado :", gridImages);
+    console.log(planogramMatrix);
+    for (let i = 0; i < rows; i++) {
       let temp = [];
-      for (let j = 0; j < grid[0]; j++) {
-        temp.push(labels[i][j] == gridImages[i][j]);
+      for (let j = 0; j < cols; j++) {
+        temp.push(planogramMatrix[i][j] == gridImages[i][j]);
       }
       res.push(temp);
     }
-    console.log(res);
-    return res;
+    console.log("Comparacion  : ", res);
+    const error = await calculateError(res);
+    console.log("Error : ", error);
+    return { compareMatrix: res, error };
   } catch (err) {
     console.log(err);
   }
