@@ -3,6 +3,8 @@ import { Text, View, Button, Dimensions, TouchableWithoutFeedback } from "react-
 
 import Bird from "../components/Bird";
 import Obstacle from "../components/Obstacle";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+
 
 export default function FlappyBird() {
   const screenWidth = Dimensions.get("screen").width;
@@ -10,7 +12,7 @@ export default function FlappyBird() {
 
   // Bird
   const birdLeft = screenWidth / 2;
-  const gravity = 3;
+  const [gravity, setGravity] = useState(4);
 
   const [birdBottom, setBirdBottom] = useState(screenHeight / 2);
 
@@ -126,20 +128,39 @@ export default function FlappyBird() {
   const gameOver = () => {
     clearInterval(gameTimerId);
     setIsGameOver(true);
+    setGravity(4);
   };
 
+  useEffect(() => {
+    if (score >= 3) {
+      SpeedGame();
+    } if (score >= 6){
+      SpeedGameX2();
+    }
+  }, [score]);
+  
+  const SpeedGame = () => {
+    setGravity(6);
+  };
+
+  const SpeedGameX2 = () => {
+    setGravity(8);
+  };
+  
+  
   return (
     <TouchableWithoutFeedback onPress={jump}>
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor:'azure' }}>
         {isGameStarted ? (
           <>
-            <Bird birdBottom={birdBottom} birdLeft={birdLeft} />
+            <Icon name="bird" size={40} color="blueviolet" style={{ position: "absolute", left: birdLeft, bottom: birdBottom }} />
+            
             <Obstacle
               ObstaclesLeft={obstacleLeft}
               ObstacleWidth={obstacleWidth}
               ObstacleHeight={obstacleHeight}
               gap={gap}
-              color={"green"}
+              color={'green'}
               randomHeight={obstacleNegHeight}
             />
             <Obstacle
@@ -147,7 +168,7 @@ export default function FlappyBird() {
               ObstacleWidth={obstacleWidth}
               ObstacleHeight={obstacleHeight}
               gap={gap}
-              color={"yellow"}
+              color={"forestgreen"}
               randomHeight={obstacleNegHeightTwo}
             />
             {isGameOver && (
