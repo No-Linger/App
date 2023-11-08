@@ -1,5 +1,4 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Text, View, Button, Dimensions, TouchableWithoutFeedback } from "react-native";
 
 import Bird from "../components/Bird";
@@ -11,18 +10,19 @@ export default function FlappyBird() {
 
   // Bird
   const birdLeft = screenWidth / 2;
-  const [birdBottom, setBirdBottom] = useState(screenHeight / 2);
   const gravity = 3;
 
-  // Obstacle
-  const [ObstaclesLeft, setObstaclesLeft] = useState(screenWidth);
-  const ObstacleWidth = 60;
-  const ObstacleHeight = 300;
+  const [birdBottom, setBirdBottom] = useState(screenHeight / 2);
+
+  // Obstacles
+  const [obstacleLeft, setObstacleLeft] = useState(screenWidth);
+  const obstacleWidth = 60;
+  const obstacleHeight = 300;
   const gap = 150;
 
-  const [ObstaclesLeftTwo, setObstaclesLeftTwo] = useState(screenWidth + screenWidth / 2 + 30);
-  const [ObstaclesNegHeight, setObstaclesNegHeight] = useState(0);
-  const [ObstaclesNegHeightTwo, setObstaclesNegHeightTwo] = useState(0);
+  const [obstacleLeftTwo, setObstacleLeftTwo] = useState(screenWidth + screenWidth / 2 + 30);
+  const [obstacleNegHeight, setObstacleNegHeight] = useState(0);
+  const [obstacleNegHeightTwo, setObstacleNegHeightTwo] = useState(0);
 
   const [isGameOver, setIsGameOver] = useState(false);
   const [score, setScore] = useState(0);
@@ -32,7 +32,7 @@ export default function FlappyBird() {
 
   // Bird Flying
   useEffect(() => {
-    if (birdBottom > 0) {
+    if (birdBottom > 0 && !isGameOver) {
       gameTimerId = setInterval(() => {
         setBirdBottom((birdBottom) => birdBottom - gravity);
       }, 30);
@@ -41,7 +41,7 @@ export default function FlappyBird() {
         clearInterval(gameTimerId);
       };
     }
-  }, [birdBottom]);
+  }, [birdBottom, isGameOver]);
 
   const jump = () => {
     if (!isGameOver && birdBottom < screenHeight) {
@@ -49,52 +49,74 @@ export default function FlappyBird() {
     }
   };
 
-  // First Obstacles
-  let ObstaclesLeftTimerID;
-  useEffect(() => {
-    // Move 5 pixels to the left every 30 milliseconds
-    if (ObstaclesLeft > -ObstacleWidth) {
-      ObstaclesLeftTimerID = setInterval(() => {
-        setObstaclesLeft((ObstaclesLeft) => ObstaclesLeft - 5);
-      }, 30);
-      return () => {
-        clearInterval(ObstaclesLeftTimerID);
-      };
-    } else {
-      setObstaclesLeft(screenWidth);
-      setObstaclesNegHeight(-Math.random() * 100);
-      setScore((score) => score + 1);
-    }
-  }, [ObstaclesLeft]);
+  // Function to reset the game
+  const resetGame = () => {
+    setScore(0);
+    setBirdBottom(screenHeight / 2);
+    setObstacleLeft(screenWidth);
+    setObstacleLeftTwo(screenWidth + screenWidth / 2 + 30);
+    setObstacleNegHeight(0);
+    setObstacleNegHeightTwo(0);
+    setIsGameStarted(false);
+    setIsGameOver(false);
+  };
 
-  let ObstaclesLeftTimerIDTwo;
   useEffect(() => {
-    // Move 5 pixels to the left every 30 milliseconds
-    if (ObstaclesLeftTwo > -ObstacleWidth) {
-      ObstaclesLeftTimerIDTwo = setInterval(() => {
-        setObstaclesLeftTwo((ObstaclesLeftTwo) => ObstaclesLeftTwo - 5);
-      }, 30);
-      return () => {
-        clearInterval(ObstaclesLeftTimerIDTwo);
-      };
-    } else {
-      setObstaclesLeftTwo(screenWidth);
-      setObstaclesNegHeightTwo(-Math.random() * 100);
-      setScore((score) => score + 1);
+    resetGame(); // Automatically reset the game when the component loads.
+  }, []);
+
+  // Start the game
+  const startGame = () => {
+    resetGame(); // Reset the game to its initial state
+    setIsGameStarted(true);
+  };
+
+  // Obstacles
+  useEffect(() => {
+    if (isGameStarted && !isGameOver) {
+      if (obstacleLeft > -obstacleWidth) {
+        const obstacleTimerID = setInterval(() => {
+          setObstacleLeft((obstacleLeft) => obstacleLeft - 5);
+        }, 30);
+        return () => {
+          clearInterval(obstacleTimerID);
+        };
+      } else {
+        setObstacleLeft(screenWidth);
+        setObstacleNegHeight(-Math.random() * 100);
+        setScore((score) => score + 1);
+      }
     }
-  }, [ObstaclesLeftTwo]);
+  }, [obstacleLeft, isGameStarted, isGameOver]);
+
+  useEffect(() => {
+    if (isGameStarted && !isGameOver) {
+      if (obstacleLeftTwo > -obstacleWidth) {
+        const obstacleTimerIDTwo = setInterval(() => {
+          setObstacleLeftTwo((obstacleLeftTwo) => obstacleLeftTwo - 5);
+        }, 30);
+        return () => {
+          clearInterval(obstacleTimerIDTwo);
+        };
+      } else {
+        setObstacleLeftTwo(screenWidth);
+        setObstacleNegHeightTwo(-Math.random() * 100);
+        setScore((score) => score + 1);
+      }
+    }
+  }, [obstacleLeftTwo, isGameStarted, isGameOver]);
 
   // Collisions
   useEffect(() => {
     if (
-      (birdLeft + 34 > ObstaclesLeft &&
-        birdLeft < ObstaclesLeft + ObstacleWidth &&
-        (birdBottom < ObstaclesNegHeight + ObstacleHeight ||
-          birdBottom + 24 > ObstaclesNegHeight + ObstacleHeight + gap)) ||
-      (birdLeft + 34 > ObstaclesLeftTwo &&
-        birdLeft < ObstaclesLeftTwo + ObstacleWidth &&
-        (birdBottom < ObstaclesNegHeightTwo + ObstacleHeight ||
-          birdBottom + 24 > ObstaclesNegHeightTwo + ObstacleHeight + gap))
+      (birdLeft + 34 > obstacleLeft &&
+        birdLeft < obstacleLeft + obstacleWidth &&
+        (birdBottom < obstacleNegHeight + obstacleHeight ||
+          birdBottom + 24 > obstacleNegHeight + obstacleHeight + gap)) ||
+      (birdLeft + 34 > obstacleLeftTwo &&
+        birdLeft < obstacleLeftTwo + obstacleWidth &&
+        (birdBottom < obstacleNegHeightTwo + obstacleHeight ||
+          birdBottom + 24 > obstacleNegHeightTwo + obstacleHeight + gap))
     ) {
       console.log("Game Over");
       gameOver();
@@ -103,30 +125,8 @@ export default function FlappyBird() {
 
   const gameOver = () => {
     clearInterval(gameTimerId);
-    clearImmediate(ObstaclesLeftTimerID);
-    clearInterval(ObstaclesLeftTimerIDTwo);
     setIsGameOver(true);
   };
-
-  const startGame = () => {
-    setIsGameStarted(true);
-    setIsGameOver(false);
-  };
-
-  const resetGame = () => {
-    setScore(0);
-    setBirdBottom(screenHeight / 2);
-    setObstaclesLeft(screenWidth);
-    setObstaclesLeftTwo(screenWidth + screenWidth / 2 + 30);
-    setObstaclesNegHeight(0);
-    setObstaclesNegHeightTwo(0);
-    setIsGameStarted(true); // Automatically start the game on reset.
-    setIsGameOver(false);
-  };
-
-  useEffect(() => {
-    startGame(); // Automatically start the game when the component loads.
-  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={jump}>
@@ -135,42 +135,47 @@ export default function FlappyBird() {
           <>
             <Bird birdBottom={birdBottom} birdLeft={birdLeft} />
             <Obstacle
-              ObstaclesLeft={ObstaclesLeft}
-              ObstacleWidth={ObstacleWidth}
-              ObstacleHeight={ObstacleHeight}
+              ObstaclesLeft={obstacleLeft}
+              ObstacleWidth={obstacleWidth}
+              ObstacleHeight={obstacleHeight}
               gap={gap}
               color={"green"}
-              randomHeight={ObstaclesNegHeight}
+              randomHeight={obstacleNegHeight}
             />
             <Obstacle
-              ObstaclesLeft={ObstaclesLeftTwo}
-              ObstacleWidth={ObstacleWidth}
-              ObstacleHeight={ObstacleHeight}
+              ObstaclesLeft={obstacleLeftTwo}
+              ObstacleWidth={obstacleWidth}
+              ObstacleHeight={obstacleHeight}
               gap={gap}
               color={"yellow"}
-              randomHeight={ObstaclesNegHeightTwo}
+              randomHeight={obstacleNegHeightTwo}
             />
             {isGameOver && (
               <View
                 style={{
                   position: "absolute",
-                  backgroundColor: "gainsboro",
+                  backgroundColor: "darkslateblue",
                   justifyContent: "center",
                   alignItems: "center",
+                  padding:20,
+                  borderRadius:15,
                 }}
               >
-                <Text style={{ fontSize: 24 }}>Game Over</Text>
-                <Text style={{ fontSize: 24 }}>Score: {score}</Text>
-                <Button title="Restart" onPress={resetGame} />
+                <Text style={{ fontSize: 24, color:'white', padding: 5 }}>¡Ooopps! Perdiste</Text>
+                <Text style={{ fontSize: 24, color:'white', padding:5}}>Puntuación: {score}</Text>
+                <Button title="De nuevo" onPress={resetGame} />
               </View>
             )}
           </>
         ) : (
-          <View style={{ alignItems: "center" }}>
-            <Text style={{ fontSize: 24, marginBottom: 20 }}>
-              Welcome to Flappy Bird!
+          <View style={{ alignItems: "center", backgroundColor:'darkslateblue', margin:15 , borderRadius:10, padding:10, marginTop:5 }}>
+            <Text style={{ fontSize: 22, marginBottom: 20, fontWeight:'bold', textAlign:'center', color:'white' }}>
+              Bienvenido {'\n'} a{'\n'} FlappyBird
             </Text>
-            <Button title="Start" onPress={startGame} />
+            <Text style={{padding:10, textAlign:'center', color:'white'}}>
+                Esta es una pantalla de carga {'\n'} en lo que esperas a que cargue{'\n'} lo que sea que esté cargando
+            </Text>
+            <Button title="Empezar" onPress={startGame} />
           </View>
         )}
       </View>

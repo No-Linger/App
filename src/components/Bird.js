@@ -11,8 +11,8 @@ export default function Bird ({birdBottom, birdLeft}) {
         <View style={{
             position:'absolute',
             backgroundColor:'blue',
-            width:50,
-            height: 60,
+            width: birdWidth,
+            height: birdHeight,
             left: birdLeft - (birdWidth/2),
             bottom: birdBottom,
         }} />
