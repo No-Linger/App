@@ -5,8 +5,8 @@ export const syncDataToMongoDB = async (jsonData) => {
     const isConnected = (await NetInfo.fetch()).isConnected;
 
     if (isConnected) {
-      const response = await fetch(`http://192.168.1.78:8082/postStats`, {
-        method: 'POST',
+      const response = await fetch(`http://10.48.71.99:8082/postStats`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },

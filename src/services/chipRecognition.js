@@ -12,8 +12,9 @@ const categories = [
   "ruffles",
 ];
 
-const COLS = 4;
-const ROWS = 2;
+export const indexToString = (index) => {
+  return categories[index];
+};
 
 export const loadModel = async () => {
   try {
