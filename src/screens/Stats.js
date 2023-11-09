@@ -7,6 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import StatsData from "./StatsData";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import SelfData from "./SelfData";
+import FlappyBird from "./FlappyBird";
 const Tab = createMaterialTopTabNavigator();
 
 export default function TestStats() {
@@ -48,7 +49,7 @@ export default function TestStats() {
   // Función para subir los datos a la API
   const uploadData = async (data) => {
     try {
-      let response = await fetch("http://10.48.71.99:8082/postStats", {
+      let response = await fetch("http://10.48.79.232:8082/postStats", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -181,6 +182,7 @@ export default function TestStats() {
           />
         )}
       </Tab.Screen>
+      <Tab.Screen name="Game">{() => <FlappyBird />}</Tab.Screen>
     </Tab.Navigator>
   );
 }

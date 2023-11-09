@@ -25,11 +25,11 @@ function MyTabs() {
       }}
     >
       <Tab.Screen
-        name="Historial"
+        name="Datos"
         component={Stats}
         options={{
           headerTitleAlign: "left",
-          tabBarLabel: "Historial",
+          tabBarLabel: "Datos",
           headerTitleStyle: {
             fontSize: 30,
             color: "white",

@@ -18,7 +18,7 @@ export default function SelfData({
 }) {
   return (
     <ScrollView>
-      <Text style={{ marginLeft: 10, marginTop: 15, fontSize: 20, fontWeight: 600 }}>
+      <Text style={{ marginLeft: 10, marginTop: 15, fontSize: 20, fontWeight: 600, marginBottom:10 }}>
         ¡Hola! Hoy es: {currentDate}
       </Text>
 
@@ -41,32 +41,33 @@ export default function SelfData({
                 borderRadius: 15,
               }}
             >
-              <Text style={{ padding: 10, backgroundColor: 'gray', color: 'white', overflow: 'hidden', borderRadius: 15 }}>
+              <Text style={{ padding: 20, backgroundColor: 'gray', color: 'white', overflow: 'hidden', borderRadius: 15 }}>
                 Aún no has realizado ninguna captura hoy.
               </Text>
             </View>
           </View>
         ) : (
-          <View style={{ margin: 10, padding: 15, backgroundColor: 'gainsboro', overflow: 'hidden', borderRadius: 15 }}>
+          <View style={{ margin: 10, padding: 10, backgroundColor: 'gainsboro', overflow: 'hidden', borderRadius: 15 }}>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 15 }}>
-        <Text style={{ fontWeight: 'bold', marginBottom: 5, fontSize: 17 }}>Captura</Text>
-      </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5, padding: 15, fontSize: 17 }}>
-        <Text style={{fontSize: 17}}>Planograma:</Text>
-        <Text style={{fontSize: 17}}>{capture.planograma}</Text>
-      </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5, padding: 15 }}>
-        <Text style={{fontSize: 17}}>Fecha:</Text>
-        <Text style={{fontSize: 17}}>{capture.fecha}</Text>
-      </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5, padding: 15 }}>
-        <Text style={{fontSize: 17}}>Hora:</Text>
-        <Text style={{fontSize: 17}}>{capture.hora}</Text>
-      </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5, padding: 15 }}>
-        <Text style={{fontSize: 17}}>Precisión:</Text>
-        <Text style={{ color: 'green', fontSize:17 }}>{capture.precision}%</Text>
-      </View>
+              <Text style={{ fontWeight: 'bold', marginBottom: 5, fontSize: 18, color:'darkslateblue' }}>Captura</Text>
+              <Text style={{fontWeight:'bold'}}>___________________________</Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, padding: 15, fontSize: 17 }}>
+              <Text style={{fontSize: 17, fontWeight: 'bold'}}>Planograma:</Text>
+              <Text style={{fontSize: 17}}>{capture.planograma}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, padding: 15 }}>
+              <Text style={{fontSize: 17, fontWeight: 'bold'}}>Fecha:</Text>
+              <Text style={{fontSize: 17}}>{capture.fecha}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, padding: 15 }}>
+              <Text style={{fontSize: 17, fontWeight: 'bold'}}>Hora:</Text>
+              <Text style={{fontSize: 17}}>{capture.hora}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, padding: 15 }}>
+              <Text style={{fontSize: 17, fontWeight: 'bold'}}>Precisión:</Text>
+              <Text style={{ color: 'green', fontSize:17, fontWeight: 'bold'}}>{capture.precision}%</Text>
+            </View>
           </View>
         )
       )}
