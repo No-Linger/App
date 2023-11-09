@@ -51,6 +51,7 @@ export const updatePlanogramRecord = async () => {
     return actualPlanograms;
   } catch (err) {
     console.log(err);
+    return {};
   }
 };
 

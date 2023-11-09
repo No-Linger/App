@@ -5,15 +5,23 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ModelProvider } from "./contexts/model";
+import { TouchableOpacity } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Cámara"
+      initialRouteName="Analizar"
       screenOptions={{
-        tabBarActiveTintColor: "#000000",
+        tabBarActiveTintColor: "#FFFFFF",
+        tabBarInactiveTintColor: "#C2CDFF",
+        tabBarStyle: {
+          backgroundColor: "#4B6CFE",
+        },
+        headerStyle: {
+          backgroundColor: "#4B6CFE",
+        },
       }}
     >
       <Tab.Screen
@@ -23,23 +31,44 @@ function MyTabs() {
           headerTitleAlign: "left",
           tabBarLabel: "Datos",
           headerTitleStyle: {
-            fontSize: 25,
+            fontSize: 30,
+            color: "white",
           },
           tabBarIcon: ({ color, size }) => (
             <Icon name="chart-bar" color={color} size={size} />
           ),
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => console.log("Header button pressed")}
+              style={{ right: 7, position: "absolute", top: 7 }}
+            >
+              <Icon name="cog-outline" size={28} color="white" />
+            </TouchableOpacity>
+          ),
         }}
       />
       <Tab.Screen
-        name="Cámara"
+        name="Analizar"
         component={TakePicture}
-        options={{
-          headerShown: false,
+        options={({ navigation }) => ({
+          headerTitleAlign: "left",
           tabBarLabel: "Analizar",
+          headerTitleStyle: {
+            fontSize: 30,
+            color: "white",
+          },
           tabBarIcon: ({ color, size }) => (
             <Icon name="compare" color={color} size={size} />
           ),
-        }}
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => console.log("Header button pressed")}
+              style={{ right: 7, position: "absolute", top: 7 }}
+            >
+              <Icon name="cog-outline" size={28} color="white" />
+            </TouchableOpacity>
+          ),
+        })}
       />
       <Tab.Screen
         name="Planogramas"
@@ -48,10 +77,19 @@ function MyTabs() {
           headerTitleAlign: "left",
           tabBarLabel: "Planogramas",
           headerTitleStyle: {
-            fontSize: 25,
+            fontSize: 30,
+            color: "white",
           },
           tabBarIcon: ({ color, size }) => (
             <Icon name="image-multiple-outline" color={color} size={size} />
+          ),
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => console.log("Header button pressed")}
+              style={{ right: 7, position: "absolute", top: 7 }}
+            >
+              <Icon name="cog-outline" size={28} color="white" />
+            </TouchableOpacity>
           ),
         }}
       />
