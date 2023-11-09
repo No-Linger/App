@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import { LottieAnimation } from "../components";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
 import StatsData from "./StatsData";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -11,9 +11,11 @@ import FlappyBird from "./FlappyBird";
 const Tab = createMaterialTopTabNavigator();
 
 export default function TestStats() {
-  const [capture, setCapture] = useState([])
+  const [capture, setCapture] = useState([]);
   const [history, setHistory] = useState([]);
-  const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
+  const [currentDate, setCurrentDate] = useState(
+    new Date().toLocaleDateString()
+  );
   const [open, setOpen] = useState(true);
   const [dateOpen, setDateOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -152,7 +154,7 @@ export default function TestStats() {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Captura">
-      {() => (
+        {() => (
           <SelfData
             capture={capture}
             history={history}
@@ -164,27 +166,23 @@ export default function TestStats() {
             loading={loading}
             setLoading={setLoading}
             dataByDate={dataByDate}
-            handleCapturar = {handleCapturar}
-            clearData = {clearData}
+            handleCapturar={handleCapturar}
+            clearData={clearData}
           />
         )}
       </Tab.Screen>
       <Tab.Screen name="Bitácora">
-  {() => (
-    <StatsData
-      dataByDate={dataByDate}
-      open={open}
-      toggleOpen={toggleOpen}
-      dateOpen={dateOpen}
-      toggleDateOpen={toggleDateOpen}
-    />
-  )}
+        {() => (
+          <StatsData
+            dataByDate={dataByDate}
+            open={open}
+            toggleOpen={toggleOpen}
+            dateOpen={dateOpen}
+            toggleDateOpen={toggleDateOpen}
+          />
+        )}
       </Tab.Screen>
-    <Tab.Screen name = "Game">
-      {() => (
-        <FlappyBird/>
-      )}
-    </Tab.Screen>
+      <Tab.Screen name="Game">{() => <FlappyBird />}</Tab.Screen>
     </Tab.Navigator>
   );
 }

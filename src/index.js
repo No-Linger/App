@@ -12,7 +12,7 @@ const Tab = createBottomTabNavigator();
 function MyTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Cámara"
+      initialRouteName="Analizar"
       screenOptions={{
         tabBarActiveTintColor: "#FFFFFF",
         tabBarInactiveTintColor: "#C2CDFF",
@@ -48,7 +48,7 @@ function MyTabs() {
         }}
       />
       <Tab.Screen
-        name="Cámara"
+        name="Analizar"
         component={TakePicture}
         options={({ navigation }) => ({
           headerTitleAlign: "left",

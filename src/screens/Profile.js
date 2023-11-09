@@ -35,6 +35,9 @@ import Slider from "react-native-a11y-slider";
 import { ModelContext } from "../contexts/model";
 import * as Haptics from "expo-haptics";
 
+import Notification from "../components/Notification";
+import NetInfo from "@react-native-community/netinfo";
+
 export default function Profile() {
   const { model } = useContext(ModelContext);
   const [planograms, setPlanograms] = useState(null);
@@ -126,7 +129,11 @@ export default function Profile() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     let newPlanograms = await updatePlanogramRecord();
-    setPlanograms(newPlanograms);
+    if (Object.keys(newPlanograms).length !== 0) {
+      setPlanograms(newPlanograms);
+    } else {
+      setCoudPlanogramError(true);
+    }
     setRefreshing(false);
   }, []);
 
@@ -153,8 +160,37 @@ export default function Profile() {
     }
   };
 
+  const [cloudPlanogramError, setCoudPlanogramError] = useState(false);
+
+  const [isConnected, setIsConnected] = useState(null);
+  const [isConnectedNoti, setIsConnectedNoti] = useState(false);
+  const [isNotConnectedNoti, setIsNotConnectedNoti] = useState(false);
+  useEffect(() => {
+    let subscription = NetInfo.addEventListener(async (state) => {
+      setIsConnected(state.isConnected);
+      setIsNotConnectedNoti(!state.isConnected);
+    });
+    return () => {
+      subscription();
+    };
+  }, [isConnected]);
+
   return (
     <View style={{ flex: 1, backgroundColor: "#FAFBFF" }}>
+      <Notification
+        title="OMG!"
+        message="Planogrmas de la nube no disponibles"
+        isVisible={cloudPlanogramError}
+        onClose={() => setCoudPlanogramError(false)}
+        icon="liquid-spot"
+      />
+      <Notification
+        title="Modo Offline"
+        message="Se ha activado el modo sin internet"
+        isVisible={isNotConnectedNoti}
+        onClose={() => setIsNotConnectedNoti(false)}
+        icon="wifi-cancel"
+      />
       <View
         style={{
           flex: 1,

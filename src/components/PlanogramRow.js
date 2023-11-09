@@ -146,7 +146,7 @@ export default function PlanogramRow({
         borderWidth: 2,
       }}
     >
-      <View style={{ flex: 1, flexDirection: "column", marginLeft: 10 }}>
+      <View style={{ flex: 2, flexDirection: "column", marginLeft: 10 }}>
         <Text style={{ fontWeight: "600", fontSize: 18 }}>
           {planogram.name}
         </Text>
