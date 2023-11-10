@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 //import { useHistory } from 'react-router-dom'; // Importa useHistory
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, Alert, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { authClient } from "../services/firebaseConfig";
 import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -29,8 +29,31 @@ export default function Login(props) {
     const imagePosition = useSharedValue(1)
     const [modalVisible, setModalVisible] = useState(false);
     const formButtonScale = useSharedValue(1);
+
+    const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardOpen(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardOpen(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
     const imageAnimatedStyle=useAnimatedStyle(()=>{
-      const interpolation=interpolate(imagePosition.value,[0,1],[-height/2,0])
+      const interpolation=interpolate(imagePosition.value,[0,1],[-height/4,0])
       return {
         transform: [{translateY:withTiming(interpolation,{duration:1000})}]
       }
@@ -114,7 +137,10 @@ export default function Login(props) {
       }
 
       return (
-        
+        <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}
+      >
         <View style={styles.container}> 
           {/* <View style={styles.lottieAnimationStyle}>
               <LottieAnimation
@@ -129,7 +155,6 @@ export default function Login(props) {
               <ClipPath id="clipPathId">
                 <Ellipse cx={width/2} rx={height} ry={height+100}/>
               </ClipPath>
-
               <Image href={require("../../assets/splash.png")} 
               width={width} 
               height={height+100}
@@ -141,23 +166,23 @@ export default function Login(props) {
           <View style={styles.bottomContainer}>
             <Animated.View style={buttonsAnimatedStyle}>
               <Pressable style={styles.button} onPress={loginHandler}>
-                <Text style={styles.buttonText}>LOG IN</Text>
+                <Text style={styles.buttonText}>Iniciar Sesión</Text>
               </Pressable>
             </Animated.View>
           </View>
-
+          <View style={[keyboardOpen ? { backgroundColor: 'white', padding:10 } : null]}>
           <Animated.View style={[styles.formInputContainer, formAnimatedStyle]}>
             <TextInput
-              placeholder="Email"
-              placeholderTextColor="black"
+              placeholder="Correo"
+              placeholderTextColor="gray"
               style={styles.textInput}
               onChangeText={(text) => setUsername(text)}
               value={username}
               editable={!modalVisible} // Deshabilita la edición cuando el modal está visible
             />
             <TextInput
-              placeholder="Password"
-              placeholderTextColor="black"
+              placeholder="Contraseña"
+              placeholderTextColor="gray"
               style={styles.textInput}
               onChangeText={(text) => setPassword(text)}
               value={password}
@@ -171,7 +196,7 @@ export default function Login(props) {
                 setUsername('');
                 setPassword('');
               }}>
-                <Text style={{ transform: [{ rotate: '180deg' }] }}>Cancel</Text>
+                <Text style={{ transform: [{ rotate: '180deg' }] }}>X</Text>
               </Pressable>
             </Animated.View>
             <Animated.View style={[styles.formButtom, formButtonAnimatedStyle]}>
@@ -179,12 +204,14 @@ export default function Login(props) {
                 startButtonAnimation();
                 signIn(); // Iniciar la animación al presionar el botón
               }}>
-                <Text style={styles.buttonText}>LOG IN</Text>
+                <Text style={styles.buttonText}>Iniciar Sesión</Text>
               </Pressable>
             </Animated.View>
           </Animated.View>
           {modalVisible && <CustomModal isVisible={modalVisible} onModalClose={() => setModalVisible(false)} />}
-          
+          </View>
         </View>
+        </KeyboardAvoidingView>
+
       );
     }

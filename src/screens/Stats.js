@@ -4,9 +4,9 @@ import NetInfo from "@react-native-community/netinfo";
 import { LottieAnimation } from "../components";
 import { useNavigation } from "@react-navigation/native";
 
-import StatsData from "./StatsData";
+import StatsData from "./StatsStorage";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import SelfData from "./SelfData";
+import DataCapture from "./StatsCapture";
 import FlappyBird from "./FlappyBird";
 const Tab = createMaterialTopTabNavigator();
 
@@ -19,7 +19,6 @@ export default function TestStats() {
   const [open, setOpen] = useState(true);
   const [dateOpen, setDateOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
 
   // Función para obtener un número entero aleatorio en un rango específico
   function getRandomInt(min, max) {
@@ -49,7 +48,7 @@ export default function TestStats() {
   // Función para subir los datos a la API
   const uploadData = async (data) => {
     try {
-      let response = await fetch("http://10.48.79.232:8082/postStats", {
+      let response = await fetch("http://10.48.77.20:8082/postStats", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -152,10 +151,17 @@ export default function TestStats() {
   }
 
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Captura">
+    <Tab.Navigator
+    screenOptions={{
+      tabBarActiveTintColor: '#4B6CFE', 
+      tabBarLabelStyle: {
+        fontWeight: 'bold'
+      }
+    }}
+    >
+      <Tab.Screen name="Captura" style={{fontWeight:'bold'}}>
         {() => (
-          <SelfData
+          <DataCapture
             capture={capture}
             history={history}
             currentDate={currentDate}

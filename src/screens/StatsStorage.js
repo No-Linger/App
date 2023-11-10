@@ -12,7 +12,7 @@ export default function StatsData({
 
   return (
     <ScrollView>
-      <View style={{ margin: 10, padding: 10, backgroundColor: 'white', overflow: 'hidden', borderRadius: 15 }}>
+      <View style={{ margin: 10, padding: 10, overflow: 'hidden', borderRadius: 15 }}>
         <View style={{ borderRadius: 15, overflow: 'hidden', padding: 3 }}>
           <TouchableOpacity onPress={toggleOpen}>
             <Text style={{ fontSize: 15, fontWeight: '600', textAlign: 'center' }}>
@@ -23,9 +23,9 @@ export default function StatsData({
         {true && (
           <View style={{ marginTop: 5 }}>
             {Object.keys(dataByDate).map(date => (
-              <View key={date} style={{ margin: 5, padding: 10, backgroundColor: 'gainsboro', borderRadius: 15 }}>
+              <View key={date} style={{ margin: -2, padding: 10, borderColor: '#4B6CFE', borderWidth:2, borderRadius: 15 }}>
                 <TouchableOpacity onPress={() => toggleDateOpen(date)}>
-                  <Text style={{ fontWeight: 'bold', flexDirection: 'row-reverse' }}>{`Fecha: ${date}`}</Text>
+                  <Text style={{ fontWeight: 'bold', flexDirection: 'row-reverse', padding:2 }}>{`Fecha: ${date}`}</Text>
                 </TouchableOpacity>
                 {dateOpen[date] && (
                   <View style={{ flex: 1, padding: 5, marginLeft: 5, overflow: 'hidden', borderRadius: 10 }}>

@@ -6,20 +6,19 @@ const styles = StyleSheet.create({
         justifyContent:'flex-end'
     },
     button:{
-        backgroundColor:'rgba(123,104,238,0.8)',
         height:55,
         alignItems:'center',
         borderRadius:35,
         justifyContent:'center',
         marginHorizontal:20,
         marginVertical:10,
-        borderWidth:1,
-        borderColor:'white'
+        borderWidth:2,
+        borderColor:'#4B6CFE'
     },
     buttonText:{
         fontSize:20,
         fontWeight:'600',
-        color:'white',
+        color:'#4B6CFE',
         letterSpacing:0.5
     },
     bottomContainer:{
@@ -28,31 +27,22 @@ const styles = StyleSheet.create({
     },
     textInput:{
         height:50,
-        borderWidth:1,
-        borderColor: 'rgba(0,0,0,0.2)',
+        borderWidth:2,
+        borderColor: '#4B6CFE',
         marginHorizontal:20,
         marginVertical:20,
         borderRadius:25,
         paddingLeft:20
-
     },
     formButtom:{
-        backgroundColor:'rgba(123,104,238,0.8)',
         height:55,
         alignItems:'center',
         borderRadius:35,
         justifyContent:'center',
         marginHorizontal:20,
         marginVertical:10,
-        borderWidth:1,
-        borderColor:'white',
-        shadowColor:'#000',
-        shadowOffset:{
-            width:0,
-            height:7,
-        },
-        shadowOpacity:0.25,
-        shadowRadius:3.84,
+        borderWidth:2,
+        borderColor:'#4B6CFE',
         elevation:5,
         zindex:-1
 
@@ -61,21 +51,17 @@ const styles = StyleSheet.create({
         marginBottom:30,
         //...StyleSheet.absoluteFill,
         zindex:-1,
-        justifyContent:'center'
+        justifyContent:'center',
     },
     closeButtonContainer:{
     height:40,
     width:60,
     alignSelf:'center',
     justifyContent:'center',
-    shadowColor:'#000',
-    shadowOffset:{
-        width:0,
-        height:7
-    },
-    shadowOpacity:0.34,
-    shadowRadius:6.27,
     elevation:1,
+    borderColor: '#4B6CFE',
+    borderWidth:2,
+    marginBottom:5,
     backgroundColor:'white',
     alignItems:'center',
     borderRadius:20,
