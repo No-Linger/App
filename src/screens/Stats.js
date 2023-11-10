@@ -48,7 +48,7 @@ export default function TestStats() {
   // Función para subir los datos a la API
   const uploadData = async (data) => {
     try {
-      let response = await fetch("http://10.148.1.232:8082/postStats", {
+      let response = await fetch("http://10.48.77.242:8082/postStats", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

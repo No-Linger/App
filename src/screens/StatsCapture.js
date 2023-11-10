@@ -40,8 +40,8 @@ export default function DataCapture({
               </Text>
               <LottieAnimation
               source={require("../../assets/lotties/NoDataCaptured.json")}
-              width={40}
-              height={40}
+              width={50}
+              height={50}
             />
               
             </View>
