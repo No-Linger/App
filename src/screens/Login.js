@@ -197,7 +197,6 @@ export default function Login(props) {
             </Pressable>
           </Animated.View>
         </Animated.View>
-        {modalVisible && <CustomModal isVisible={modalVisible} onModalClose={() => setModalVisible(false)} />}
       </View>
     </TouchableWithoutFeedback>
   </KeyboardAvoidingView>
