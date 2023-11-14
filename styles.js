@@ -23,7 +23,8 @@ const styles = StyleSheet.create({
     },
     bottomContainer: {
         justifyContent: 'center',
-        height: height / 3
+        marginBottom: 100,
+        height: height / 3,
     },
     textInput: {
         height: 50,

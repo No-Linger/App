@@ -50,13 +50,19 @@ export default function Login(props) {
   };
 
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener('keyboardWillShow', () => {
-      setKeyboardOpen(true);
-    });
-    const keyboardDidHideListener = Keyboard.addListener('keyboardWillHide', () => {
-      setKeyboardOpen(false);
-    });
-
+    const keyboardDidShowListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', // Use different events for iOS and Android
+      () => {
+        setKeyboardOpen(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', // Use different events for iOS and Android
+      () => {
+        setKeyboardOpen(false);
+      }
+    );
+  
     return () => {
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
@@ -66,17 +72,17 @@ export default function Login(props) {
   const imageAnimatedStyle = useAnimatedStyle(() => {
     const interpolation = interpolate(imagePosition.value, [0, 1], [-height / 4, 0]);
     return {
-      transform: [{ translateY: withTiming(interpolation, { duration: 1000 }) }],
+      transform: [{ translateY: withTiming(interpolation, { duration: 500 }) }],
     };
   });
-
+  
   const buttonsAnimatedStyle = useAnimatedStyle(() => {
     const opacityInterpolation = interpolate(imagePosition.value, [0, 1], [0, 1]);
     const translateYInterpolation = interpolate(imagePosition.value, [0, 1], [250, 0]);
-    
+  
     return {
-      opacity: withTiming(opacityInterpolation, { duration: 500 }),
-      transform: [{ translateY: withTiming(translateYInterpolation, { duration: 1000 }) }],
+      opacity: withTiming(opacityInterpolation, { duration: 300 }),
+      transform: [{ translateY: withTiming(translateYInterpolation, { duration: 500 }) }],
     };
   });
   
@@ -85,9 +91,19 @@ export default function Login(props) {
     const interpolation = interpolate(imagePosition.value, [0, 1], [180, 360]);
     return {
       opacity: withTiming(imagePosition.value === 1 ? 0 : 1, { duration: 800 }),
-      transform: [{ rotate: withTiming(interpolation + 'deg', { duration: 1000 }) }],
+      transform: [
+        {
+          rotate: withTiming(
+            Platform.OS === 'ios' ? interpolation + 'deg' : `${interpolation}deg` // Add 'deg' suffix for Android
+          ),
+        },
+        {
+          translateY: withTiming(imagePosition.value === 1 ? 0 : 0, { duration: 800 }), // Adjust translateY as needed
+        },
+      ],
     };
   });
+  
 
   const formAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -110,7 +126,7 @@ export default function Login(props) {
   const [loggedIn, setLoggedIn] = useState(false);
 
   return (
-  <KeyboardAvoidingView behavior="padding" style={styles.container}>
+  <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
     <Animated.View style={[StyleSheet.absoluteFill, imageAnimatedStyle]}>
       <Svg height={height + 100} width={width}>
         <ClipPath id="clipPathId">
@@ -136,7 +152,7 @@ export default function Login(props) {
       </Animated.View>
     </View>
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={[keyboardOpen ? { backgroundColor: 'white', padding: 5 } : null]}>
+      <View style={[keyboardOpen ? { backgroundColor: 'white', marginTop:-20 } : null]}>
         <Animated.View style={[styles.formInputContainer, formAnimatedStyle]}>
           <TextInput
             placeholder="Correo"
