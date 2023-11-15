@@ -27,8 +27,6 @@ import { LottieAnimation } from "../components";
 import CustomModal from "../components/modalLottie";
 import styles from "../../styles";
 
-const logoImageSource = require("../../assets/logoOxxo.png");
-
 export default function Login(props) {
   const { height, width } = Dimensions.get("window");
   const imagePosition = useSharedValue(1);
