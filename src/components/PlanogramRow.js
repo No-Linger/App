@@ -142,7 +142,7 @@ export default function PlanogramRow({
         borderRadius: 10,
         flexDirection: "row",
         alignItems: "center",
-        borderColor: "black",
+        borderColor: "#4B6CFE",
         borderWidth: 2,
       }}
     >
@@ -204,7 +204,7 @@ export default function PlanogramRow({
                     backgroundColor: "white",
                     borderRadius: 25,
                     borderWidth: 2,
-                    borderColor: "black",
+                    borderColor: "#4B6CFE",
                   }}
                 >
                   <View style={{ flex: 1, marginTop: 30, marginLeft: 16 }}>

@@ -164,7 +164,7 @@ export default function FlappyBird() {
             <Icon
               name="bird"
               size={40}
-              color="blueviolet"
+              color="#4B6CFE"
               style={{
                 position: "absolute",
                 left: birdLeft,
