@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, Button, Dimensions, TouchableWithoutFeedback } from "react-native";
+import { Text, View, Button, Dimensions, TouchableWithoutFeedback, TouchableOpacity } from "react-native";
 
 import Bird from "../components/Bird";
 import Obstacle from "../components/Obstacle";
@@ -132,25 +132,18 @@ export default function FlappyBird() {
   };
 
   useEffect(() => {
-    if (score >= 3) {
+    if (score >= 3 && score % 3 === 0) {
       SpeedGame();
-    } if (score >= 6){
-      SpeedGameX2();
     }
   }, [score]);
   
   const SpeedGame = () => {
-    setGravity(6);
+    setGravity((gravity) => gravity + 2);
   };
-
-  const SpeedGameX2 = () => {
-    setGravity(8);
-  };
-  
   
   return (
     <TouchableWithoutFeedback onPress={jump}>
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor:'azure' }}>
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor:'white' }}>
         {isGameStarted ? (
           <>
             <Icon name="bird" size={40} color="blueviolet" style={{ position: "absolute", left: birdLeft, bottom: birdBottom }} />
@@ -175,28 +168,34 @@ export default function FlappyBird() {
               <View
                 style={{
                   position: "absolute",
-                  backgroundColor: "darkslateblue",
+                  borderColor: "#4B6CFE",
+                  borderWidth: 2,
                   justifyContent: "center",
                   alignItems: "center",
                   padding:20,
                   borderRadius:15,
+                  backgroundColor:"white"
                 }}
               >
-                <Text style={{ fontSize: 24, color:'white', padding: 5 }}>¡Ooopps! Perdiste</Text>
-                <Text style={{ fontSize: 24, color:'white', padding:5}}>Puntuación: {score}</Text>
-                <Button title="De nuevo" onPress={resetGame} />
+                <Text style={{ fontSize: 24, color:'#4B6CFE', padding: 5 }}>¡Ooopps! Perdiste</Text>
+                <Text style={{ fontSize: 24, color:'#4B6CFE', padding:5 }}>Puntuación: {score}</Text>
+                <TouchableOpacity onPress={resetGame}  style={{borderWidth:2, borderColor:'#4B6CFE', padding:10, borderRadius:15, marginBottom:10, marginTop: 10}}>
+                  <Text style={{color:'#4B6CFE'}}>Intentar de Nuevo</Text>
+                </TouchableOpacity>
               </View>
             )}
           </>
         ) : (
-          <View style={{ alignItems: "center", backgroundColor:'darkslateblue', margin:15 , borderRadius:10, padding:15, marginTop:5 }}>
-            <Text style={{ fontSize: 25, marginBottom: 20, fontWeight:'bold', textAlign:'center', color:'khaki', marginTop:10 }}>
+          <View style={{ alignItems: "center", borderColor:'#4B6CFE', borderWidth: 2, margin:15 , borderRadius:10, padding:15, marginTop:5 }}>
+            <Text style={{ fontSize: 25, marginBottom: 20, fontWeight:'bold', textAlign:'center', color:'#4B6CFE', marginTop:10 }}>
               Bienvenido {'\n'} a{'\n'} FlappyBird
             </Text>
-            <Text style={{padding:10, textAlign:'center', color:'white', marginBottom:10}}>
-                Esta es una pantalla de carga {'\n'} en lo que esperas a que cargue{'\n'} lo que sea que esté cargando
+            <Text style={{padding:10, textAlign:'center', color:'#4B6CFE', marginBottom:15, fontWeight:400}}>
+                Esta es una pantalla de carga {'\n'} en lo que esperas a que cargue{'\n'} lo que sea que esté cargando.
             </Text>
-            <Button title="Empezar" onPress={startGame}/>
+            <TouchableOpacity onPress={startGame} style={{borderWidth:2, borderColor:'#4B6CFE', padding:10, borderRadius:15, marginBottom:10}}>
+              <Text style={{color: '#4B6CFE'}}>Esperar</Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
