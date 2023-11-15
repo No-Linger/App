@@ -50,6 +50,7 @@ export default function Login(props) {
   };
 
   useEffect(() => {
+    loginHandler();
     const keyboardDidShowListener = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', // Use different events for iOS and Android
       () => {
@@ -142,14 +143,14 @@ export default function Login(props) {
       </Svg>
     </Animated.View>
     <View style={styles.bottomContainer}>
-      <Animated.View style={buttonsAnimatedStyle}>
+      {/* <Animated.View style={buttonsAnimatedStyle}>
         <Pressable
           style={styles.button}
           onPress={loginHandler}
         >
           <Text style={styles.buttonText}>Iniciar Sesión</Text>
         </Pressable>
-      </Animated.View>
+      </Animated.View> */}
     </View>
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={[keyboardOpen ? { backgroundColor: 'white', marginTop:-20 } : null]}>
@@ -171,7 +172,7 @@ export default function Login(props) {
             secureTextEntry
             editable={isButtonClicked && !modalVisible}
           />
-          <Animated.View style={[styles.closeButtonContainer, closeButtonContainerStyle]}>
+          {/* <Animated.View style={[styles.closeButtonContainer, closeButtonContainerStyle]}>
             <Pressable
               onPress={() => {
                 Keyboard.dismiss();
@@ -183,7 +184,7 @@ export default function Login(props) {
             >
               <Text style={{ transform: [{ rotate: '180deg' }] }}>X</Text>
             </Pressable>
-          </Animated.View>
+          </Animated.View> */}
           <Animated.View style={[styles.formButtom, formButtonAnimatedStyle]}>
             <Pressable
               onPress={async () => {
