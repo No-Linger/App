@@ -15,7 +15,7 @@ const Obstacle = ({
         style={{
           position: "absolute",
           backgroundColor: "white",
-          borderColor: color,
+          borderColor: "#4B6CFE",
           borderWidth: 4,
           width: ObstacleWidth,
           height: ObstacleHeight,
@@ -28,7 +28,7 @@ const Obstacle = ({
         style={{
           position: "absolute",
           backgroundColor: "white",
-          borderColor: color,
+          borderColor: "#4B6CFE",
           borderWidth: 4,
           width: ObstacleWidth,
           height: ObstacleHeight,

@@ -14,18 +14,11 @@ export default function StatsData({
       <View
         style={{ margin: 0, padding: 10, overflow: "hidden", borderRadius: 15 }}
       >
-        <View style={{ borderRadius: 15, overflow: "hidden", padding: 3 }}>
-          <TouchableOpacity onPress={toggleOpen}>
-            <Text
-              style={{ fontSize: 15, fontWeight: "600", textAlign: "center" }}
-            >
-              Bitácora de Datos
-            </Text>
-          </TouchableOpacity>
-        </View>
-
         {Object.keys(dataByDate).length > 0 ? (
           <View style={{ marginTop: 10 }}>
+            <View style={{ marginBottom: 18 }}>
+              <Text style={{ fontSize: 25, fontWeight: "600" }}>Historial</Text>
+            </View>
             {Object.keys(dataByDate).map((date) => (
               <View
                 key={date}
@@ -114,6 +107,7 @@ export default function StatsData({
           >
             <Text
               style={{
+                fontSize: 20,
                 padding: 20,
                 color: "#4B6CFE",
                 overflow: "hidden",

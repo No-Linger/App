@@ -70,7 +70,7 @@ export default function Profile() {
 
   const generateLines = (count, isRow, imageWidth, imageHeight) => {
     const lines = [];
-    for (let i = 0; i < count; i++) {
+    for (let i = 1; i < count; i++) {
       const position = isRow
         ? (imageHeight / count) * i
         : (imageWidth / count) * i;
@@ -182,7 +182,7 @@ export default function Profile() {
         message="Planogrmas de la nube no disponibles"
         isVisible={cloudPlanogramError}
         onClose={() => setCoudPlanogramError(false)}
-        icon="liquid-spot"
+        icon="content-save-alert-outline"
       />
       <Notification
         title="Modo Offline"
@@ -241,7 +241,7 @@ export default function Profile() {
                   backgroundColor: "white",
                   borderRadius: 25,
                   borderWidth: 2,
-                  borderColor: "black",
+                  borderColor: "#4B6CFE",
                 }}
               >
                 <View style={{ flex: 1, marginTop: 30, marginLeft: 16 }}>
@@ -270,15 +270,16 @@ export default function Profile() {
                     <TouchableOpacity
                       onPress={pickImage}
                       style={{
+                        margin: 2,
                         borderWidth: 2,
-                        borderColor: "black",
-                        padding: 80,
+                        borderColor: "#4B6CFE",
+                        padding: 45,
                         borderRadius: 20,
                         justifyContent: "center",
                         alignItems: "center",
                       }}
                     >
-                      <Icon name="selection-drag" size={80} />
+                      <Icon name="selection-drag" size={80} color="#4B6CFE" />
                       <Text
                         style={{
                           marginTop: 10,
@@ -307,6 +308,8 @@ export default function Profile() {
                               (selectedImage.width / selectedImage.height),
                             height: containerHeight,
                             borderRadius: 10,
+                            borderColor: "#4B6CFE",
+                            borderWidth: 2,
                           }}
                         />
                         {generateLines(
@@ -496,6 +499,7 @@ export default function Profile() {
           style={{ flex: 1, opacity: 0 }}
           onPress={async () => {
             let planograms = await getLocalPlanograms();
+            console.log(planograms);
             setPlanograms(planograms);
           }}
         >
@@ -526,14 +530,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
-    height: 1,
-    backgroundColor: "white",
+    height: 2,
+    backgroundColor: "#A6A6FD",
   },
   colLine: {
     position: "absolute",
     top: 0,
     bottom: 0,
-    width: 1,
-    backgroundColor: "white",
+    width: 2,
+    backgroundColor: "#A6A6FD",
   },
 });

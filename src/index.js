@@ -12,7 +12,7 @@ const Tab = createBottomTabNavigator();
 function MyTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Analizar"
+      initialRouteName="Datos"
       screenOptions={{
         tabBarActiveTintColor: "#FFFFFF",
         tabBarInactiveTintColor: "#C2CDFF",
@@ -98,8 +98,7 @@ function MyTabs() {
 }
 
 export default function Main() {
-  //const [isLoged, setIsLoged] = useState(false);
-  const [isLoged, setIsLoged] = useState(false);
+  const [isLoged, setIsLoged] = useState(true);
   if (isLoged) {
     return (
       <ModelProvider>

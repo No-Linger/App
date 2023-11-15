@@ -13,6 +13,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { authClient } from "../services/firebaseConfig";
 import Animated, {
   interpolate,
   useSharedValue,
