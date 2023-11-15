@@ -5,11 +5,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const categories = [
   "adobadas",
-  "chips",
+  "cheetos",
+  "churrumais",
   "doritos",
-  "jalapeno",
+  "doritosDinamita",
+  "fritosChorizo",
+  "nothing",
   "rancheritos",
   "ruffles",
+  "sabritas",
+  "sabritasLimon",
 ];
 
 export const indexToString = (index) => {
@@ -21,24 +26,18 @@ export const loadModel = async () => {
     await tf.ready();
     console.log("Tensorflow Ready!");
     const modelJson = require("../model/model.json");
-    const modelWeights1 = require("../model/group1-shard1of4.bin");
-    const modelWeights2 = require("../model/group1-shard2of4.bin");
-    const modelWeights3 = require("../model/group1-shard3of4.bin");
-    const modelWeights4 = require("../model/group1-shard4of4.bin");
+    const modelWeights1 = require("../model/group1-shard1of1.bin");
 
     let start = performance.now();
-    const model = await tf.loadLayersModel(
-      bundleResourceIO(modelJson, [
-        modelWeights1,
-        modelWeights2,
-        modelWeights3,
-        modelWeights4,
-      ])
+    const model = await tf.loadGraphModel(
+      bundleResourceIO(modelJson, modelWeights1)
     );
     let end = performance.now();
+
     console.log("Model Loaded in : ", ((end - start) / 1000).toFixed(2));
     return model;
   } catch (err) {
+    console.log(err);
     console.log("model load failed 🙃");
   }
 };
@@ -46,7 +45,6 @@ export const loadModel = async () => {
 export const sliceImage = async (uri, rows, cols) => {
   const imageInfo = await ImageManipulator.manipulateAsync(uri);
   const { width, height } = imageInfo;
-  console.log(width, height);
 
   const pieceWidth = width / cols;
   const pieceHeight = height / rows;
@@ -147,7 +145,6 @@ export const comparePlanogram = async (
 ) => {
   try {
     let res = [];
-    console.log(planogramMatrix);
     for (let i = 0; i < rows; i++) {
       let temp = [];
       for (let j = 0; j < cols; j++) {

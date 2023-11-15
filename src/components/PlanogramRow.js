@@ -57,7 +57,7 @@ export default function PlanogramRow({
 
   const generateLines = (count, isRow, imageWidth, imageHeight) => {
     const lines = [];
-    for (let i = 0; i < count; i++) {
+    for (let i = 1; i < count; i++) {
       const position = isRow
         ? (imageHeight / count) * i
         : (imageWidth / count) * i;
@@ -179,7 +179,7 @@ export default function PlanogramRow({
                 autoPlay={true}
                 loop
                 source={require("../../assets/lotties/processingImage.json")}
-                style={{ width: 50, height: 50 }}
+                style={{ width: 85, height: 85 }}
               />
             )}
             <Modal
@@ -246,6 +246,8 @@ export default function PlanogramRow({
                                   (planogram.width / planogram.height),
                                 height: containerHeight,
                                 borderRadius: 10,
+                                borderColor: "#4B6CFE",
+                                borderWidth: 2,
                               }}
                             />
                             {generateLines(
@@ -432,13 +434,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: "white",
+    backgroundColor: "#4B6CFE",
   },
   colLine: {
     position: "absolute",
     top: 0,
     bottom: 0,
     width: 1,
-    backgroundColor: "white",
+    backgroundColor: "#4B6CFE",
   },
 });
