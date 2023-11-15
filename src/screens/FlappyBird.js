@@ -140,20 +140,13 @@ export default function FlappyBird() {
   };
 
   useEffect(() => {
-    if (score >= 3) {
+    if (score >= 3 && score % 3 === 0) {
       SpeedGame();
-    }
-    if (score >= 6) {
-      SpeedGameX2();
     }
   }, [score]);
 
   const SpeedGame = () => {
-    setGravity(6);
-  };
-
-  const SpeedGameX2 = () => {
-    setGravity(8);
+    setGravity((gravity) => gravity + 2);
   };
 
   return (
@@ -171,7 +164,7 @@ export default function FlappyBird() {
             <Icon
               name="bird"
               size={40}
-              color="#4B6CFE"
+              color="blueviolet"
               style={{
                 position: "absolute",
                 left: birdLeft,
@@ -184,7 +177,7 @@ export default function FlappyBird() {
               ObstacleWidth={obstacleWidth}
               ObstacleHeight={obstacleHeight}
               gap={gap}
-              color={"#4B6CFE"}
+              color={"green"}
               randomHeight={obstacleNegHeight}
             />
             <Obstacle
@@ -192,29 +185,41 @@ export default function FlappyBird() {
               ObstacleWidth={obstacleWidth}
               ObstacleHeight={obstacleHeight}
               gap={gap}
-              color={"#4B6CFE"}
+              color={"forestgreen"}
               randomHeight={obstacleNegHeightTwo}
             />
             {isGameOver && (
               <View
                 style={{
                   position: "absolute",
-                  backgroundColor: "white",
                   borderColor: "#4B6CFE",
                   borderWidth: 2,
                   justifyContent: "center",
                   alignItems: "center",
                   padding: 20,
                   borderRadius: 15,
+                  backgroundColor: "white",
                 }}
               >
                 <Text style={{ fontSize: 24, color: "#4B6CFE", padding: 5 }}>
                   ¡Ooopps! Perdiste
                 </Text>
-                <Text style={{ fontSize: 24, color: "black", padding: 5 }}>
+                <Text style={{ fontSize: 24, color: "#4B6CFE", padding: 5 }}>
                   Puntuación: {score}
                 </Text>
-                <Button title="De nuevo" onPress={resetGame} />
+                <TouchableOpacity
+                  onPress={resetGame}
+                  style={{
+                    borderWidth: 2,
+                    borderColor: "#4B6CFE",
+                    padding: 10,
+                    borderRadius: 15,
+                    marginBottom: 10,
+                    marginTop: 10,
+                  }}
+                >
+                  <Text style={{ color: "#4B6CFE" }}>Intentar de Nuevo</Text>
+                </TouchableOpacity>
               </View>
             )}
           </>
@@ -222,7 +227,6 @@ export default function FlappyBird() {
           <View
             style={{
               alignItems: "center",
-              backgroundColor: "white",
               borderColor: "#4B6CFE",
               borderWidth: 2,
               margin: 15,
@@ -241,24 +245,31 @@ export default function FlappyBird() {
                 marginTop: 10,
               }}
             >
-              FlappyBird
+              Bienvenido {"\n"} a{"\n"} FlappyBird
             </Text>
             <Text
               style={{
                 padding: 10,
                 textAlign: "center",
-                color: "black",
-                marginBottom: 10,
+                color: "#4B6CFE",
+                marginBottom: 15,
+                fontWeight: 400,
               }}
             >
               Esta es una pantalla de carga {"\n"} en lo que esperas a que
-              cargue{"\n"} lo que sea que esté cargando
+              cargue{"\n"} lo que sea que esté cargando.
             </Text>
             <TouchableOpacity
               onPress={startGame}
-              style={{ borderWidth: 2, padding: 8, borderRadius: 10 }}
+              style={{
+                borderWidth: 2,
+                borderColor: "#4B6CFE",
+                padding: 10,
+                borderRadius: 15,
+                marginBottom: 10,
+              }}
             >
-              <Text style={{ fontSize: 20 }}>Empezar</Text>
+              <Text style={{ color: "#4B6CFE" }}>Esperar</Text>
             </TouchableOpacity>
           </View>
         )}
