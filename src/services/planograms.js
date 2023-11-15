@@ -92,14 +92,7 @@ export const downloadPlanogram = async (planogramId) => {
   }
 };
 
-export const processPlanogram = async (
-  model,
-  planogramId,
-
-  uri,
-  cols,
-  rows
-) => {
+export const processPlanogram = async (model, planogramId, uri, cols, rows) => {
   const slices = await sliceImage(uri, rows, cols);
   const predicitons = await classifyGrid(model, slices, rows, cols);
   let actualPlanograms = await getLocalPlanograms();

@@ -284,6 +284,11 @@ export default function TakePicture() {
                   flex: 1,
                 }}
               >
+                <LottieView
+                  source={require("../../assets/lotties/ghost.json")}
+                  style={{ width: 250, height: 250 }}
+                  autoPlay
+                />
                 <Text
                   style={{
                     width: "60%",
@@ -292,8 +297,7 @@ export default function TakePicture() {
                     fontSize: 16,
                   }}
                 >
-                  Aqui va el perro maldito Lottie ¡Aún no has descargado ningún
-                  planograma!
+                  ¡Aún no has descargado ningún planograma!
                 </Text>
               </View>
             )}

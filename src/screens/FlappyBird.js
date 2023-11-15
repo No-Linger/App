@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, Button, Dimensions, TouchableWithoutFeedback } from "react-native";
+import {
+  Text,
+  View,
+  Button,
+  Dimensions,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
+} from "react-native";
 
 import Bird from "../components/Bird";
 import Obstacle from "../components/Obstacle";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-
 
 export default function FlappyBird() {
   const screenWidth = Dimensions.get("screen").width;
@@ -22,7 +28,9 @@ export default function FlappyBird() {
   const obstacleHeight = 300;
   const gap = 150;
 
-  const [obstacleLeftTwo, setObstacleLeftTwo] = useState(screenWidth + screenWidth / 2 + 30);
+  const [obstacleLeftTwo, setObstacleLeftTwo] = useState(
+    screenWidth + screenWidth / 2 + 30
+  );
   const [obstacleNegHeight, setObstacleNegHeight] = useState(0);
   const [obstacleNegHeightTwo, setObstacleNegHeightTwo] = useState(0);
 
@@ -134,11 +142,12 @@ export default function FlappyBird() {
   useEffect(() => {
     if (score >= 3) {
       SpeedGame();
-    } if (score >= 6){
+    }
+    if (score >= 6) {
       SpeedGameX2();
     }
   }, [score]);
-  
+
   const SpeedGame = () => {
     setGravity(6);
   };
@@ -146,21 +155,36 @@ export default function FlappyBird() {
   const SpeedGameX2 = () => {
     setGravity(8);
   };
-  
-  
+
   return (
     <TouchableWithoutFeedback onPress={jump}>
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor:'azure' }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "white",
+        }}
+      >
         {isGameStarted ? (
           <>
-            <Icon name="bird" size={40} color="blueviolet" style={{ position: "absolute", left: birdLeft, bottom: birdBottom }} />
-            
+            <Icon
+              name="bird"
+              size={40}
+              color="#4B6CFE"
+              style={{
+                position: "absolute",
+                left: birdLeft,
+                bottom: birdBottom,
+              }}
+            />
+
             <Obstacle
               ObstaclesLeft={obstacleLeft}
               ObstacleWidth={obstacleWidth}
               ObstacleHeight={obstacleHeight}
               gap={gap}
-              color={'green'}
+              color={"#4B6CFE"}
               randomHeight={obstacleNegHeight}
             />
             <Obstacle
@@ -168,35 +192,74 @@ export default function FlappyBird() {
               ObstacleWidth={obstacleWidth}
               ObstacleHeight={obstacleHeight}
               gap={gap}
-              color={"forestgreen"}
+              color={"#4B6CFE"}
               randomHeight={obstacleNegHeightTwo}
             />
             {isGameOver && (
               <View
                 style={{
                   position: "absolute",
-                  backgroundColor: "darkslateblue",
+                  backgroundColor: "white",
+                  borderColor: "#4B6CFE",
+                  borderWidth: 2,
                   justifyContent: "center",
                   alignItems: "center",
-                  padding:20,
-                  borderRadius:15,
+                  padding: 20,
+                  borderRadius: 15,
                 }}
               >
-                <Text style={{ fontSize: 24, color:'white', padding: 5 }}>¡Ooopps! Perdiste</Text>
-                <Text style={{ fontSize: 24, color:'white', padding:5}}>Puntuación: {score}</Text>
+                <Text style={{ fontSize: 24, color: "#4B6CFE", padding: 5 }}>
+                  ¡Ooopps! Perdiste
+                </Text>
+                <Text style={{ fontSize: 24, color: "black", padding: 5 }}>
+                  Puntuación: {score}
+                </Text>
                 <Button title="De nuevo" onPress={resetGame} />
               </View>
             )}
           </>
         ) : (
-          <View style={{ alignItems: "center", backgroundColor:'darkslateblue', margin:15 , borderRadius:10, padding:15, marginTop:5 }}>
-            <Text style={{ fontSize: 25, marginBottom: 20, fontWeight:'bold', textAlign:'center', color:'khaki', marginTop:10 }}>
-              Bienvenido {'\n'} a{'\n'} FlappyBird
+          <View
+            style={{
+              alignItems: "center",
+              backgroundColor: "white",
+              borderColor: "#4B6CFE",
+              borderWidth: 2,
+              margin: 15,
+              borderRadius: 10,
+              padding: 15,
+              marginTop: 5,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 25,
+                marginBottom: 20,
+                fontWeight: "bold",
+                textAlign: "center",
+                color: "#4B6CFE",
+                marginTop: 10,
+              }}
+            >
+              FlappyBird
             </Text>
-            <Text style={{padding:10, textAlign:'center', color:'white', marginBottom:10}}>
-                Esta es una pantalla de carga {'\n'} en lo que esperas a que cargue{'\n'} lo que sea que esté cargando
+            <Text
+              style={{
+                padding: 10,
+                textAlign: "center",
+                color: "black",
+                marginBottom: 10,
+              }}
+            >
+              Esta es una pantalla de carga {"\n"} en lo que esperas a que
+              cargue{"\n"} lo que sea que esté cargando
             </Text>
-            <Button title="Empezar" onPress={startGame}/>
+            <TouchableOpacity
+              onPress={startGame}
+              style={{ borderWidth: 2, padding: 8, borderRadius: 10 }}
+            >
+              <Text style={{ fontSize: 20 }}>Empezar</Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
