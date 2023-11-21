@@ -32,14 +32,18 @@ export default function TestStats() {
 
   // Función para generar un JSON falso para simular los datos capturados
   const getFakeJson = () => {
-    const precision = getRandomInt(97, 100);
+    //const precision = getRandomInt(97, 100);
+    //const fecha = new Date().toLocaleDateString();
+    //const hora = new Date().toLocaleTimeString();
+    //const planograma = getRandomArrayElement([
+    //  "Sabritas",
+    //  "CocaCola",
+    //  "Barcel",
+    //]);
+    const precision = 75;
     const fecha = new Date().toLocaleDateString();
     const hora = new Date().toLocaleTimeString();
-    const planograma = getRandomArrayElement([
-      "Sabritas",
-      "CocaCola",
-      "Barcel",
-    ]);
+    const planograma = getRandomArrayElement(["Sabritas"]);
     const sucrusal = 123456;
     const fakeJSON = { planograma, fecha, hora, precision, sucrusal };
     return fakeJSON;
@@ -58,7 +62,7 @@ export default function TestStats() {
   const uploadData = async (data) => {
     try {
       let response = await fetchWithTimeout(
-        "http://192.168.100.24:8082/postStats",
+        "http://10.48.69.105:8082/postStats",
         {
           method: "POST",
           headers: {
@@ -200,7 +204,6 @@ export default function TestStats() {
           />
         )}
       </Tab.Screen>
-      <Tab.Screen name="Game">{() => <FlappyBird />}</Tab.Screen>
     </Tab.Navigator>
   );
 }

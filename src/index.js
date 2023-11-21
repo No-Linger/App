@@ -12,7 +12,7 @@ const Tab = createBottomTabNavigator();
 function MyTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Datos"
+      initialRouteName="Analizar"
       screenOptions={{
         tabBarActiveTintColor: "#FFFFFF",
         tabBarInactiveTintColor: "#C2CDFF",

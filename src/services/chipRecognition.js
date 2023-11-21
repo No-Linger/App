@@ -8,13 +8,13 @@ const categories = [
   "cheetos",
   "churrumais",
   "doritos",
-  "doritosDinamita",
-  "fritosChorizo",
+  "Doritos Dinamita",
+  "Fritos Chorizo",
   "nothing",
   "rancheritos",
   "ruffles",
   "sabritas",
-  "sabritasLimon",
+  "sabritas Limon",
 ];
 
 export const indexToString = (index) => {
