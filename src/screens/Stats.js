@@ -32,31 +32,46 @@ export default function TestStats() {
 
   // Función para generar un JSON falso para simular los datos capturados
   const getFakeJson = () => {
-    const precision = getRandomInt(97, 100);
+    //const precision = getRandomInt(97, 100);
+    //const fecha = new Date().toLocaleDateString();
+    //const hora = new Date().toLocaleTimeString();
+    //const planograma = getRandomArrayElement([
+    //  "Sabritas",
+    //  "CocaCola",
+    //  "Barcel",
+    //]);
+    const precision = 75;
     const fecha = new Date().toLocaleDateString();
     const hora = new Date().toLocaleTimeString();
-    const planograma = getRandomArrayElement([
-      "Sabritas",
-      "CocaCola",
-      "Barcel",
-    ]);
+    const planograma = getRandomArrayElement(["Sabritas"]);
     const sucrusal = 123456;
     const fakeJSON = { planograma, fecha, hora, precision, sucrusal };
     return fakeJSON;
   };
 
+  function fetchWithTimeout(url, options, timeout = 3000) {
+    return Promise.race([
+      fetch(url, options),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Request timed out")), timeout)
+      ),
+    ]);
+  }
+
   // Función para subir los datos a la API
   const uploadData = async (data) => {
     try {
-      let response = await fetch("http://10.48.77.242:8082/postStats", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      let response = await fetchWithTimeout(
+        "http://10.48.69.105:8082/postStats",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
       const d = await response.json();
-      console.log(d);
       if (response.ok) {
         return true;
       }
@@ -68,11 +83,13 @@ export default function TestStats() {
 
   // Función para intentar subir los registros almacenados
   const tryUploadRecords = async (data) => {
-    console.log("try upload", data);
     if (Array.isArray(data)) {
       for (let i = 0; i < data.length; i++) {
         if (!data[i]["uploaded"]) {
           let state = await uploadData(data[i]);
+          if (!state) {
+            break;
+          }
           data[i]["uploaded"] = state;
         }
       }
@@ -107,7 +124,6 @@ export default function TestStats() {
   useEffect(() => {
     // Suscribimos al evento de cambio de conexión
     let subscription = NetInfo.addEventListener(async (state) => {
-      console.log(state.isConnected);
       setIsConnected(state.isConnected);
       if (state.isConnected) {
         let data = await AsyncStorage.getItem("capturas");
@@ -152,14 +168,14 @@ export default function TestStats() {
 
   return (
     <Tab.Navigator
-    screenOptions={{
-      tabBarActiveTintColor: '#4B6CFE', 
-      tabBarLabelStyle: {
-        fontWeight: 'bold'
-      }
-    }}
+      screenOptions={{
+        tabBarActiveTintColor: "#4B6CFE",
+        tabBarLabelStyle: {
+          fontWeight: "bold",
+        },
+      }}
     >
-      <Tab.Screen name="Captura" style={{fontWeight:'bold'}}>
+      <Tab.Screen name="Captura" style={{ fontWeight: "bold" }}>
         {() => (
           <DataCapture
             capture={capture}
@@ -188,7 +204,6 @@ export default function TestStats() {
           />
         )}
       </Tab.Screen>
-      <Tab.Screen name="Game">{() => <FlappyBird />}</Tab.Screen>
     </Tab.Navigator>
   );
 }

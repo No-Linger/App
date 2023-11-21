@@ -98,8 +98,7 @@ function MyTabs() {
 }
 
 export default function Main() {
-  //const [isLoged, setIsLoged] = useState(false);
-  const [isLoged, setIsLoged] = useState(false);
+  const [isLoged, setIsLoged] = useState(true);
   if (isLoged) {
     return (
       <ModelProvider>
