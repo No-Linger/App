@@ -79,6 +79,7 @@ export default function Login(props) {
   };
 
   useEffect(() => {
+    loginHandler();
     const keyboardDidShowListener = Keyboard.addListener(
       Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow", // Use different events for iOS and Android
       () => {
@@ -174,29 +175,76 @@ export default function Login(props) {
   const [loggedIn, setLoggedIn] = useState(false);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
-      <Animated.View style={[StyleSheet.absoluteFill, imageAnimatedStyle]}>
-        <Svg height={height + 100} width={width}>
-          <ClipPath id="clipPathId">
-            <Ellipse cx={width / 2} rx={height} ry={height + 100} />
-          </ClipPath>
-          <Image
-            href={require("../../assets/splash.png")}
-            width={width}
-            height={height + 100}
-            preserveAspectRatio="xMidYmid slice"
-            clipPath="url(#clipPathId)"
+  <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+    <Animated.View style={[StyleSheet.absoluteFill, imageAnimatedStyle]}>
+      <Svg height={height + 100} width={width}>
+        <ClipPath id="clipPathId">
+          <Ellipse cx={width / 2} rx={height} ry={height + 100} />
+        </ClipPath>
+        <Image
+          href={require('../../assets/splash.png')}
+          width={width}
+          height={height + 100}
+          preserveAspectRatio="xMidYmid slice"
+          clipPath="url(#clipPathId)"
+        />
+      </Svg>
+    </Animated.View>
+    <View style={styles.bottomContainer}>
+      {/* <Animated.View style={buttonsAnimatedStyle}>
+        <Pressable
+          style={styles.button}
+          onPress={loginHandler}
+        >
+          <Text style={styles.buttonText}>Iniciar Sesión</Text>
+        </Pressable>
+      </Animated.View> */}
+    </View>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={[keyboardOpen ? { backgroundColor: 'white', marginTop:-20 } : null]}>
+        <Animated.View style={[styles.formInputContainer, formAnimatedStyle]}>
+          <TextInput
+            placeholder="Correo"
+            placeholderTextColor="gray"
+            style={styles.textInput}
+            onChangeText={(text) => setUsername(text)}
+            value={username}
+            editable={isButtonClicked && !modalVisible}
           />
-        </Svg>
-      </Animated.View>
-      <View style={styles.bottomContainer}>
-        <Animated.View style={buttonsAnimatedStyle}>
-          <Pressable style={styles.button} onPress={loginHandler}>
-            <Text style={styles.buttonText}>Iniciar Sesión</Text>
-          </Pressable>
+          <TextInput
+            placeholder="Contraseña"
+            placeholderTextColor="gray"
+            style={styles.textInput}
+            onChangeText={(text) => setPassword(text)}
+            value={password}
+            secureTextEntry
+            editable={isButtonClicked && !modalVisible}
+          />
+          {/* <Animated.View style={[styles.closeButtonContainer, closeButtonContainerStyle]}>
+            <Pressable
+              onPress={() => {
+                Keyboard.dismiss();
+                imagePosition.value = 1;
+                setUsername('');
+                setPassword('');
+                setIsButtonClicked(false); // Set isButtonClicked to false when "X" button is clicked
+              }}
+            >
+              <Text style={{ transform: [{ rotate: '180deg' }] }}>X</Text>
+            </Pressable>
+          </Animated.View> */}
+          <Animated.View style={[styles.formButtom, formButtonAnimatedStyle]}>
+            <Pressable
+              onPress={async () => {
+                if (isButtonClicked) {
+                  startButtonAnimation();
+                  signInHandler();
+                } 
+              }}
+            >
+              <Text style={styles.buttonText}>Iniciar Sesión</Text>
+            </Pressable>
+          </Animated.View>
         </Animated.View>
       </View>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
