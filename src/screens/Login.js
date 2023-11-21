@@ -13,7 +13,6 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { authClient } from "../services/firebaseConfig";
 import Animated, {
   interpolate,
   useSharedValue,
@@ -27,6 +26,7 @@ import { Dimensions } from "react-native";
 import { LottieAnimation } from "../components";
 import CustomModal from "../components/modalLottie";
 import styles from "../../styles";
+import { authClient } from "../services/firebaseConfig";
 
 export default function Login(props) {
   const { height, width } = Dimensions.get("window");
@@ -36,6 +36,10 @@ export default function Login(props) {
 
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useState(false);
+
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const signInHandler = useCallback(async () => {
     try {
@@ -170,28 +174,27 @@ export default function Login(props) {
     imagePosition.value = 0;
   };
 
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
-
   return (
-  <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-    <Animated.View style={[StyleSheet.absoluteFill, imageAnimatedStyle]}>
-      <Svg height={height + 100} width={width}>
-        <ClipPath id="clipPathId">
-          <Ellipse cx={width / 2} rx={height} ry={height + 100} />
-        </ClipPath>
-        <Image
-          href={require('../../assets/splash.png')}
-          width={width}
-          height={height + 100}
-          preserveAspectRatio="xMidYmid slice"
-          clipPath="url(#clipPathId)"
-        />
-      </Svg>
-    </Animated.View>
-    <View style={styles.bottomContainer}>
-      {/* <Animated.View style={buttonsAnimatedStyle}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <Animated.View style={[StyleSheet.absoluteFill, imageAnimatedStyle]}>
+        <Svg height={height + 100} width={width}>
+          <ClipPath id="clipPathId">
+            <Ellipse cx={width / 2} rx={height} ry={height + 100} />
+          </ClipPath>
+          <Image
+            href={require("../../assets/splash.png")}
+            width={width}
+            height={height + 100}
+            preserveAspectRatio="xMidYmid slice"
+            clipPath="url(#clipPathId)"
+          />
+        </Svg>
+      </Animated.View>
+      <View style={styles.bottomContainer}>
+        {/* <Animated.View style={buttonsAnimatedStyle}>
         <Pressable
           style={styles.button}
           onPress={loginHandler}
@@ -199,53 +202,6 @@ export default function Login(props) {
           <Text style={styles.buttonText}>Iniciar Sesión</Text>
         </Pressable>
       </Animated.View> */}
-    </View>
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={[keyboardOpen ? { backgroundColor: 'white', marginTop:-20 } : null]}>
-        <Animated.View style={[styles.formInputContainer, formAnimatedStyle]}>
-          <TextInput
-            placeholder="Correo"
-            placeholderTextColor="gray"
-            style={styles.textInput}
-            onChangeText={(text) => setUsername(text)}
-            value={username}
-            editable={isButtonClicked && !modalVisible}
-          />
-          <TextInput
-            placeholder="Contraseña"
-            placeholderTextColor="gray"
-            style={styles.textInput}
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            secureTextEntry
-            editable={isButtonClicked && !modalVisible}
-          />
-          {/* <Animated.View style={[styles.closeButtonContainer, closeButtonContainerStyle]}>
-            <Pressable
-              onPress={() => {
-                Keyboard.dismiss();
-                imagePosition.value = 1;
-                setUsername('');
-                setPassword('');
-                setIsButtonClicked(false); // Set isButtonClicked to false when "X" button is clicked
-              }}
-            >
-              <Text style={{ transform: [{ rotate: '180deg' }] }}>X</Text>
-            </Pressable>
-          </Animated.View> */}
-          <Animated.View style={[styles.formButtom, formButtonAnimatedStyle]}>
-            <Pressable
-              onPress={async () => {
-                if (isButtonClicked) {
-                  startButtonAnimation();
-                  signInHandler();
-                } 
-              }}
-            >
-              <Text style={styles.buttonText}>Iniciar Sesión</Text>
-            </Pressable>
-          </Animated.View>
-        </Animated.View>
       </View>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View
@@ -271,21 +227,19 @@ export default function Login(props) {
               secureTextEntry
               editable={isButtonClicked && !modalVisible}
             />
-            <Animated.View
-              style={[styles.closeButtonContainer, closeButtonContainerStyle]}
+            {/* <Animated.View style={[styles.closeButtonContainer, closeButtonContainerStyle]}>
+            <Pressable
+              onPress={() => {
+                Keyboard.dismiss();
+                imagePosition.value = 1;
+                setUsername('');
+                setPassword('');
+                setIsButtonClicked(false); // Set isButtonClicked to false when "X" button is clicked
+              }}
             >
-              <Pressable
-                onPress={() => {
-                  Keyboard.dismiss();
-                  imagePosition.value = 1;
-                  setUsername("");
-                  setPassword("");
-                  setIsButtonClicked(false); // Set isButtonClicked to false when "X" button is clicked
-                }}
-              >
-                <Text style={{ transform: [{ rotate: "180deg" }] }}>X</Text>
-              </Pressable>
-            </Animated.View>
+              <Text style={{ transform: [{ rotate: '180deg' }] }}>X</Text>
+            </Pressable>
+          </Animated.View> */}
             <Animated.View style={[styles.formButtom, formButtonAnimatedStyle]}>
               <Pressable
                 onPress={async () => {
