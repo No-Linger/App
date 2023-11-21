@@ -24,7 +24,6 @@ const firebaseConfig = {
   appId: APP_ID,
   measurementId: MEASUREMENT_ID,
 };
-
 export const Firebase_APP = initializeApp(firebaseConfig);
 
 const auth = initializeAuth(Firebase_APP, {
