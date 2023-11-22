@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Profile, Stats, TakePicture } from "./screens";
 import Login from "./screens/Login";
 import { NavigationContainer } from "@react-navigation/native";
@@ -6,6 +6,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ModelProvider } from "./contexts/model";
 import { TouchableOpacity } from "react-native";
+import { authClient } from "./services/firebaseConfig";
 
 const Tab = createBottomTabNavigator();
 
@@ -99,6 +100,19 @@ function MyTabs() {
 
 export default function Main() {
   const [isLoged, setIsLoged] = useState(false);
+  const checkSession = async()=>{
+    const user = await authClient
+  if(user){
+    console.log("Hay usuario")
+    setIsLoged(true)
+  }else{
+    console.log("NEL")
+  }
+  }
+  useEffect(()=>{
+    checkSession()
+  },[])
+  
   if (isLoged) {
     return (
       <ModelProvider>
