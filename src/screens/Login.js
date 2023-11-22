@@ -5,12 +5,19 @@ import Animated, { interpolate, useSharedValue, useAnimatedStyle, withTiming, wi
 import Svg, { Ellipse, Image, ClipPath } from 'react-native-svg';
 import { Dimensions } from 'react-native';
 import { LottieAnimation } from '../components';
+import {authClient} from '../services/firebaseConfig';
 import CustomModal from '../components/modalLottie';
 import styles from '../../styles';
 
 const logoImageSource = require('../../assets/logoOxxo.png');
 
 export default function Login(props) {
+
+  
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [loggedIn, setLoggedIn] = useState(false);
+  
   const { height, width } = Dimensions.get('window');
   const imagePosition = useSharedValue(1);
   const [modalVisible, setModalVisible] = useState(false);
@@ -32,6 +39,8 @@ export default function Login(props) {
       console.log(authClient.currentUser.uid);
     } catch (error) {
       console.log(error);
+      // setModalExceptionVisible(true)
+      showAlert()
     } finally {
       setTimeout(() => {
         setModalVisible(false);
@@ -39,6 +48,20 @@ export default function Login(props) {
       }, 3000);
     }
   }, [username, password, setModalVisible, setLoggedIn, props, setIsButtonClicked]);
+
+  const showAlert = () => {
+    Alert.alert(
+       'Error',
+       'Something went wrong. Please try again.',
+       [
+         {
+           text: 'OK',
+           onPress: () => console.log('OK Pressed'),
+         },
+       ],
+       { cancelable: false }
+    );
+   };
 
   const loginHandler = () => {
     imagePosition.value = 0;
@@ -122,9 +145,6 @@ export default function Login(props) {
     imagePosition.value = 0;
   };
 
-  const [username, setUsername] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [loggedIn, setLoggedIn] = useState(false);
 
   return (
   <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
@@ -143,14 +163,6 @@ export default function Login(props) {
       </Svg>
     </Animated.View>
     <View style={styles.bottomContainer}>
-      {/* <Animated.View style={buttonsAnimatedStyle}>
-        <Pressable
-          style={styles.button}
-          onPress={loginHandler}
-        >
-          <Text style={styles.buttonText}>Iniciar Sesión</Text>
-        </Pressable>
-      </Animated.View> */}
     </View>
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={[keyboardOpen ? { backgroundColor: 'white', marginTop:-20 } : null]}>
@@ -161,7 +173,7 @@ export default function Login(props) {
             style={styles.textInput}
             onChangeText={(text) => setUsername(text)}
             value={username}
-            editable={isButtonClicked && !modalVisible}
+            // editable={isButtonClicked && !modalVisible}
           />
           <TextInput
             placeholder="Contraseña"
@@ -170,21 +182,8 @@ export default function Login(props) {
             onChangeText={(text) => setPassword(text)}
             value={password}
             secureTextEntry
-            editable={isButtonClicked && !modalVisible}
+            // editable={isButtonClicked && !modalVisible}
           />
-          {/* <Animated.View style={[styles.closeButtonContainer, closeButtonContainerStyle]}>
-            <Pressable
-              onPress={() => {
-                Keyboard.dismiss();
-                imagePosition.value = 1;
-                setUsername('');
-                setPassword('');
-                setIsButtonClicked(false); // Set isButtonClicked to false when "X" button is clicked
-              }}
-            >
-              <Text style={{ transform: [{ rotate: '180deg' }] }}>X</Text>
-            </Pressable>
-          </Animated.View> */}
           <Animated.View style={[styles.formButtom, formButtonAnimatedStyle]}>
             <Pressable
               onPress={async () => {
@@ -198,6 +197,7 @@ export default function Login(props) {
             </Pressable>
           </Animated.View>
         </Animated.View>
+        {modalVisible && <CustomModal isVisible={modalVisible} />}
       </View>
     </TouchableWithoutFeedback>
   </KeyboardAvoidingView>
