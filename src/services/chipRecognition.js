@@ -1,20 +1,25 @@
 import * as tf from "@tensorflow/tfjs";
 import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
 import * as ImageManipulator from "expo-image-manipulator";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const categories = [
   "adobadas",
   "cheetos",
+  "cheetos-hot",
+  "cheetos-mix",
   "churrumais",
-  "doritos",
-  "Doritos Dinamita",
-  "Fritos Chorizo",
+  "doritos-dinamita",
+  "doritos-hot",
+  "doritos-nacho",
+  "fritos-chorizo",
   "nothing",
   "rancheritos",
   "ruffles",
+  "ruffles-jalapeno",
+  "ruffles-queso",
   "sabritas",
-  "sabritas Limon",
+  "sabritas-limon",
+  "tostitos-hot",
 ];
 
 export const indexToString = (index) => {
