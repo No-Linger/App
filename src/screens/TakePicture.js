@@ -30,6 +30,7 @@ import PagerView from "react-native-pager-view";
 import ResultImageDisplay from "../components/ResultImageDisplay";
 
 import * as Haptics from "expo-haptics";
+import { handleCapturar } from "../services/StatService";
 
 export default function TakePicture() {
   const { model } = useContext(ModelContext);
@@ -69,6 +70,19 @@ export default function TakePicture() {
           selectedPlanogram.rows,
           selectedPlanogram.cols
         );
+
+      const fecha = new Date().toLocaleDateString();
+      const hora = new Date().toLocaleTimeString();
+      const captureJson = {
+        planograma: selectedPlanogram.name,
+        fecha,
+        hora,
+        precision: errorPercentage,
+        sucursal: 69,
+      };
+
+      await handleCapturar(captureJson);
+
       setPlanogramValues(planogramMatrix);
       setRealValues(predicitons);
       setComparationResults(compareMatrix);
