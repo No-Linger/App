@@ -12,7 +12,7 @@ import SettingsOverlay from "./components/settingsOverlay";
 const Tab = createBottomTabNavigator();
 
 export default function Main() {
-  const [isLoged, setIsLoged] = useState(true);
+  const [isLoged, setIsLoged] = useState(false);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
 
   const checkSession = async () => {
@@ -149,3 +149,4 @@ function MyTabs({ toggleOverlay }) {
     </Tab.Navigator>
   );
 }
+
