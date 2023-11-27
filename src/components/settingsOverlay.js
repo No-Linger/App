@@ -2,7 +2,7 @@ import React from "react";
 import { View, TouchableOpacity, Text, Modal, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-const SettingsOverlay = ({ isVisible, onClose }) => {
+const SettingsOverlay = ({ isVisible, onClose, onLogout }) => {
   return (
     <Modal
       transparent={true}
@@ -16,14 +16,11 @@ const SettingsOverlay = ({ isVisible, onClose }) => {
         onPress={onClose}
       >
         <View style={styles.overlayContent}>
-          <TouchableOpacity style={styles.button} onPress={() => 1}>
-            <Text>Button 1</Text>
+          <TouchableOpacity style={styles.button} onPress={onLogout}>
+            <Text>Cerrar Sesión</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => 2}>
+          <TouchableOpacity style={styles.button} onPress={() => console.log(2)}>
             <Text>Button 2</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={onClose}>
-            <Text>Close</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>

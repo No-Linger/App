@@ -12,7 +12,7 @@ import SettingsOverlay from "./components/settingsOverlay";
 const Tab = createBottomTabNavigator();
 
 export default function Main() {
-  const [isLoged, setIsLoged] = useState(false);
+  const [isLoged, setIsLoged] = useState(true);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
 
   const checkSession = async () => {
@@ -32,6 +32,11 @@ export default function Main() {
     setIsOverlayVisible(!isOverlayVisible);
   };
 
+  const logout = () => {
+    setIsLoged(false);
+    setIsOverlayVisible(false);
+  };
+
   if (isLoged) {
     return (
       <ModelProvider>
@@ -40,6 +45,7 @@ export default function Main() {
           <SettingsOverlay
             isVisible={isOverlayVisible}
             onClose={() => setIsOverlayVisible(false)}
+            onLogout={logout}
           />
         </NavigationContainer>
       </ModelProvider>
