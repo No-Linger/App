@@ -17,7 +17,8 @@ const SettingsOverlay = ({ isVisible, onClose, onLogout }) => {
       >
         <View style={styles.overlayContent}>
           <TouchableOpacity style={styles.button} onPress={onLogout}>
-            <Text>Cerrar Sesión</Text>
+            <Icon name='logout-variant' style={styles.icon}/>
+            <Text style={{textDecorationLine: 'underline', color:'blue'}}>Cerrar Sesión</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={() => console.log(2)}>
             <Text>Button 2</Text>
@@ -43,8 +44,13 @@ const styles = StyleSheet.create({
   button: {
     padding: 10,
     marginVertical: 5,
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
+  icon: {
+    marginRight: 8,
+    color: 'blue'
+  }
 });
 
 export default SettingsOverlay;
