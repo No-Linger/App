@@ -32,14 +32,6 @@ export default function TestStats() {
 
   // Función para generar un JSON falso para simular los datos capturados
   const getFakeJson = () => {
-    //const precision = getRandomInt(97, 100);
-    //const fecha = new Date().toLocaleDateString();
-    //const hora = new Date().toLocaleTimeString();
-    //const planograma = getRandomArrayElement([
-    //  "Sabritas",
-    //  "CocaCola",
-    //  "Barcel",
-    //]);
     const precision = 75;
     const fecha = new Date().toLocaleDateString();
     const hora = new Date().toLocaleTimeString();
@@ -49,6 +41,7 @@ export default function TestStats() {
     return fakeJSON;
   };
 
+  // separate ui and system
   function fetchWithTimeout(url, options, timeout = 3000) {
     return Promise.race([
       fetch(url, options),
@@ -59,10 +52,11 @@ export default function TestStats() {
   }
 
   // Función para subir los datos a la API
+  // separate ui and system
   const uploadData = async (data) => {
     try {
       let response = await fetchWithTimeout(
-        "http://10.48.69.105:8082/postStats",
+        "http://10.48.74.125:8082/postStats",
         {
           method: "POST",
           headers: {
@@ -82,6 +76,7 @@ export default function TestStats() {
   };
 
   // Función para intentar subir los registros almacenados
+  // separate ui and system
   const tryUploadRecords = async (data) => {
     if (Array.isArray(data)) {
       for (let i = 0; i < data.length; i++) {
@@ -103,6 +98,7 @@ export default function TestStats() {
   };
 
   // Manejador del botón para capturar datos
+  // separate ui and system
   const handleCapturar = async () => {
     const fakeData = getFakeJson();
     let data = await AsyncStorage.getItem("capturas");

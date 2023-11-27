@@ -1,5 +1,5 @@
 //import { PLANOGRAM_API } from "@env";
-const PLANOGRAM_API = "http://10.48.69.105:8082";
+const PLANOGRAM_API = "http://10.48.74.125:8082";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system";
 import { classifyGrid, sliceImage } from "./chipRecognition";
