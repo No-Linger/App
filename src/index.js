@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Profile, Stats, TakePicture } from "./screens";
 import Login from "./screens/Login";
 import { NavigationContainer } from "@react-navigation/native";
@@ -7,10 +7,56 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { ModelProvider } from "./contexts/model";
 import { TouchableOpacity } from "react-native";
 import { authClient } from "./services/firebaseConfig";
+import SettingsOverlay from "./components/settingsOverlay";
 
 const Tab = createBottomTabNavigator();
 
-function MyTabs() {
+export default function Main() {
+  const [isLoged, setIsLoged] = useState(false);
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+
+  const checkSession = async () => {
+    const user = await authClient;
+    if (user) {
+      setIsLoged(true);
+    } else {
+      console.log("NEL");
+    }
+  };
+
+  useEffect(() => {
+    checkSession();
+  }, []);
+
+  const toggleOverlay = () => {
+    setIsOverlayVisible(!isOverlayVisible);
+  };
+
+  if (isLoged) {
+    return (
+      <ModelProvider>
+        <NavigationContainer>
+          <MyTabs toggleOverlay={toggleOverlay} />
+          <SettingsOverlay
+            isVisible={isOverlayVisible}
+            onClose={() => setIsOverlayVisible(false)}
+          />
+        </NavigationContainer>
+      </ModelProvider>
+    );
+  } else {
+    return (
+      <Login
+        setIsLoged={setIsLoged}
+        onClick={() => {
+          setIsLoged(true);
+        }}
+      />
+    );
+  }
+}
+
+function MyTabs({ toggleOverlay }) {
   return (
     <Tab.Navigator
       initialRouteName="Analizar"
@@ -40,7 +86,7 @@ function MyTabs() {
           ),
           headerRight: () => (
             <TouchableOpacity
-              onPress={() => console.log("Header button pressed")}
+              onPress={toggleOverlay}
               style={{ right: 7, position: "absolute", top: 7 }}
             >
               <Icon name="cog-outline" size={28} color="white" />
@@ -63,7 +109,7 @@ function MyTabs() {
           ),
           headerRight: () => (
             <TouchableOpacity
-              onPress={() => console.log("Header button pressed")}
+              onPress={toggleOverlay}
               style={{ right: 7, position: "absolute", top: 7 }}
             >
               <Icon name="cog-outline" size={28} color="white" />
@@ -86,7 +132,7 @@ function MyTabs() {
           ),
           headerRight: () => (
             <TouchableOpacity
-              onPress={() => console.log("Header button pressed")}
+              onPress={toggleOverlay}
               style={{ right: 7, position: "absolute", top: 7 }}
             >
               <Icon name="cog-outline" size={28} color="white" />
@@ -96,39 +142,4 @@ function MyTabs() {
       />
     </Tab.Navigator>
   );
-}
-
-export default function Main() {
-  const [isLoged, setIsLoged] = useState(false);
-  const checkSession = async()=>{
-    const user = await authClient
-  if(user){
-    console.log("Hay usuario")
-    setIsLoged(true)
-  }else{
-    console.log("NEL")
-  }
-  }
-  useEffect(()=>{
-    checkSession()
-  },[])
-  
-  if (isLoged) {
-    return (
-      <ModelProvider>
-        <NavigationContainer>
-          <MyTabs />
-        </NavigationContainer>
-      </ModelProvider>
-    );
-  } else {
-    return (
-      <Login
-        setIsLoged={setIsLoged}
-        onClick={() => {
-          setIsLoged(true);
-        }}
-      />
-    );
-  }
 }
