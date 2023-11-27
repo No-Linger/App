@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, Text, View, Button, TouchableOpacity } from "react-native";
+import { ScrollView, Text, View, Alert, TouchableOpacity } from "react-native";
 import { LottieAnimation } from "../components";
 
 export default function DataCapture({
@@ -8,8 +8,23 @@ export default function DataCapture({
   loading,
   dataByDate,
   handleCapturar,
-  clearData,
+  clearData
 }) {
+
+  const showDeleteConfirmation = () => {
+    Alert.alert(
+      "Confirmación",
+      "¿Estás seguro que quieres borrar los datos?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        { text: "Borrar", onPress: () => clearData() },
+      ]
+    );
+  };
+
   return (
     <ScrollView>
       <Text
@@ -18,7 +33,7 @@ export default function DataCapture({
           marginTop: 20,
           fontSize: 20,
           fontWeight: 600,
-          marginBottom: 15,
+          marginBottom: 5,
         }}
       >
         ¡Hola! Hoy es: {currentDate}
@@ -146,7 +161,7 @@ export default function DataCapture({
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
-                marginBottom: 10,
+                marginBottom: 20,
                 padding: 5,
               }}
             >
@@ -162,6 +177,7 @@ export default function DataCapture({
       )}
 
       <View style={{ justifyContent: "center", alignItems: "center", gap: 16 }}>
+        
         <TouchableOpacity
           onPress={handleCapturar}
           style={{
@@ -176,20 +192,24 @@ export default function DataCapture({
         >
           <Text style={{ fontSize: 18, fontWeight: "600" }}>Capturar</Text>
         </TouchableOpacity>
+        
         <TouchableOpacity
-          onPress={clearData}
+          onPress={showDeleteConfirmation}
           style={{
             padding: 12,
-            borderColor: "black",
-            borderWidth: 2,
+            marginTop: 5,
+            backgroundColor: "red", // Set background color to red
             borderRadius: 12,
             width: "50%",
             justifyContent: "center",
             alignItems: "center",
           }}
         >
-          <Text style={{ fontSize: 18, fontWeight: "600" }}>Borrar</Text>
+          <Text style={{ fontSize: 18, fontWeight: "600", color: "white" }}>
+            Borrar Datos
+          </Text>
         </TouchableOpacity>
+
       </View>
     </ScrollView>
   );
