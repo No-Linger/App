@@ -12,7 +12,7 @@ import SettingsOverlay from "./components/settingsOverlay";
 const Tab = createBottomTabNavigator();
 
 export default function Main() {
-  const [isLoged, setIsLoged] = useState(true);
+  const [isLoged, setIsLoged] = useState(false);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
 
   const checkSession = async () => {
@@ -148,38 +148,4 @@ function MyTabs({ toggleOverlay }) {
       />
     </Tab.Navigator>
   );
-}
-
-export default function Main() {
-  const [isLoged, setIsLoged] = useState(false);
-  const checkSession = async () => {
-    const user = await authClient;
-    if (user) {
-      setIsLoged(true);
-    } else {
-      setIsLoged(false);
-    }
-  };
-  useEffect(() => {
-    checkSession();
-  }, []);
-
-  if (isLoged) {
-    return (
-      <ModelProvider>
-        <NavigationContainer>
-          <MyTabs />
-        </NavigationContainer>
-      </ModelProvider>
-    );
-  } else {
-    return (
-      <Login
-        setIsLoged={setIsLoged}
-        onClick={() => {
-          setIsLoged(true);
-        }}
-      />
-    );
-  }
 }
