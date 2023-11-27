@@ -10,6 +10,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/roboto-mono": "^0.2.3",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-community/netinfo": "9.3.10",
     "@react-native-masked-view/masked-view": "0.2.9",
@@ -24,6 +25,7 @@
     "expo-camera": "~13.4.4",
     "expo-device": "~5.4.0",
     "expo-file-system": "~15.4.4",
+    "expo-font": "~11.4.0",
     "expo-gl": "~13.0.1",
     "expo-haptics": "~12.4.0",
     "expo-image-manipulator": "~11.3.0",
@@ -63,5 +65,5 @@
     "postinstall-postinstall": "^2.1.0"
   },
   "private": true,
-  "license" :"UNLICENSED"
+  "license": "UNLICENSED"
 }
