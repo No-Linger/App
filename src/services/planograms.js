@@ -6,6 +6,12 @@ import { classifyGrid, sliceImage } from "./chipRecognition";
 import { Image } from "react-native";
 
 export const resetPlanogramTracker = async () => {
+  const actual = await getLocalPlanograms();
+  try {
+    actual.map(
+      async (value, index) => await FileSystem.deleteAsync(value.localUri)
+    );
+  } catch (err) {}
   await AsyncStorage.setItem("planograms", JSON.stringify({}));
   await AsyncStorage.setItem("planogramsMatrix", JSON.stringify({}));
   return {};

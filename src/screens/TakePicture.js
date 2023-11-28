@@ -473,7 +473,7 @@ export default function TakePicture() {
       )}
       {capturedPhoto && isProcessing && photoAccepted && (
         <>
-            <FlappyBird/>          
+          <FlappyBird />
         </>
       )}
       {capturedPhoto && !isProcessing && photoAccepted && (
