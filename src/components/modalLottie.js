@@ -3,21 +3,21 @@ import { View, Text, Modal } from 'react-native';
 //import Modal from 'react-native-modal';
 import LottieAnimation from './LottieAnimation'; // Asegúrate de que la ruta sea correcta
 
-const CustomModal = ({ isVisible, onModalClose }) => {
+const CustomModal = ({ isVisible }) => {
   useEffect(() => {
     if (isVisible) {
       const timer = setTimeout(() => {
-        onModalClose();
-      }, 3000); //Cierra el modal después de 3 segundos
+
+            }, 3000); //Cierra el modal después de 3 segundos
 
       return () => {
         clearTimeout(timer);
       };
     }
-  }, [isVisible, onModalClose]);
+  }, [isVisible]);
 
   return (
-    <Modal isVisible={isVisible}>
+    <Modal style={styles.modalStyle} isVisible={isVisible}>
       <View style={styles.modalContent}>
         <View style={styles.lottieAnimationStyle}>
           <LottieAnimation
@@ -32,15 +32,23 @@ const CustomModal = ({ isVisible, onModalClose }) => {
 };
 
 const styles = {
-  modalContent: {
+  modalStyle: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    
+ },
+ modalContent: {
     backgroundColor: 'white',
     padding: 20,
-  },
-  lottieAnimationStyle: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
+ },
+ lottieAnimationStyle: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+ },
 };
 
 export default CustomModal;
