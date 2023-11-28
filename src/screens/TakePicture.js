@@ -33,6 +33,8 @@ import * as Haptics from "expo-haptics";
 import { handleCapturar } from "../services/StatService";
 import FlappyBird from "./FlappyBird";
 
+import { authClient } from "../services/firebaseConfig";
+
 export default function TakePicture() {
   const { model } = useContext(ModelContext);
 
@@ -75,11 +77,11 @@ export default function TakePicture() {
       const fecha = new Date().toLocaleDateString();
       const hora = new Date().toLocaleTimeString();
       const captureJson = {
+        usuario: authClient.currentUser.email,
         planograma: selectedPlanogram.name,
         fecha,
         hora,
         precision: errorPercentage,
-        sucursal: 69,
       };
 
       await handleCapturar(captureJson);
