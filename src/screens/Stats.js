@@ -8,10 +8,12 @@ import StatsData from "./StatsStorage";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import DataCapture from "./StatsCapture";
 import FlappyBird from "./FlappyBird";
+
+import { useFocusEffect } from "@react-navigation/native";
+
 const Tab = createMaterialTopTabNavigator();
 
 export default function TestStats() {
-  const [capture, setCapture] = useState([]);
   const [history, setHistory] = useState([]);
   const [currentDate, setCurrentDate] = useState(
     new Date().toLocaleDateString()
@@ -29,17 +31,6 @@ export default function TestStats() {
   function getRandomArrayElement(arr) {
     return arr[getRandomInt(0, arr.length - 1)];
   }
-
-  // Función para generar un JSON falso para simular los datos capturados
-  const getFakeJson = () => {
-    const precision = 75;
-    const fecha = new Date().toLocaleDateString();
-    const hora = new Date().toLocaleTimeString();
-    const planograma = getRandomArrayElement(["Sabritas"]);
-    const sucrusal = 123456;
-    const fakeJSON = { planograma, fecha, hora, precision, sucrusal };
-    return fakeJSON;
-  };
 
   // separate ui and system
   function fetchWithTimeout(url, options, timeout = 3000) {
@@ -110,7 +101,6 @@ export default function TestStats() {
     data.push(fakeData);
     let newRecords = await tryUploadRecords(data);
     await AsyncStorage.setItem("capturas", JSON.stringify(newRecords));
-    setCapture(fakeData);
   };
 
   // Estado para manejar la conexión a internet
@@ -137,7 +127,6 @@ export default function TestStats() {
   // Función para borrar los datos almacenados
   const clearData = async () => {
     await AsyncStorage.setItem("capturas", JSON.stringify([]));
-    setCapture([]);
     setHistory([]);
   };
 
@@ -160,7 +149,19 @@ export default function TestStats() {
       dataByDate[date] = [];
     }
     dataByDate[date].push(item);
-  }
+  } 
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        let data = await AsyncStorage.getItem("capturas");
+        data = JSON.parse(data);
+        await tryUploadRecords(data);
+      };
+
+      fetchData();
+    }, [])
+  );
 
   return (
     <Tab.Navigator
@@ -174,7 +175,6 @@ export default function TestStats() {
       <Tab.Screen name="Captura" style={{ fontWeight: "bold" }}>
         {() => (
           <DataCapture
-            capture={capture}
             history={history}
             currentDate={currentDate}
             open={open}
