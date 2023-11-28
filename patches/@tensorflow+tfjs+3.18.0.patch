@@ -1,0 +1,140 @@
+diff --git a/node_modules/@tensorflow/tfjs/dist/tf.node.js b/node_modules/@tensorflow/tfjs/dist/tf.node.js
+index f5b3578..4023957 100644
+--- a/node_modules/@tensorflow/tfjs/dist/tf.node.js
++++ b/node_modules/@tensorflow/tfjs/dist/tf.node.js
+@@ -2522,7 +2522,7 @@ class Variable extends Tensor {
+ }
+ Object.defineProperty(Variable, Symbol.hasInstance, {
+     value: (instance) => {
+-        return instance instanceof Tensor && instance.assign != null &&
++        return instance instanceof getGlobalTensorClass() && instance.assign != null &&
+             instance.assign instanceof Function;
+     }
+ });
+@@ -2655,7 +2655,7 @@ function walkTensorContainer(container, list, seen) {
+     if (container == null) {
+         return;
+     }
+-    if (container instanceof Tensor) {
++    if (container instanceof getGlobalTensorClass()) {
+         list.push(container);
+         return;
+     }
+@@ -3533,7 +3533,7 @@ class Engine {
+             throw new Error(`dy must have 'float32' dtype, but has '${dy.dtype}'`);
+         }
+         const y = this.scopedRun(() => this.startTape(), () => this.endTape(), () => this.tidy('forward', f));
+-        assert(y instanceof Tensor, () => 'The result y returned by f() must be a tensor.');
++        assert(y instanceof getGlobalTensorClass(), () => 'The result y returned by f() must be a tensor.');
+         // Filter out the nodes that don't connect x => y.
+         const filteredTape = getFilteredNodesXToY(this.state.activeTape, xs, y);
+         if (!allowNoGradients && filteredTape.length === 0 && xs.length > 0) {
+@@ -3567,7 +3567,7 @@ class Engine {
+     customGrad(f) {
+         assert(isFunction(f), () => 'The f passed in customGrad(f) must be a function.');
+         return (...inputs) => {
+-            assert(inputs.every(t => t instanceof Tensor), () => 'The args passed in customGrad(f)(x1, x2,...) must all be ' +
++            assert(inputs.every(t => t instanceof getGlobalTensorClass()), () => 'The args passed in customGrad(f)(x1, x2,...) must all be ' +
+                 'tensors');
+             let res;
+             const inputMap = {};
+@@ -3576,7 +3576,7 @@ class Engine {
+             });
+             const forwardFunc = (_, save) => {
+                 res = f(...[...inputs, save]);
+-                assert(res.value instanceof Tensor, () => 'The function f passed in customGrad(f) must return an ' +
++                assert(res.value instanceof getGlobalTensorClass(), () => 'The function f passed in customGrad(f) must return an ' +
+                     'object where `obj.value` is a tensor');
+                 assert(isFunction(res.gradFunc), () => 'The function f passed in customGrad(f) must return an ' +
+                     'object where `obj.gradFunc` is a function.');
+@@ -3588,7 +3588,7 @@ class Engine {
+                 assert(grads.length === inputs.length, () => 'The function f passed in customGrad(f) must return an ' +
+                     'object where `obj.gradFunc` is a function that returns ' +
+                     'the same number of tensors as inputs passed to f(...).');
+-                assert(grads.every(t => t instanceof Tensor), () => 'The function f passed in customGrad(f) must return an ' +
++                assert(grads.every(t => t instanceof getGlobalTensorClass()), () => 'The function f passed in customGrad(f) must return an ' +
+                     'object where `obj.gradFunc` is a function that returns ' +
+                     'a list of only tensors.');
+                 const gradMap = {};
+@@ -3758,7 +3758,7 @@ function assertDtype(expectedDtype, actualDType, argName, functionName) {
+     }
+ }
+ function convertToTensor(x, argName, functionName, parseAsDtype = 'numeric') {
+-    if (x instanceof Tensor) {
++    if (x instanceof getGlobalTensorClass()) {
+         assertDtype(parseAsDtype, x.dtype, argName, functionName);
+         return x;
+     }
+@@ -12766,7 +12766,7 @@ async function fromPixelsAsync(pixels, numChannels = 3) {
+  */
+ async function toPixels(img, canvas) {
+     let $img = convertToTensor(img, 'img', 'toPixels');
+-    if (!(img instanceof Tensor)) {
++    if (!(img instanceof getGlobalTensorClass())) {
+         // Assume int32 if user passed a native array.
+         const originalImgTensor = $img;
+         $img = cast(originalImgTensor, 'int32');
+@@ -17148,8 +17148,8 @@ function grads(f) {
+ function valueAndGrad(f) {
+     assert(isFunction(f), () => 'The f passed in valueAndGrad(f) must be a function');
+     return (x, dy) => {
+-        assert(x instanceof Tensor, () => 'The x passed in valueAndGrad(f)(x) must be a tensor');
+-        assert(dy == null || dy instanceof Tensor, () => 'The dy passed in valueAndGrad(f)(x, dy) must be a tensor');
++        assert(x instanceof getGlobalTensorClass(), () => 'The x passed in valueAndGrad(f)(x) must be a tensor');
++        assert(dy == null || dy instanceof getGlobalTensorClass(), () => 'The dy passed in valueAndGrad(f)(x, dy) must be a tensor');
+         const { grads, value } = ENGINE.gradients(() => f(x), [x], dy);
+         checkGrads(grads);
+         return { grad: grads[0], value };
+@@ -17189,9 +17189,9 @@ function valueAndGrad(f) {
+ function valueAndGrads(f) {
+     assert(isFunction(f), () => 'The f passed in valueAndGrads(f) must be a function');
+     return (args, dy) => {
+-        assert(Array.isArray(args) && args.every(arg => arg instanceof Tensor), () => 'The args passed in valueAndGrads(f)(args) must be array of ' +
++        assert(Array.isArray(args) && args.every(arg => arg instanceof getGlobalTensorClass()), () => 'The args passed in valueAndGrads(f)(args) must be array of ' +
+             'tensors');
+-        assert(dy == null || dy instanceof Tensor, () => 'The dy passed in valueAndGrads(f)(args, dy) must be a tensor');
++        assert(dy == null || dy instanceof getGlobalTensorClass(), () => 'The dy passed in valueAndGrads(f)(args, dy) must be a tensor');
+         const res = ENGINE.gradients(() => f(...args), args, dy);
+         if (dy != null) {
+             assertShapesMatch(res.value.shape, dy.shape, 'The shape of dy passed in valueAndGrads(f)([x1,...], dy) must ' +
+@@ -18190,11 +18190,11 @@ function meshgrid(x, y, { indexing = 'xy' } = {}) {
+     if (x === undefined) {
+         return [];
+     }
+-    let $x = convertToTensor(x, 'x', 'meshgrid', x instanceof Tensor ? x.dtype : 'float32');
++    let $x = convertToTensor(x, 'x', 'meshgrid', x instanceof getGlobalTensorClass() ? x.dtype : 'float32');
+     if (y === undefined) {
+         return [$x];
+     }
+-    let $y = convertToTensor(y, 'y', 'meshgrid', y instanceof Tensor ? y.dtype : 'float32');
++    let $y = convertToTensor(y, 'y', 'meshgrid', y instanceof getGlobalTensorClass() ? y.dtype : 'float32');
+     const w = sizeFromShape($x.shape);
+     const h = sizeFromShape($y.shape);
+     if (indexing === 'xy') {
+@@ -22598,7 +22598,7 @@ function dropout_(x, rate, noiseShape, seed) {
+         `scaled, but got a ${$x.dtype} tensor instead.`);
+     assert(rate >= 0 && rate < 1, () => `rate must be a float in the range [0, 1), but got ${rate}.`);
+     if (rate === 0) {
+-        return x instanceof Tensor ? $x.clone() : $x;
++        return x instanceof getGlobalTensorClass() ? $x.clone() : $x;
+     }
+     const $noiseShape = getNoiseShape($x, noiseShape);
+     const keepProb = 1 - rate;
+@@ -29927,7 +29927,7 @@ getGlobalTensorClass().prototype.clipByValue = function (min, max) {
+  */
+ getGlobalTensorClass().prototype.concat = function (x, axis) {
+     this.throwIfDisposed();
+-    if (x instanceof Tensor) {
++    if (x instanceof getGlobalTensorClass()) {
+         x = [x];
+     }
+     return concat([this, ...x], axis);
+@@ -31849,7 +31849,7 @@ getGlobalTensorClass().prototype.squeeze = function (axis) {
+  */
+ getGlobalTensorClass().prototype.stack = function (x, axis) {
+     this.throwIfDisposed();
+-    const tensorsToBeStacked = x instanceof Tensor ? [this, x] : [this, ...x];
++    const tensorsToBeStacked = x instanceof getGlobalTensorClass() ? [this, x] : [this, ...x];
+     return stack(tensorsToBeStacked, axis);
+ };
+ 

@@ -1,5 +1,5 @@
 //import { PLANOGRAM_API } from "@env";
-const PLANOGRAM_API = "http://10.48.71.99:8082";
+const PLANOGRAM_API = "http://10.48.74.125:8082";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system";
 import { classifyGrid, sliceImage } from "./chipRecognition";
@@ -31,9 +31,18 @@ export const getLocalPlanogramsMatrix = async () => {
   return actualPlanogramsMatrix;
 };
 
+function fetchWithTimeout(url, options, timeout = 3000) {
+  return Promise.race([
+    fetch(url, options),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Request timed out")), timeout)
+    ),
+  ]);
+}
+
 export const updatePlanogramRecord = async () => {
   try {
-    const response = await fetch(PLANOGRAM_API + "/getPlanograms");
+    const response = await fetchWithTimeout(PLANOGRAM_API + "/getPlanograms");
     const data = await response.json();
     let actualPlanograms = await getLocalPlanograms();
     let actualPlanogramsKeys = Object.keys(actualPlanograms);
@@ -92,14 +101,7 @@ export const downloadPlanogram = async (planogramId) => {
   }
 };
 
-export const processPlanogram = async (
-  model,
-  planogramId,
-
-  uri,
-  cols,
-  rows
-) => {
+export const processPlanogram = async (model, planogramId, uri, cols, rows) => {
   const slices = await sliceImage(uri, rows, cols);
   const predicitons = await classifyGrid(model, slices, rows, cols);
   let actualPlanograms = await getLocalPlanograms();

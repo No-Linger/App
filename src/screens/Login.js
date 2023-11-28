@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, KeyboardAvoidingView, Platform, Pressable, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -19,6 +20,7 @@ export default function Login(props) {
   const [loggedIn, setLoggedIn] = useState(false);
   
   const { height, width } = Dimensions.get('window');
+
   const imagePosition = useSharedValue(1);
   const [modalVisible, setModalVisible] = useState(false);
   const formButtonScale = useSharedValue(1);
@@ -26,9 +28,17 @@ export default function Login(props) {
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useState(false);
 
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
+
   const signInHandler = useCallback(async () => {
     try {
-      const response = await signInWithEmailAndPassword(authClient, username, password);
+      const response = await signInWithEmailAndPassword(
+        authClient,
+        username,
+        password
+      );
       console.log(response);
       setLoggedIn(true);
       setModalVisible(true);
@@ -47,7 +57,14 @@ export default function Login(props) {
         setIsButtonClicked(false); // Set isButtonClicked to false after handling the sign-in
       }, 3000);
     }
-  }, [username, password, setModalVisible, setLoggedIn, props, setIsButtonClicked]);
+  }, [
+    username,
+    password,
+    setModalVisible,
+    setLoggedIn,
+    props,
+    setIsButtonClicked,
+  ]);
 
   const showAlert = () => {
     Alert.alert(
@@ -75,18 +92,18 @@ export default function Login(props) {
   useEffect(() => {
     loginHandler();
     const keyboardDidShowListener = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', // Use different events for iOS and Android
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow", // Use different events for iOS and Android
       () => {
         setKeyboardOpen(true);
       }
     );
     const keyboardDidHideListener = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', // Use different events for iOS and Android
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide", // Use different events for iOS and Android
       () => {
         setKeyboardOpen(false);
       }
     );
-  
+
     return () => {
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
@@ -94,22 +111,35 @@ export default function Login(props) {
   }, [setKeyboardOpen]);
 
   const imageAnimatedStyle = useAnimatedStyle(() => {
-    const interpolation = interpolate(imagePosition.value, [0, 1], [-height / 4, 0]);
+    const interpolation = interpolate(
+      imagePosition.value,
+      [0, 1],
+      [-height / 4, 0]
+    );
     return {
       transform: [{ translateY: withTiming(interpolation, { duration: 500 }) }],
     };
   });
-  
+
   const buttonsAnimatedStyle = useAnimatedStyle(() => {
-    const opacityInterpolation = interpolate(imagePosition.value, [0, 1], [0, 1]);
-    const translateYInterpolation = interpolate(imagePosition.value, [0, 1], [250, 0]);
-  
+    const opacityInterpolation = interpolate(
+      imagePosition.value,
+      [0, 1],
+      [0, 1]
+    );
+    const translateYInterpolation = interpolate(
+      imagePosition.value,
+      [0, 1],
+      [250, 0]
+    );
+
     return {
       opacity: withTiming(opacityInterpolation, { duration: 300 }),
-      transform: [{ translateY: withTiming(translateYInterpolation, { duration: 500 }) }],
+      transform: [
+        { translateY: withTiming(translateYInterpolation, { duration: 500 }) },
+      ],
     };
   });
-  
 
   const closeButtonContainerStyle = useAnimatedStyle(() => {
     const interpolation = interpolate(imagePosition.value, [0, 1], [180, 360]);
@@ -118,20 +148,26 @@ export default function Login(props) {
       transform: [
         {
           rotate: withTiming(
-            Platform.OS === 'ios' ? interpolation + 'deg' : `${interpolation}deg` // Add 'deg' suffix for Android
+            Platform.OS === "ios"
+              ? interpolation + "deg"
+              : `${interpolation}deg` // Add 'deg' suffix for Android
           ),
         },
         {
-          translateY: withTiming(imagePosition.value === 1 ? 0 : 0, { duration: 800 }), // Adjust translateY as needed
+          translateY: withTiming(imagePosition.value === 1 ? 0 : 0, {
+            duration: 800,
+          }), // Adjust translateY as needed
         },
       ],
     };
   });
-  
 
   const formAnimatedStyle = useAnimatedStyle(() => {
     return {
-      opacity: imagePosition.value === 0 ? withTiming(1, { duration: 800 }) : withTiming(0, { duration: 300 }),
+      opacity:
+        imagePosition.value === 0
+          ? withTiming(1, { duration: 800 })
+          : withTiming(0, { duration: 300 }),
     };
   });
 

@@ -1,0 +1,90 @@
+diff --git a/node_modules/@tensorflow/tfjs-converter/dist/tf-converter.node.js b/node_modules/@tensorflow/tfjs-converter/dist/tf-converter.node.js
+index 9e7d0e2..76cfbfc 100755
+--- a/node_modules/@tensorflow/tfjs-converter/dist/tf-converter.node.js
++++ b/node_modules/@tensorflow/tfjs-converter/dist/tf-converter.node.js
+@@ -10458,7 +10458,7 @@ var Variable = /** @class */ (function (_super) {
+ }(Tensor));
+ Object.defineProperty(Variable, Symbol.hasInstance, {
+     value: function (instance) {
+-        return instance instanceof Tensor && instance.assign != null &&
++        return instance instanceof getGlobalTensorClass() && instance.assign != null &&
+             instance.assign instanceof Function;
+     }
+ });
+@@ -10584,7 +10584,7 @@ function walkTensorContainer(container, list, seen) {
+     if (container == null) {
+         return;
+     }
+-    if (container instanceof Tensor) {
++    if (container instanceof getGlobalTensorClass()) {
+         list.push(container);
+         return;
+     }
+@@ -11537,7 +11537,7 @@ var Engine = /** @class */ (function () {
+             throw new Error("dy must have 'float32' dtype, but has '" + dy.dtype + "'");
+         }
+         var y = this.scopedRun(function () { return _this.startTape(); }, function () { return _this.endTape(); }, function () { return _this.tidy('forward', f); });
+-        assert(y instanceof Tensor, function () { return 'The result y returned by f() must be a tensor.'; });
++        assert(y instanceof getGlobalTensorClass(), function () { return 'The result y returned by f() must be a tensor.'; });
+         // Filter out the nodes that don't connect x => y.
+         var filteredTape = getFilteredNodesXToY(this.state.activeTape, xs, y);
+         if (!allowNoGradients && filteredTape.length === 0 && xs.length > 0) {
+@@ -11587,7 +11587,7 @@ var Engine = /** @class */ (function () {
+             for (var _i = 0; _i < arguments.length; _i++) {
+                 inputs[_i] = arguments[_i];
+             }
+-            assert(inputs.every(function (t) { return t instanceof Tensor; }), function () { return 'The args passed in customGrad(f)(x1, x2,...) must all be ' +
++            assert(inputs.every(function (t) { return t instanceof getGlobalTensorClass(); }), function () { return 'The args passed in customGrad(f)(x1, x2,...) must all be ' +
+                 'tensors'; });
+             var res;
+             var inputMap = {};
+@@ -11596,7 +11596,7 @@ var Engine = /** @class */ (function () {
+             });
+             var forwardFunc = function (_, save) {
+                 res = f.apply(void 0, __spread(inputs, [save]));
+-                assert(res.value instanceof Tensor, function () { return 'The function f passed in customGrad(f) must return an ' +
++                assert(res.value instanceof getGlobalTensorClass(), function () { return 'The function f passed in customGrad(f) must return an ' +
+                     'object where `obj.value` is a tensor'; });
+                 assert(isFunction(res.gradFunc), function () { return 'The function f passed in customGrad(f) must return an ' +
+                     'object where `obj.gradFunc` is a function.'; });
+@@ -11608,7 +11608,7 @@ var Engine = /** @class */ (function () {
+                 assert(grads.length === inputs.length, function () { return 'The function f passed in customGrad(f) must return an ' +
+                     'object where `obj.gradFunc` is a function that returns ' +
+                     'the same number of tensors as inputs passed to f(...).'; });
+-                assert(grads.every(function (t) { return t instanceof Tensor; }), function () { return 'The function f passed in customGrad(f) must return an ' +
++                assert(grads.every(function (t) { return t instanceof getGlobalTensorClass(); }), function () { return 'The function f passed in customGrad(f) must return an ' +
+                     'object where `obj.gradFunc` is a function that returns ' +
+                     'a list of only tensors.'; });
+                 var gradMap = {};
+@@ -11794,7 +11794,7 @@ function assertDtype(expectedDtype, actualDType, argName, functionName) {
+ }
+ function convertToTensor(x, argName, functionName, parseAsDtype) {
+     if (parseAsDtype === void 0) { parseAsDtype = 'numeric'; }
+-    if (x instanceof Tensor) {
++    if (x instanceof getGlobalTensorClass()) {
+         assertDtype(parseAsDtype, x.dtype, argName, functionName);
+         return x;
+     }
+@@ -17926,11 +17926,11 @@ function meshgrid(x, y, _a) {
+     if (x === undefined) {
+         return [];
+     }
+-    var $x = convertToTensor(x, 'x', 'meshgrid', x instanceof Tensor ? x.dtype : 'float32');
++    var $x = convertToTensor(x, 'x', 'meshgrid', x instanceof getGlobalTensorClass() ? x.dtype : 'float32');
+     if (y === undefined) {
+         return [$x];
+     }
+-    var $y = convertToTensor(y, 'y', 'meshgrid', y instanceof Tensor ? y.dtype : 'float32');
++    var $y = convertToTensor(y, 'y', 'meshgrid', y instanceof getGlobalTensorClass() ? y.dtype : 'float32');
+     var w = sizeFromShape($x.shape);
+     var h = sizeFromShape($y.shape);
+     if (indexing === 'xy') {
+@@ -22894,7 +22894,7 @@ function dropout_(x, rate, noiseShape, seed) {
+         ("scaled, but got a " + $x.dtype + " tensor instead."); });
+     assert(rate >= 0 && rate < 1, function () { return "rate must be a float in the range [0, 1), but got " + rate + "."; });
+     if (rate === 0) {
+-        return x instanceof Tensor ? $x.clone() : $x;
++        return x instanceof getGlobalTensorClass() ? $x.clone() : $x;
+     }
+     var $noiseShape = getNoiseShape($x, noiseShape);
+     var keepProb = 1 - rate;

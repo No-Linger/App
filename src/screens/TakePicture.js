@@ -30,6 +30,10 @@ import PagerView from "react-native-pager-view";
 import ResultImageDisplay from "../components/ResultImageDisplay";
 
 import * as Haptics from "expo-haptics";
+import { handleCapturar } from "../services/StatService";
+import FlappyBird from "./FlappyBird";
+
+import { authClient } from "../services/firebaseConfig";
 
 export default function TakePicture() {
   const { model } = useContext(ModelContext);
@@ -69,6 +73,19 @@ export default function TakePicture() {
           selectedPlanogram.rows,
           selectedPlanogram.cols
         );
+
+      const fecha = new Date().toLocaleDateString();
+      const hora = new Date().toLocaleTimeString();
+      const captureJson = {
+        usuario: authClient.currentUser.email,
+        planograma: selectedPlanogram.name,
+        fecha,
+        hora,
+        precision: errorPercentage,
+      };
+
+      await handleCapturar(captureJson);
+
       setPlanogramValues(planogramMatrix);
       setRealValues(predicitons);
       setComparationResults(compareMatrix);
@@ -284,6 +301,11 @@ export default function TakePicture() {
                   flex: 1,
                 }}
               >
+                <LottieView
+                  source={require("../../assets/lotties/ghost.json")}
+                  style={{ width: 250, height: 250 }}
+                  autoPlay
+                />
                 <Text
                   style={{
                     width: "60%",
@@ -292,8 +314,7 @@ export default function TakePicture() {
                     fontSize: 16,
                   }}
                 >
-                  Aqui va el perro maldito Lottie ¡Aún no has descargado ningún
-                  planograma!
+                  ¡Aún no has descargado ningún planograma!
                 </Text>
               </View>
             )}
@@ -452,26 +473,7 @@ export default function TakePicture() {
       )}
       {capturedPhoto && isProcessing && photoAccepted && (
         <>
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              marginTop: "10%",
-            }}
-          >
-            <View>
-              <LottieView
-                autoPlay
-                loop
-                source={require("../../assets/lotties/processingImage.json")}
-                style={{ width: 400, height: 400 }}
-              />
-            </View>
-            <Text style={{ fontSize: 15, marginTop: 5 }}>
-              Pocesando imagen ...
-            </Text>
-          </View>
+            <FlappyBird/>          
         </>
       )}
       {capturedPhoto && !isProcessing && photoAccepted && (
