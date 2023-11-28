@@ -3,14 +3,11 @@ import { ScrollView, Text, View, Alert, TouchableOpacity } from "react-native";
 import { LottieAnimation } from "../components";
 
 export default function DataCapture({
-  capture,
   currentDate,
   loading,
   dataByDate,
-  handleCapturar,
-  clearData
+  clearData,
 }) {
-
   const showDeleteConfirmation = () => {
     Alert.alert(
       "Confirmación",
@@ -25,6 +22,8 @@ export default function DataCapture({
     );
   };
 
+  const lastCapture = dataByDate[currentDate]?.[dataByDate[currentDate]?.length - 1];
+
   return (
     <ScrollView>
       <Text
@@ -32,12 +31,13 @@ export default function DataCapture({
           marginLeft: 10,
           marginTop: 20,
           fontSize: 20,
-          fontWeight: 600,
+          fontWeight: "600",
           marginBottom: 5,
         }}
       >
         ¡Hola! Hoy es: {currentDate}
       </Text>
+
       {loading ? (
         <View
           style={{
@@ -72,7 +72,7 @@ export default function DataCapture({
                 color: "#4B6CFE",
                 overflow: "hidden",
                 borderRadius: 15,
-                fontWeight: 600,
+                fontWeight: "600",
                 textAlign: "center",
                 fontSize: 22,
               }}
@@ -87,9 +87,7 @@ export default function DataCapture({
           </View>
         </View>
       ) : (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <View
             style={{
               margin: 10,
@@ -111,7 +109,7 @@ export default function DataCapture({
             >
               <Text
                 style={{
-                  fontWeight: 600,
+                  fontWeight: "600",
                   marginBottom: -5,
                   fontSize: 20,
                   color: "black",
@@ -123,82 +121,77 @@ export default function DataCapture({
                 ________________________
               </Text>
             </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginBottom: 10,
-                padding: 5,
-                fontSize: 17,
-              }}
-            >
-              <Text style={{ fontSize: 17, fontWeight: 600 }}>Planograma:</Text>
-              <Text style={{ fontSize: 17 }}>{capture.planograma}</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginBottom: 8,
-                padding: 5,
-              }}
-            >
-              <Text style={{ fontSize: 17, fontWeight: 600 }}>Fecha:</Text>
-              <Text style={{ fontSize: 17 }}>{capture.fecha}</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginBottom: 10,
-                padding: 5,
-              }}
-            >
-              <Text style={{ fontSize: 17, fontWeight: 600 }}>Hora:</Text>
-              <Text style={{ fontSize: 17 }}>{capture.hora}</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginBottom: 20,
-                padding: 5,
-              }}
-            >
-              <Text style={{ fontSize: 17, fontWeight: 600 }}>Precisión:</Text>
-              <Text
-                style={{ color: "green", fontSize: 17, fontWeight: "bold" }}
+
+            <View key={lastCapture?.hora} style={{ marginBottom: 5 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginBottom: 10,
+                  padding: 5,
+                  fontSize: 17,
+                }}
               >
-                {capture.precision}%
-              </Text>
+                <Text style={{ fontSize: 17, fontWeight: "600" }}>
+                  Planograma:
+                </Text>
+                <Text style={{ fontSize: 17 }}>{lastCapture?.planograma}</Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginBottom: 8,
+                  padding: 5,
+                }}
+              >
+                <Text style={{ fontSize: 17, fontWeight: "600" }}>Fecha:</Text>
+                <Text style={{ fontSize: 17 }}>{lastCapture?.fecha}</Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginBottom: 10,
+                  padding: 5,
+                }}
+              >
+                <Text style={{ fontSize: 17, fontWeight: "600" }}>Hora:</Text>
+                <Text style={{ fontSize: 17 }}>{lastCapture?.hora}</Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginBottom: 20,
+                  padding: 5,
+                }}
+              >
+                <Text style={{ fontSize: 17, fontWeight: "600" }}>
+                  Precisión:
+                </Text>
+                <Text style={{ color: "green", fontSize: 17, fontWeight: "bold" }}>
+                  {lastCapture?.precision.toFixed(2)}%
+                </Text>
+              </View>
             </View>
           </View>
         </View>
       )}
 
-      <View style={{ justifyContent: "center", alignItems: "center", gap: 16 }}>
-        
-        <TouchableOpacity
-          onPress={handleCapturar}
-          style={{
-            padding: 12,
-            borderColor: "black",
-            borderWidth: 2,
-            borderRadius: 12,
-            width: "50%",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ fontSize: 18, fontWeight: "600" }}>Capturar</Text>
-        </TouchableOpacity>
-        
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: 16,
+        }}
+      >
         <TouchableOpacity
           onPress={showDeleteConfirmation}
           style={{
             padding: 12,
-            marginTop: 5,
-            backgroundColor: "red", // Set background color to red
+            marginTop: -20,
+            backgroundColor: "red",
             borderRadius: 12,
             width: "50%",
             justifyContent: "center",
@@ -209,7 +202,6 @@ export default function DataCapture({
             Borrar Datos
           </Text>
         </TouchableOpacity>
-
       </View>
     </ScrollView>
   );

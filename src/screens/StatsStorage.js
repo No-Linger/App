@@ -78,9 +78,9 @@ export default function StatsData({
                             justifyContent: "space-between",
                           }}
                         >
-                          <Text>Precisión:</Text>
-                          <Text style={{ color: "green" }}>
-                            {item.precision}%
+                          <Text>Error:</Text>
+                          <Text style={{ color: "red" }}>
+                            {item.precision.toFixed(2)}%
                           </Text>
                         </View>
                         <Text style={{ textAlign: "center" }}>

@@ -31,6 +31,7 @@ import ResultImageDisplay from "../components/ResultImageDisplay";
 
 import * as Haptics from "expo-haptics";
 import { handleCapturar } from "../services/StatService";
+import FlappyBird from "./FlappyBird";
 
 export default function TakePicture() {
   const { model } = useContext(ModelContext);
@@ -470,26 +471,7 @@ export default function TakePicture() {
       )}
       {capturedPhoto && isProcessing && photoAccepted && (
         <>
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              marginTop: "10%",
-            }}
-          >
-            <View>
-              <LottieView
-                autoPlay
-                loop
-                source={require("../../assets/lotties/processingImage.json")}
-                style={{ width: 400, height: 400 }}
-              />
-            </View>
-            <Text style={{ fontSize: 15, marginTop: 5 }}>
-              Pocesando imagen ...
-            </Text>
-          </View>
+            <FlappyBird/>          
         </>
       )}
       {capturedPhoto && !isProcessing && photoAccepted && (
