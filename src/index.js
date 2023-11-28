@@ -8,31 +8,38 @@ import { ModelProvider } from "./contexts/model";
 import { TouchableOpacity } from "react-native";
 import { authClient } from "./services/firebaseConfig";
 import SettingsOverlay from "./components/settingsOverlay";
+import * as SplashScreen from "expo-splash-screen";
 
 const Tab = createBottomTabNavigator();
+
+SplashScreen.preventAutoHideAsync();
 
 export default function Main() {
   const [isLoged, setIsLoged] = useState(false);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
 
-  const checkSession = async () => {
-    const user = await authClient;
-    if (user) {
-      setIsLoged(true);
-    } else {
-      console.log("NEL");
-    }
-  };
-
   useEffect(() => {
-    checkSession();
+    const unsubscribe = authClient.onAuthStateChanged(async (user) => {
+      if (user) {
+        // User is signed in.
+        setIsLoged(true);
+      } else {
+        // No user is signed in.
+        setIsLoged(false);
+      }
+      await SplashScreen.hideAsync();
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, []);
 
   const toggleOverlay = () => {
     setIsOverlayVisible(!isOverlayVisible);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await authClient.signOut();
     setIsLoged(false);
     setIsOverlayVisible(false);
   };
@@ -149,4 +156,3 @@ function MyTabs({ toggleOverlay }) {
     </Tab.Navigator>
   );
 }
-

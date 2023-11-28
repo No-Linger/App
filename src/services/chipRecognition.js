@@ -117,7 +117,7 @@ export const classifyGrid = async (model, imagesUris, rows, cols) => {
       });
       let label = await getLabel(predcition);
       temp.push(label);
-      console.log(categories[label]);
+      //console.log(categories[label]);
       counter++;
     }
     result.push(temp);
@@ -139,7 +139,10 @@ const calculateError = async (resultMatrix) => {
       }
     }
   }
-  return { errorPercentage: (falseCount / totalCount) * 100, falseCount };
+  return {
+    errorPercentage: ((falseCount / totalCount) * 100).toFixed(2),
+    falseCount,
+  };
 };
 
 export const comparePlanogram = async (
