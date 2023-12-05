@@ -60,8 +60,8 @@ export default function Profile() {
     })
   ).current;
 
-  const [rows, setRows] = useState(4);
-  const [cols, setCols] = useState(4);
+  const [rows, setRows] = useState(0);
+  const [cols, setCols] = useState(0);
   const [planogramName, setPlanogramName] = useState("");
   const [currentDate, setCurrentDate] = useState("");
 
@@ -97,6 +97,11 @@ export default function Profile() {
   }
 
   const handlePlanogramSaveAndProcess = async () => {
+    if(rows === 0 || cols === 0 || planogramName === ""){
+      console.log("Hello");
+      return 0;
+      
+    }
     setModalVisible(false);
     const { id, localUri } = await addCustomePlanogram(selectedImage.uri, {
       name: planogramName,
@@ -115,6 +120,7 @@ export default function Profile() {
     );
     setPlanograms(newPlanograms);
     await resetAddPlanogram();
+    
   };
 
   const resetAddPlanogram = async () => {
@@ -397,7 +403,7 @@ export default function Profile() {
                     <Slider
                       min={1}
                       max={12}
-                      values={[rows]}
+                      values={[]}
                       onChange={setRows}
                       style={{ width: "70%", marginTop: 10 }}
                       showLabel={false}
