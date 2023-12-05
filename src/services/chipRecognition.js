@@ -5,21 +5,15 @@ import * as ImageManipulator from "expo-image-manipulator";
 const categories = [
   "adobadas",
   "cheetos",
-  "cheetos-hot",
-  "cheetos-mix",
   "churrumais",
-  "doritos-dinamita",
-  "doritos-hot",
-  "doritos-nacho",
-  "fritos-chorizo",
-  "nothing",
+  "doritos",
+  "doritos dinamita",
+  "fritos chorizo",
+  "nada",
   "rancheritos",
   "ruffles",
-  "ruffles-jalapeno",
-  "ruffles-queso",
   "sabritas",
-  "sabritas-limon",
-  "tostitos-hot",
+  "sabritas limon",
 ];
 
 export const indexToString = (index) => {
@@ -117,7 +111,7 @@ export const classifyGrid = async (model, imagesUris, rows, cols) => {
       });
       let label = await getLabel(predcition);
       temp.push(label);
-      //console.log(categories[label]);
+      console.log(categories[label]);
       counter++;
     }
     result.push(temp);

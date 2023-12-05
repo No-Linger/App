@@ -46,17 +46,19 @@ export default function TestStats() {
   // separate ui and system
   const uploadData = async (data) => {
     try {
+      console(JSON.stringify([data]));
       let response = await fetchWithTimeout(
-        "http://10.48.74.125:8082/postStats",
+        "https://api.stage.no-linger.tech/saveStatistics",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify([data]),
         }
       );
       const d = await response.json();
+      console.log("Burger :", d);
       if (response.ok) {
         return true;
       }
@@ -149,7 +151,7 @@ export default function TestStats() {
       dataByDate[date] = [];
     }
     dataByDate[date].push(item);
-  } 
+  }
 
   useFocusEffect(
     React.useCallback(() => {

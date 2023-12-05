@@ -1,25 +1,39 @@
-
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet, KeyboardAvoidingView, Platform, Pressable, Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import Animated, { interpolate, useSharedValue, useAnimatedStyle, withTiming, withSpring, withSequence } from 'react-native-reanimated';
-import Svg, { Ellipse, Image, ClipPath } from 'react-native-svg';
-import { Dimensions } from 'react-native';
-import { LottieAnimation } from '../components';
-import {authClient} from '../services/firebaseConfig';
-import CustomModal from '../components/modalLottie';
-import styles from '../../styles';
-
-const logoImageSource = require('../../assets/logoOxxo.png');
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from "react-native";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import Animated, {
+  interpolate,
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+  withSequence,
+} from "react-native-reanimated";
+import Svg, { Ellipse, Image, ClipPath } from "react-native-svg";
+import { Dimensions } from "react-native";
+import { LottieAnimation } from "../components";
+import { authClient } from "../services/firebaseConfig";
+import CustomModal from "../components/modalLottie";
+import styles from "../../styles";
 
 export default function Login(props) {
-
-  
-  const [username, setUsername] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const [loggedIn, setLoggedIn] = useState(false);
-  
-  const { height, width } = Dimensions.get('window');
+
+  const { height, width } = Dimensions.get("window");
 
   const imagePosition = useSharedValue(1);
   const [modalVisible, setModalVisible] = useState(false);
@@ -27,10 +41,6 @@ export default function Login(props) {
 
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useState(false);
-
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
 
   const signInHandler = useCallback(async () => {
     try {
@@ -50,7 +60,7 @@ export default function Login(props) {
     } catch (error) {
       console.log(error);
       // setModalExceptionVisible(true)
-      showAlert()
+      showAlert();
     } finally {
       setTimeout(() => {
         setModalVisible(false);
@@ -68,17 +78,17 @@ export default function Login(props) {
 
   const showAlert = () => {
     Alert.alert(
-       'Error',
-       'Something went wrong. Please try again.',
-       [
-         {
-           text: 'OK',
-           onPress: () => console.log('OK Pressed'),
-         },
-       ],
-       { cancelable: false }
+      "Error",
+      "Something went wrong. Please try again.",
+      [
+        {
+          text: "OK",
+          onPress: () => console.log("OK Pressed"),
+        },
+      ],
+      { cancelable: false }
     );
-   };
+  };
 
   const loginHandler = () => {
     imagePosition.value = 0;
@@ -181,61 +191,66 @@ export default function Login(props) {
     imagePosition.value = 0;
   };
 
-
   return (
-  <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-    <Animated.View style={[StyleSheet.absoluteFill, imageAnimatedStyle]}>
-      <Svg height={height + 100} width={width}>
-        <ClipPath id="clipPathId">
-          <Ellipse cx={width / 2} rx={height} ry={height + 100} />
-        </ClipPath>
-        <Image
-          href={require('../../assets/splash.png')}
-          width={width}
-          height={height + 100}
-          preserveAspectRatio="xMidYmid slice"
-          clipPath="url(#clipPathId)"
-        />
-      </Svg>
-    </Animated.View>
-    <View style={styles.bottomContainer}>
-    </View>
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={[keyboardOpen ? { backgroundColor: 'white', marginTop:-20 } : null]}>
-        <Animated.View style={[styles.formInputContainer, formAnimatedStyle]}>
-          <TextInput
-            placeholder="Correo"
-            placeholderTextColor="gray"
-            style={styles.textInput}
-            onChangeText={(text) => setUsername(text)}
-            value={username}
-            // editable={isButtonClicked && !modalVisible}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <Animated.View style={[StyleSheet.absoluteFill, imageAnimatedStyle]}>
+        <Svg height={height + 100} width={width}>
+          <ClipPath id="clipPathId">
+            <Ellipse cx={width / 2} rx={height} ry={height + 100} />
+          </ClipPath>
+          <Image
+            href={require("../../assets/splash.png")}
+            width={width}
+            height={height + 100}
+            preserveAspectRatio="xMidYmid slice"
+            clipPath="url(#clipPathId)"
           />
-          <TextInput
-            placeholder="Contraseña"
-            placeholderTextColor="gray"
-            style={styles.textInput}
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            secureTextEntry
-            // editable={isButtonClicked && !modalVisible}
-          />
-          <Animated.View style={[styles.formButtom, formButtonAnimatedStyle]}>
-            <Pressable
-              onPress={async () => {
-                if (isButtonClicked) {
-                  startButtonAnimation();
-                  signInHandler();
-                } 
-              }}
-            >
-              <Text style={styles.buttonText}>Iniciar Sesión</Text>
-            </Pressable>
+        </Svg>
+      </Animated.View>
+      <View style={styles.bottomContainer}></View>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View
+          style={[
+            keyboardOpen ? { backgroundColor: "white", marginTop: -20 } : null,
+          ]}
+        >
+          <Animated.View style={[styles.formInputContainer, formAnimatedStyle]}>
+            <TextInput
+              placeholder="Correo"
+              placeholderTextColor="gray"
+              style={styles.textInput}
+              onChangeText={(text) => setUsername(text)}
+              value={username}
+              // editable={isButtonClicked && !modalVisible}
+            />
+            <TextInput
+              placeholder="Contraseña"
+              placeholderTextColor="gray"
+              style={styles.textInput}
+              onChangeText={(text) => setPassword(text)}
+              value={password}
+              secureTextEntry
+              // editable={isButtonClicked && !modalVisible}
+            />
+            <Animated.View style={[styles.formButtom, formButtonAnimatedStyle]}>
+              <Pressable
+                onPress={async () => {
+                  if (isButtonClicked) {
+                    startButtonAnimation();
+                    signInHandler();
+                  }
+                }}
+              >
+                <Text style={styles.buttonText}>Iniciar Sesión</Text>
+              </Pressable>
+            </Animated.View>
           </Animated.View>
-        </Animated.View>
-        {modalVisible && <CustomModal isVisible={modalVisible} />}
-      </View>
-    </TouchableWithoutFeedback>
-  </KeyboardAvoidingView>
-);
+          {modalVisible && <CustomModal isVisible={modalVisible} />}
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
+  );
 }

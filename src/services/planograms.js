@@ -1,9 +1,10 @@
 //import { PLANOGRAM_API } from "@env";
-const PLANOGRAM_API = "http://10.48.74.125:8082";
+const PLANOGRAM_API = "https://api.stage.no-linger.tech";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system";
 import { classifyGrid, sliceImage } from "./chipRecognition";
 import { Image } from "react-native";
+import { authClient } from "./firebaseConfig";
 
 export const resetPlanogramTracker = async () => {
   const actual = await getLocalPlanograms();
@@ -46,13 +47,40 @@ function fetchWithTimeout(url, options, timeout = 3000) {
   ]);
 }
 
+function transformJsonArray(jsonArray) {
+  return jsonArray.map((item) => {
+    return {
+      _id: item._id,
+      url: item.Ver,
+      name: item.Nombre,
+      tienda: item.Tienda,
+      fecha: formatDate(item.Fecha),
+    };
+  });
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const formattedDate = date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  return formattedDate;
+}
+
 export const updatePlanogramRecord = async () => {
   try {
-    const response = await fetchWithTimeout(PLANOGRAM_API + "/getPlanograms");
+    const response = await fetchWithTimeout(PLANOGRAM_API + "/getPlanograms", {
+      headers: {
+        Authorization: await authClient.currentUser.getIdToken(),
+      },
+    });
     const data = await response.json();
+    let planograms = transformJsonArray(data.planograms);
     let actualPlanograms = await getLocalPlanograms();
     let actualPlanogramsKeys = Object.keys(actualPlanograms);
-    for (let planogram of data.planograms) {
+    for (let planogram of planograms) {
       if (!actualPlanogramsKeys.includes(planogram["_id"])) {
         const id = planogram["_id"];
         delete planogram["_id"];
