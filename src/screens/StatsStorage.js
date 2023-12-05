@@ -80,7 +80,7 @@ export default function StatsData({
                         >
                           <Text>Error:</Text>
                           <Text style={{ color: "red" }}>
-                            {item.precision.toFixed(2)}%
+                            {item.precision}%
                           </Text>
                         </View>
                         <Text style={{ textAlign: "center" }}>

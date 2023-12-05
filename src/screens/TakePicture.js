@@ -82,6 +82,7 @@ export default function TakePicture() {
         fecha,
         hora,
         precision: errorPercentage,
+        malColocados: {},
       };
 
       await handleCapturar(captureJson);

@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-STATS_API = "http://10.48.74.125:8082/postStats";
+STATS_API = "https://api.stage.no-linger.tech/saveStatistics";
 // separate ui and system
 function fetchWithTimeout(url, options, timeout = 3000) {
   return Promise.race([
@@ -20,9 +20,11 @@ const uploadData = async (data) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify([data]),
     });
     const d = await response.json();
+    console.log("Burger :", d);
+    console.log("Airdrian : ", JSON.stringify([data]));
     if (response.ok) {
       return true;
     }

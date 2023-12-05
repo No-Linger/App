@@ -9,20 +9,17 @@ export default function DataCapture({
   clearData,
 }) {
   const showDeleteConfirmation = () => {
-    Alert.alert(
-      "Confirmación",
-      "¿Estás seguro que quieres borrar los datos?",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        { text: "Borrar", onPress: () => clearData() },
-      ]
-    );
+    Alert.alert("Confirmación", "¿Estás seguro que quieres borrar los datos?", [
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+      { text: "Borrar", onPress: () => clearData() },
+    ]);
   };
 
-  const lastCapture = dataByDate[currentDate]?.[dataByDate[currentDate]?.length - 1];
+  const lastCapture =
+    dataByDate[currentDate]?.[dataByDate[currentDate]?.length - 1];
 
   return (
     <ScrollView>
@@ -87,7 +84,9 @@ export default function DataCapture({
           </View>
         </View>
       ) : (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
           <View
             style={{
               margin: 10,
@@ -170,8 +169,17 @@ export default function DataCapture({
                 <Text style={{ fontSize: 17, fontWeight: "600" }}>
                   Precisión:
                 </Text>
-                <Text style={{ color: "green", fontSize: 17, fontWeight: "bold" }}>
-                  {lastCapture?.precision.toFixed(2)}%
+                <Text
+                  style={{
+                    color:
+                      lastCapture && lastCapture?.precision - 100 > 80
+                        ? "green"
+                        : "red",
+                    fontSize: 17,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {lastCapture ? lastCapture?.precision - 100 : 0}%
                 </Text>
               </View>
             </View>
