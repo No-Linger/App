@@ -129,6 +129,14 @@ export default function ImageEditor({ image, onCancel, onComplete }) {
   };
 
   const handleImageCrop = async () => {
+    if (
+      tempX.value < 0 ||
+      tempY.value < 0 ||
+      tempX.value + croperWidth.value > imageFixedWidth ||
+      tempY.value + croperHeight.value > imageFixedHeight
+    ) {
+      return;
+    }
     try {
       let res = await cropImage(
         actualImage ? actualImage.uri : image.uri,
